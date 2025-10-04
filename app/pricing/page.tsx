@@ -219,7 +219,7 @@ export default function PricingPage() {
       clearInterval(textGlitchInterval);
       clearInterval(priceGlitchInterval);
     };
-  }, []);
+  }, [router]);
 
   return (
     <>
