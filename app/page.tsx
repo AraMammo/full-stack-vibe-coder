@@ -203,17 +203,21 @@ export default function Home() {
     }, 3000);
 
     // Listen for contact form events from navigation
-    const handleContactFormEvent = (event: CustomEvent) => {
-      openForm(event.detail.subject);
+    const handleContactFormEvent = (event: any) => {
+      try {
+        openForm(event.detail?.subject || 'General Inquiry');
+      } catch (error) {
+        console.error('Error handling contact form event:', error);
+      }
     };
 
-    window.addEventListener('openContactForm', handleContactFormEvent as EventListener);
+    window.addEventListener('openContactForm', handleContactFormEvent);
 
     return () => {
       window.removeEventListener('resize', handleResize);
       canvas.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mousemove', handleCardMouseMove);
-      window.removeEventListener('openContactForm', handleContactFormEvent as EventListener);
+      window.removeEventListener('openContactForm', handleContactFormEvent);
       clearInterval(morphInterval);
       clearInterval(glitchInterval);
     };

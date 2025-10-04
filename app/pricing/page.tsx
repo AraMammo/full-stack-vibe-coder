@@ -199,17 +199,22 @@ export default function PricingPage() {
     }, 3000);
 
     // Listen for contact form events from navigation
-    const handleContactFormEvent = (event: CustomEvent) => {
-      // Redirect to homepage with contact form
-      router.push('/?contact=true&subject=' + encodeURIComponent(event.detail.subject));
+    const handleContactFormEvent = (event: any) => {
+      try {
+        // Redirect to homepage with contact form
+        router.push('/?contact=true&subject=' + encodeURIComponent(event.detail?.subject || 'General Inquiry'));
+      } catch (error) {
+        console.error('Error handling contact form event:', error);
+        router.push('/');
+      }
     };
 
-    window.addEventListener('openContactForm', handleContactFormEvent as EventListener);
+    window.addEventListener('openContactForm', handleContactFormEvent);
 
     return () => {
       window.removeEventListener('resize', handleResize);
       canvas.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('openContactForm', handleContactFormEvent as EventListener);
+      window.removeEventListener('openContactForm', handleContactFormEvent);
       clearInterval(glitchInterval);
       clearInterval(textGlitchInterval);
       clearInterval(priceGlitchInterval);
@@ -332,8 +337,13 @@ export default function PricingPage() {
             <button 
               className="enterprise-cta pricing-enterprise-cta"
               onClick={() => {
-                const event = new CustomEvent('openContactForm', { detail: { subject: 'Enterprise Automation Inquiry' } });
-                window.dispatchEvent(event);
+                try {
+                  const event = new CustomEvent('openContactForm', { detail: { subject: 'Enterprise Automation Inquiry' } });
+                  window.dispatchEvent(event);
+                } catch (error) {
+                  console.error('Error dispatching contact form event:', error);
+                  router.push('/?contact=true&subject=' + encodeURIComponent('Enterprise Automation Inquiry'));
+                }
               }}
             >
               Book Enterprise Consultation →

@@ -9,9 +9,15 @@ export default function Navigation() {
   const pathname = usePathname();
 
   const openForm = (subject: string) => {
-    // Create a temporary form element to trigger the contact form
-    const event = new CustomEvent('openContactForm', { detail: { subject } });
-    window.dispatchEvent(event);
+    try {
+      // Create a temporary form element to trigger the contact form
+      const event = new CustomEvent('openContactForm', { detail: { subject } });
+      window.dispatchEvent(event);
+    } catch (error) {
+      console.error('Error dispatching contact form event:', error);
+      // Fallback to direct navigation
+      router.push('/?contact=true&subject=' + encodeURIComponent(subject));
+    }
   };
 
   const navItems = [
