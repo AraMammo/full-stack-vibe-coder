@@ -1,11 +1,18 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [formSubject, setFormSubject] = useState('');
   const router = useRouter();
+
+  const openForm = (subject: string) => {
+    setFormSubject(subject);
+    setShowForm(true);
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -24,7 +31,29 @@ export default function Home() {
 
     window.addEventListener('resize', handleResize);
 
-    // Particle system (keeping existing code)
+    // Morphing text animation
+    const phrases = [
+      'products that matter',
+      'solutions for real problems',
+      'end-to-end systems',
+      'friction removed',
+      'tech that works for people'
+    ];
+
+    let currentPhrase = 0;
+    const morphingEl = document.getElementById('morphing');
+
+    const morphInterval = setInterval(() => {
+      if (!morphingEl) return;
+      morphingEl.style.opacity = '0';
+      setTimeout(() => {
+        currentPhrase = (currentPhrase + 1) % phrases.length;
+        morphingEl.textContent = phrases[currentPhrase];
+        morphingEl.style.opacity = '1';
+      }, 500);
+    }, 3000);
+
+    // Particle system
     class Particle {
       x: number;
       y: number;
@@ -125,6 +154,30 @@ export default function Home() {
 
     animate();
 
+    // Card 3D tilt effect
+    const handleCardMouseMove = (e: MouseEvent) => {
+      const cards = document.querySelectorAll('.chaos-card');
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
+          const rotateX = (y / rect.height - 0.5) * 10;
+          const rotateY = (x / rect.width - 0.5) * -10;
+          (card as HTMLElement).style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+        }
+      });
+    };
+
+    document.addEventListener('mousemove', handleCardMouseMove);
+
+    document.querySelectorAll('.chaos-card').forEach(card => {
+      card.addEventListener('mouseleave', () => {
+        (card as HTMLElement).style.transform = '';
+      });
+    });
+
     // Random glitch effect
     const glitchInterval = setInterval(() => {
       const titles = document.querySelectorAll('.main-title');
@@ -138,6 +191,8 @@ export default function Home() {
     return () => {
       window.removeEventListener('resize', handleResize);
       canvas.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mousemove', handleCardMouseMove);
+      clearInterval(morphInterval);
       clearInterval(glitchInterval);
     };
   }, []);
@@ -163,95 +218,184 @@ export default function Home() {
           <h1 className="main-title" data-text="CODER">CODER</h1>
         </div>
 
-        <h2 className="hero-headline">
-          Turn Your Business Idea Into A Live Company In 48 Hours
-        </h2>
-
-        <p className="hero-subtext">
-          Record a 5-minute voice note. Get a complete turn-key business: Website. Branding. Business Plan. Marketing. Everything.
+        <p className="tagline">
+          World&apos;s fastest full stack developers. Tell us your problem. We&apos;ll fix it and make sure it never happens again.
         </p>
 
-        <div className="price-container">
-          <div className="price-strike">$997</div>
-          <div className="price-main">$297</div>
-          <div className="price-label">Launch Special - Limited Time</div>
-        </div>
-
-        <button className="cta-primary" onClick={() => router.push('/payment')}>
-          Start Your Business Now →
-        </button>
-
-        {/* What's Included Section */}
-        <div className="included-section">
-          <h3 className="included-title">What You Get:</h3>
-          <div className="included-grid">
-            <div className="included-item">
-              <span className="check">✓</span>
-              <div>
-                <strong>Live Landing Page</strong>
-                <p>Hosted & deployed instantly</p>
-              </div>
-            </div>
-            <div className="included-item">
-              <span className="check">✓</span>
-              <div>
-                <strong>Brand Assets</strong>
-                <p>Logo, colors, fonts</p>
-              </div>
-            </div>
-            <div className="included-item">
-              <span className="check">✓</span>
-              <div>
-                <strong>Business Plan PDF</strong>
-                <p>10-15 pages, professional</p>
-              </div>
-            </div>
-            <div className="included-item">
-              <span className="check">✓</span>
-              <div>
-                <strong>Marketing Copy</strong>
-                <p>Social posts, emails, ads</p>
-              </div>
-            </div>
-            <div className="included-item">
-              <span className="check">✓</span>
-              <div>
-                <strong>Business Model Canvas</strong>
-                <p>Visual one-pager</p>
-              </div>
-            </div>
-            <div className="included-item">
-              <span className="check">✓</span>
-              <div>
-                <strong>Launch Checklist</strong>
-                <p>Step-by-step guide</p>
-              </div>
-            </div>
+        <div className="chaos-grid">
+          <div className="chaos-card">
+            <h3 className="card-title">Got a Problem?</h3>
+            <p className="card-desc">
+              We don&apos;t care what it is. If it&apos;s broken, slow, or eating your time—we&apos;ll build you a solution that works.
+            </p>
+            <a className="card-btn" onClick={() => openForm('I Have A Problem')}>
+              Tell us what&apos;s broken →
+            </a>
           </div>
-        </div>
 
-        {/* Enterprise Section */}
-        <div className="enterprise-section">
-          <h3 className="enterprise-title">Need More Than A Startup Kit?</h3>
-          <p className="enterprise-desc">
-            We automate entire businesses end-to-end. Compliance systems. Legal tech. Content engines. 
-            If you&apos;re spending $100K+/year on manual processes, we&apos;ll show you how to cut that by 60% in 90 days.
-          </p>
-          <div className="enterprise-pricing">
-            <div className="enterprise-price">Minimum Investment: $20,000</div>
-            <div className="enterprise-range">Average Project: $75,000 - $250,000</div>
+          <div className="chaos-card">
+            <h3 className="card-title">Who Are We?</h3>
+            <p className="card-desc">
+              Ara ran a real estate team in Toronto. Got frustrated waiting for tech that never shipped. Learned to code. But here&apos;s the weapon: full stack developer AND end-to-end marketer. Branding. Meta ads. Google campaigns. The whole stack. This is what happens when operators become builders.
+            </p>
+            <a className="card-btn" onClick={() => openForm('Tell Me More')}>
+              The origin story →
+            </a>
           </div>
-          <a href="mailto:ara@fullstackvibecoder.com?subject=Enterprise Automation Inquiry" className="enterprise-cta">
-            Book Enterprise Consultation →
-          </a>
+
+          <div className="chaos-card">
+            <h3 className="card-title">Launch Your Business</h3>
+            <p className="card-desc">
+              Got an idea? Turn your business idea into a live company in 48 hours. Complete turn-key business: Website. Branding. Business Plan. Marketing. Everything. Faster than anyone else on the planet.
+            </p>
+            <a className="card-btn" onClick={() => router.push('/pricing')}>
+              Turn Your Idea Into A Live Business →
+            </a>
+          </div>
+
+          <div className="chaos-card">
+            <h3 className="card-title">How We Work</h3>
+            <p className="card-desc">
+              You describe the problem. We build the solution. End-to-end. No endless meetings. No project managers. Just results.
+            </p>
+            <a className="card-btn" onClick={() => openForm("Let's Work Together")}>
+              Let&apos;s work together →
+            </a>
+          </div>
         </div>
       </div>
 
       <div className="rotating-badges">
-        <div className="badge">48 Hours</div>
-        <div className="badge">Zero Meetings</div>
-        <div className="badge">Full Ownership</div>
+        <div className="badge">End to End</div>
+        <div className="badge">Ship Fast</div>
+        <div className="badge">No Fluff</div>
       </div>
+
+      {showForm && (
+        <ContactForm 
+          subject={formSubject} 
+          onClose={() => setShowForm(false)} 
+        />
+      )}
     </>
+  );
+}
+
+interface ContactFormProps {
+  subject: string;
+  onClose: () => void;
+}
+
+function ContactForm({ subject, onClose }: ContactFormProps) {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [glitchText, setGlitchText] = useState('SEND MESSAGE');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const glitchPhrases = ['SEND MESSAGE', 'SHIP IT', 'DEPLOY', 'LAUNCH', 'BUILD', 'EXECUTE'];
+    let currentIndex = 0;
+    
+    const interval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % glitchPhrases.length;
+      setGlitchText(glitchPhrases[currentIndex]);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    // Simulate submission with mailto fallback
+    const mailtoLink = `mailto:ara@fullstackvibecoder.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+    )}`;
+    
+    window.location.href = mailtoLink;
+    
+    setTimeout(() => {
+      setIsSubmitting(false);
+      onClose();
+    }, 1000);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  return (
+    <div className="form-overlay" onClick={onClose}>
+      <div className="form-container" onClick={(e) => e.stopPropagation()}>
+        <button className="form-close" onClick={onClose}>×</button>
+        
+        <div className="form-glitch-title" data-text={subject}>
+          {subject}
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-label">NAME</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="form-input"
+              placeholder="Your name"
+            />
+            <div className="input-glitch"></div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">EMAIL</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="form-input"
+              placeholder="your@email.com"
+            />
+            <div className="input-glitch"></div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">MESSAGE</label>
+            <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              required
+              className="form-textarea"
+              placeholder="Tell us what you need..."
+              rows={6}
+            />
+            <div className="input-glitch"></div>
+          </div>
+
+          <button 
+            type="submit" 
+            className="form-submit"
+            disabled={isSubmitting}
+          >
+            <span className="submit-glitch" data-text={glitchText}>
+              {glitchText}
+            </span>
+          </button>
+        </form>
+
+        <div className="form-noise"></div>
+      </div>
+    </div>
   );
 }
