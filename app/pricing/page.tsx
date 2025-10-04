@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Navigation from '../components/Navigation';
 
 export default function PricingPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -197,9 +198,18 @@ export default function PricingPage() {
       }, 300);
     }, 3000);
 
+    // Listen for contact form events from navigation
+    const handleContactFormEvent = (event: CustomEvent) => {
+      // Redirect to homepage with contact form
+      router.push('/?contact=true&subject=' + encodeURIComponent(event.detail.subject));
+    };
+
+    window.addEventListener('openContactForm', handleContactFormEvent as EventListener);
+
     return () => {
       window.removeEventListener('resize', handleResize);
       canvas.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('openContactForm', handleContactFormEvent as EventListener);
       clearInterval(glitchInterval);
       clearInterval(textGlitchInterval);
       clearInterval(priceGlitchInterval);
@@ -208,6 +218,7 @@ export default function PricingPage() {
 
   return (
     <>
+      <Navigation />
       <div className="noise"></div>
       <div className="grid-overlay"></div>
 
@@ -318,9 +329,15 @@ export default function PricingPage() {
               <div className="enterprise-price pricing-enterprise-price">Minimum Investment: $20,000</div>
               <div className="enterprise-range pricing-enterprise-range">Average Project: $75,000 - $250,000</div>
             </div>
-            <a href="mailto:ara@fullstackvibecoder.com?subject=Enterprise Automation Inquiry" className="enterprise-cta pricing-enterprise-cta">
+            <button 
+              className="enterprise-cta pricing-enterprise-cta"
+              onClick={() => {
+                const event = new CustomEvent('openContactForm', { detail: { subject: 'Enterprise Automation Inquiry' } });
+                window.dispatchEvent(event);
+              }}
+            >
               Book Enterprise Consultation →
-            </a>
+            </button>
           </div>
 
           {/* Back Button */}

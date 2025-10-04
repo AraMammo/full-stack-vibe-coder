@@ -1,18 +1,32 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Navigation from './components/Navigation';
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [showForm, setShowForm] = useState(false);
   const [formSubject, setFormSubject] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const openForm = (subject: string) => {
     setFormSubject(subject);
     setShowForm(true);
   };
+
+  // Handle URL parameters for contact form
+  useEffect(() => {
+    const contact = searchParams.get('contact');
+    const subject = searchParams.get('subject');
+    
+    if (contact === 'true' && subject) {
+      openForm(decodeURIComponent(subject));
+      // Clean up URL
+      router.replace('/', { scroll: false });
+    }
+  }, [searchParams, router]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -188,10 +202,18 @@ export default function Home() {
       }, 100);
     }, 3000);
 
+    // Listen for contact form events from navigation
+    const handleContactFormEvent = (event: CustomEvent) => {
+      openForm(event.detail.subject);
+    };
+
+    window.addEventListener('openContactForm', handleContactFormEvent as EventListener);
+
     return () => {
       window.removeEventListener('resize', handleResize);
       canvas.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mousemove', handleCardMouseMove);
+      window.removeEventListener('openContactForm', handleContactFormEvent as EventListener);
       clearInterval(morphInterval);
       clearInterval(glitchInterval);
     };
@@ -199,6 +221,7 @@ export default function Home() {
 
   return (
     <>
+      <Navigation />
       <div className="noise"></div>
       <div className="grid-overlay"></div>
 
