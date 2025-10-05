@@ -18,13 +18,19 @@ export default function Home() {
 
   // Handle URL parameters for contact form
   useEffect(() => {
-    const contact = searchParams.get('contact');
-    const subject = searchParams.get('subject');
-    
-    if (contact === 'true' && subject) {
-      openForm(decodeURIComponent(subject));
-      // Clean up URL
-      router.replace('/', { scroll: false });
+    try {
+      const contact = searchParams.get('contact');
+      const subject = searchParams.get('subject');
+      
+      if (contact === 'true' && subject) {
+        openForm(decodeURIComponent(subject));
+        // Clean up URL with a small delay to avoid race conditions
+        setTimeout(() => {
+          router.replace('/', { scroll: false });
+        }, 100);
+      }
+    } catch (error) {
+      console.error('Error handling URL parameters:', error);
     }
   }, [searchParams, router, openForm]);
 

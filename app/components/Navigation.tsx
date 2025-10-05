@@ -15,8 +15,14 @@ export default function Navigation() {
       window.dispatchEvent(event);
     } catch (error) {
       console.error('Error dispatching contact form event:', error);
-      // Fallback to direct navigation
-      router.push('/?contact=true&subject=' + encodeURIComponent(subject));
+      // Fallback to direct navigation with error handling
+      try {
+        router.push('/?contact=true&subject=' + encodeURIComponent(subject));
+      } catch (routerError) {
+        console.error('Error with router navigation:', routerError);
+        // Final fallback - just navigate to home
+        window.location.href = '/';
+      }
     }
   };
 
@@ -29,7 +35,14 @@ export default function Navigation() {
     <nav className="navigation">
       <div className="nav-container">
         {/* Logo */}
-        <div className="nav-logo" onClick={() => router.push('/')}>
+        <div className="nav-logo" onClick={() => {
+          try {
+            router.push('/');
+          } catch (error) {
+            console.error('Navigation error:', error);
+            window.location.href = '/';
+          }
+        }}>
           <span className="logo-text">FULLSTACK VIBE CODER</span>
         </div>
 
@@ -39,7 +52,14 @@ export default function Navigation() {
             <button
               key={item.path}
               className={`nav-item ${pathname === item.path ? 'active' : ''}`}
-              onClick={() => router.push(item.path)}
+              onClick={() => {
+                try {
+                  router.push(item.path);
+                } catch (error) {
+                  console.error('Navigation error:', error);
+                  window.location.href = item.path;
+                }
+              }}
             >
               {item.name}
             </button>
@@ -72,8 +92,14 @@ export default function Navigation() {
             key={item.path}
             className={`mobile-nav-item ${pathname === item.path ? 'active' : ''}`}
             onClick={() => {
-              router.push(item.path);
-              setIsMenuOpen(false);
+              try {
+                router.push(item.path);
+                setIsMenuOpen(false);
+              } catch (error) {
+                console.error('Mobile navigation error:', error);
+                window.location.href = item.path;
+                setIsMenuOpen(false);
+              }
             }}
           >
             {item.name}
