@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -22,6 +18,11 @@ export async function POST(request: Request) {
       fileName: audio.name,
       fileSize: audio.size,
       sessionId: sessionId,
+    });
+
+    // Initialize OpenAI client
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
     });
 
     // Step 1: Transcribe audio with OpenAI Whisper
