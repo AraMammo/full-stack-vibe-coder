@@ -1,41 +1,44 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const audioFile = formData.get('audio') as File;
+    const audio = formData.get('audio') as File;
     const sessionId = formData.get('sessionId') as string;
 
-    if (!audioFile || !sessionId) {
+    if (!audio || !sessionId) {
       return NextResponse.json(
-        { error: 'Missing audio file or session ID' },
+        { error: 'Missing audio or session ID' },
         { status: 400 }
       );
     }
 
-    // Here you would typically:
-    // 1. Verify the Stripe session was successful
-    // 2. Process the audio file (transcribe, analyze, etc.)
-    // 3. Generate business assets based on the voice note
-    // 4. Store the results in a database
-    // 5. Send confirmation email to customer
+    // TODO: Implement actual upload logic
+    // For now, we'll just log and return success
+    // In production, you'll:
+    // 1. Upload audio to S3/Cloudflare R2
+    // 2. Transcribe with Whisper API
+    // 3. Process with Claude/GPT
+    // 4. Generate business assets
+    // 5. Send email to customer
 
-    // For now, we'll just simulate success
-    console.log('Audio file received:', audioFile.name, audioFile.size, 'bytes');
-    console.log('Session ID:', sessionId);
+    console.log('Received voice note:', {
+      fileName: audio.name,
+      fileSize: audio.size,
+      sessionId: sessionId,
+    });
 
-    // Simulate processing time
+    // Simulate processing
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     return NextResponse.json({ 
-      success: true, 
-      message: 'Voice note received and processing started' 
+      success: true,
+      message: 'Voice note received. Your business is being built!' 
     });
-
-  } catch (error) {
-    console.error('Upload error:', error);
+  } catch (err) {
+    console.error('Upload error:', err);
     return NextResponse.json(
-      { error: 'Failed to process upload' },
+      { error: 'Upload failed' },
       { status: 500 }
     );
   }
