@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Navigation from './components/Navigation';
 
@@ -11,10 +11,10 @@ export default function Home() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const openForm = (subject: string) => {
+  const openForm = useCallback((subject: string) => {
     setFormSubject(subject);
     setShowForm(true);
-  };
+  }, []);
 
   // Handle URL parameters for contact form
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function Home() {
       // Clean up URL
       router.replace('/', { scroll: false });
     }
-  }, [searchParams, router]);
+  }, [searchParams, router, openForm]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -221,7 +221,7 @@ export default function Home() {
       clearInterval(morphInterval);
       clearInterval(glitchInterval);
     };
-  }, []);
+  }, [openForm]);
 
   return (
     <>
