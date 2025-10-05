@@ -6,6 +6,10 @@ A cutting-edge agency website built with Next.js, featuring chaotic cyberpunk ae
 
 - **Cyberpunk Design**: Dark theme with neon colors and glitch effects
 - **Interactive Particles**: Canvas-based particle system with floating animations
+- **Voice Note Upload**: Record and upload voice notes for business ideas
+- **AI Transcription**: OpenAI Whisper integration for audio transcription
+- **Business Blueprint Automation**: Webhook integration for automated business asset generation
+- **Stripe Payment Integration**: Secure payment processing
 - **Responsive Layout**: Works perfectly on desktop and mobile devices
 - **Modern Tech Stack**: Built with Next.js 14, React 18, and TypeScript
 - **Performance Optimized**: Fast loading with optimized animations
@@ -14,8 +18,11 @@ A cutting-edge agency website built with Next.js, featuring chaotic cyberpunk ae
 
 - **Framework**: Next.js 14 with App Router
 - **Language**: TypeScript
+- **AI/ML**: OpenAI Whisper API for audio transcription
+- **Payment**: Stripe for payment processing
 - **Styling**: CSS with custom animations and effects
 - **Effects**: Canvas API for particle animations
+- **Automation**: Webhook integration for business blueprint generation
 
 ## 🏃‍♂️ Getting Started
 
@@ -31,12 +38,20 @@ A cutting-edge agency website built with Next.js, featuring chaotic cyberpunk ae
    npm install
    ```
 
-3. Start the development server:
+3. Create a `.env.local` file in the root directory with the following variables:
+   ```env
+   OPENAI_API_KEY=your_openai_api_key_here
+   BUSINESS_BLUEPRINT_WEBHOOK_URL=your_webhook_url_here
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key_here
+   STRIPE_SECRET_KEY=your_stripe_secret_key_here
+   ```
+
+4. Start the development server:
    ```bash
    npm run dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ### Available Scripts
 
