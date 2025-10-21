@@ -108,7 +108,7 @@ export default function WhatIsVibeCodingPage() {
               </div>
             </div>
             
-            <a href="/upload" className="vibe-cta-primary">
+            <a href="/pricing" className="vibe-cta-primary">
               See Vibe Coding in Action
             </a>
           </header>
@@ -380,7 +380,7 @@ export default function WhatIsVibeCodingPage() {
             <p className="cta-description">
               Record your idea. Get a proposal in 6 hours.
             </p>
-            <a href="/upload" className="vibe-cta-primary large">
+            <a href="/pricing" className="vibe-cta-primary large">
               Start a Project
             </a>
           </section>

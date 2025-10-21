@@ -254,7 +254,7 @@ export default function FAQPage() {
             <p>Record a voice note describing your project. I'll answer your specific questions in the proposal.</p>
             <button
               className="faq-cta-button"
-              onClick={() => window.location.href = '/upload'}
+              onClick={() => window.location.href = '/pricing'}
             >
               Record Your Idea
             </button>
