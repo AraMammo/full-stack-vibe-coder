@@ -251,6 +251,17 @@ export default function Home() {
           <h1 className="main-title" data-text="CODER">CODER</h1>
         </div>
 
+        <div className="featured-badge-float">
+          <button 
+            className="featured-badge" 
+            onClick={() => router.push('/tools')}
+          >
+            <span className="badge-new">NEW</span>
+            <span className="badge-title">Pre-Built Tools</span>
+            <span className="badge-subtitle">Substack • Video</span>
+          </button>
+        </div>
+
         <p className="tagline">
           World&apos;s fastest full stack developers. Tell us your problem. We&apos;ll fix it and make sure it never happens again.
         </p>

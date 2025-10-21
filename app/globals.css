@@ -267,6 +267,129 @@ body {
   transform: translateX(5px);
 }
 
+.featured-badge-float {
+  position: fixed;
+  top: 15%;
+  right: 8%;
+  transform: rotate(12deg);
+  pointer-events: auto;
+  z-index: 100;
+  animation: badgeFloat 3s ease-in-out infinite;
+}
+
+@keyframes badgeFloat {
+  0%, 100% { transform: rotate(12deg) translateY(0); }
+  50% { transform: rotate(9deg) translateY(-8px); }
+}
+
+.featured-badge {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  height: 160px;
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.2), rgba(0, 170, 255, 0.2));
+  border: 3px solid #ff0080;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(255, 0, 128, 0.3);
+}
+
+.featured-badge::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    rgba(0, 255, 136, 0.3),
+    transparent,
+    rgba(0, 170, 255, 0.3),
+    transparent
+  );
+  animation: badgeSpinSlow 4s linear infinite;
+}
+
+@keyframes badgeSpinSlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.featured-badge:hover {
+  transform: scale(1.1) rotate(-3deg);
+  box-shadow: 0 12px 48px rgba(255, 0, 128, 0.5);
+  border-color: #00ff88;
+}
+
+.badge-new {
+  position: relative;
+  background: #ff0080;
+  color: #fff;
+  padding: 4px 16px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  z-index: 1;
+  animation: pulse 2s infinite;
+}
+
+.badge-title {
+  position: relative;
+  font-size: 1rem;
+  font-weight: 900;
+  text-align: center;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #00ff88, #00aaff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  z-index: 1;
+  margin-bottom: 8px;
+}
+
+.badge-subtitle {
+  position: relative;
+  font-size: 0.75rem;
+  color: #aaa;
+  font-weight: 600;
+  text-align: center;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@media (max-width: 768px) {
+  .featured-badge-float {
+    top: 20%;
+    right: 2%;
+    transform: translateY(0) rotate(5deg);
+  }
+  
+  .featured-badge {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .badge-title {
+    font-size: 0.85rem;
+  }
+  
+  .badge-subtitle {
+    font-size: 0.65rem;
+  }
+}
+
 .rotating-badges {
   position: fixed;
   bottom: 2rem;
