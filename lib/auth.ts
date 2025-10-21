@@ -1,36 +1,38 @@
 /**
- * NextAuth.js Configuration
+ * NextAuth.js v5 Configuration
  *
  * Handles user authentication using email magic links and Google OAuth.
  */
 
-import { NextAuthOptions } from 'next-auth';
+import NextAuth, { type NextAuthConfig } from 'next-auth';
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import EmailProvider from 'next-auth/providers/email';
-import GoogleProvider from 'next-auth/providers/google';
+import Email from 'next-auth/providers/email';
+import Google from 'next-auth/providers/google';
 import { prisma } from './db';
 
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
+export const authConfig = {
+  adapter: PrismaAdapter(prisma),
+  
+  secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET ?? 'dev-secret-change-in-production',
 
   providers: [
     // Email magic link authentication
-    EmailProvider({
+    Email({
       server: {
         host: process.env.EMAIL_SERVER_HOST,
-        port: parseInt(process.env.EMAIL_SERVER_PORT || '587'),
+        port: parseInt(process.env.EMAIL_SERVER_PORT ?? '587'),
         auth: {
           user: process.env.EMAIL_SERVER_USER,
           pass: process.env.EMAIL_SERVER_PASSWORD,
         },
       },
-      from: process.env.EMAIL_FROM || 'noreply@fullstackvibecoder.com',
+      from: process.env.EMAIL_FROM ?? 'noreply@fullstackvibecoder.com',
     }),
 
     // Google OAuth (optional)
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? [
-          GoogleProvider({
+          Google({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
           }),
@@ -51,14 +53,14 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.sub!;
+      if (session.user && token?.sub) {
+        (session.user as any).id = token.sub;
       }
       return session;
     },
 
-    async jwt({ token, user, account }) {
-      if (user) {
+    async jwt({ token, user }) {
+      if (user?.id) {
         token.sub = user.id;
       }
       return token;
@@ -75,7 +77,7 @@ export const authOptions: NextAuthOptions = {
 
     async signIn({ user, account, isNewUser }) {
       console.log('User signed in:', {
-        email: user.email,
+        email: user?.email,
         provider: account?.provider,
         isNewUser,
       });
@@ -85,15 +87,16 @@ export const authOptions: NextAuthOptions = {
   },
 
   debug: process.env.NODE_ENV === 'development',
-};
+} satisfies NextAuthConfig;
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
 
 /**
  * Helper function to get the current user from server components
  */
 export async function getCurrentUser() {
-  const { getServerSession } = await import('next-auth');
-  const session = await getServerSession(authOptions);
-  return session?.user;
+  const session = await auth();
+  return session?.user ?? null;
 }
 
 /**
