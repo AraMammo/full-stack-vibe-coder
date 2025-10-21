@@ -7,7 +7,7 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 35009
+localPort = 43801
 externalPort = 3000
 
 [workflows]
@@ -33,3 +33,6 @@ waitForPort = 5000
 
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[nix]
+channel = "stable-25_05"
