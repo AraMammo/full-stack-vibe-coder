@@ -87,16 +87,8 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
     }
   };
 
-  const handleTextSubmit = () => {
+  const handleTextSubmit = async () => {
     if (!inputText.trim()) return;
-    setShowContactModal(true);
-  };
-
-  const handleContactSubmit = async () => {
-    if (!name.trim() || !email.trim()) {
-      alert('Please provide both name and email');
-      return;
-    }
 
     setIsSubmitting(true);
 
@@ -106,15 +98,17 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
         content: inputText
       }]);
 
+      const userInputCopy = inputText;
+      setInputText('');
+      setInputType('text');
+
       const res = await fetch('/api/analyze-need', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name,
-          email,
-          text: inputText,
+          text: userInputCopy,
           inputType,
         }),
       });
@@ -130,12 +124,6 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
       
       setRecommendation(data.recommendedProduct);
       
-      setInputText('');
-      setInputType('text');
-      setShowContactModal(false);
-      setName('');
-      setEmail('');
-      
     } catch (error) {
       console.error('Error submitting:', error);
       alert('Something went wrong. Please try again.');
@@ -145,12 +133,37 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
   };
 
   const handleProductClick = (product: string) => {
-    if (product === 'branding') {
-      window.location.href = '/branding';
-    } else if (product === 'tools') {
-      window.location.href = '/tools';
-    } else if (product === 'automation') {
-      window.location.href = '/automate';
+    setShowContactModal(true);
+  };
+
+  const handleContactSubmit = async () => {
+    if (!name.trim() || !email.trim()) {
+      alert('Please provide both name and email');
+      return;
+    }
+
+    try {
+      await fetch('/api/save-lead', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          recommendedProduct: recommendation,
+        }),
+      });
+
+      if (recommendation === 'branding') {
+        window.location.href = '/branding';
+      } else if (recommendation === 'tools') {
+        window.location.href = '/tools';
+      } else if (recommendation === 'automation') {
+        window.location.href = '/automate';
+      }
+    } catch (error) {
+      console.error('Error saving lead:', error);
     }
   };
 
@@ -210,8 +223,8 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
       {showContactModal && (
         <div className="modal-overlay" onClick={() => setShowContactModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Just need a couple details</h3>
-            <p>So I can send you the recommendations</p>
+            <h3>Let's get you started</h3>
+            <p>Just need your contact info to continue</p>
             
             <input
               type="text"

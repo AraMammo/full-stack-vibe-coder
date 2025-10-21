@@ -10,14 +10,7 @@ const openai = new OpenAI({
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, text, inputType = 'text' } = body;
-
-    if (!name || !email) {
-      return NextResponse.json(
-        { error: 'Name and email are required' },
-        { status: 400 }
-      );
-    }
+    const { text, inputType = 'text' } = body;
 
     if (!text) {
       return NextResponse.json(
@@ -70,15 +63,6 @@ Respond in this EXACT JSON format:
     const response = JSON.parse(completion.choices[0].message.content || '{}');
     const recommendedProduct = response.product;
     const recommendationMessage = response.message;
-
-    await db.insert(chatSubmissions).values({
-      name,
-      email,
-      userInput: text,
-      inputType,
-      aiRecommendation: recommendationMessage,
-      recommendedProduct,
-    });
 
     return NextResponse.json({
       recommendation: recommendationMessage,
