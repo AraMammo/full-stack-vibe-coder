@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Navigation from './components/Navigation';
+import ChatInterface from './components/ChatInterface';
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -265,6 +266,8 @@ export default function Home() {
         <p className="tagline">
           World&apos;s fastest full stack developers. Tell us your problem. We&apos;ll fix it and make sure it never happens again.
         </p>
+
+        <ChatInterface />
 
         <div className="chaos-grid">
           <div className="chaos-card">
