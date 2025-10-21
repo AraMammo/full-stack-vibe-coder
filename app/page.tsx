@@ -251,6 +251,8 @@ export default function Home() {
           <h1 className="main-title" data-text="VIBE">VIBE</h1>
           <h1 className="main-title" data-text="CODER">CODER</h1>
         </div>
+        
+        <a href="/what-is-vibe-coding" className="inline-link">New to vibe coding? Learn more →</a>
 
         <div className="featured-badge-float">
           <button 

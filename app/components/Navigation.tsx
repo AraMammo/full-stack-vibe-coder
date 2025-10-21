@@ -28,6 +28,7 @@ export default function Navigation() {
 
   const navItems = [
     { name: 'Home', path: '/' },
+    { name: 'What is Vibe Coding?', path: '/what-is-vibe-coding' },
     { name: 'Business In A Box', path: '/pricing' },
     { name: 'Tools', path: '/tools' },
   ];
