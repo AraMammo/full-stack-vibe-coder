@@ -1342,3 +1342,219 @@ body {
   z-index: 1;
   pointer-events: none;
 }
+
+/* ===== TOOLS PAGE STYLES ===== */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 3rem;
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 3rem;
+}
+
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+  transition: all 0.3s ease;
+}
+
+.tool-card:hover {
+  box-shadow: 
+    0 0 40px rgba(255, 0, 128, 0.6),
+    0 0 80px rgba(0, 255, 136, 0.3);
+  border-color: #00ff88;
+  animation: toolPulse 1.5s ease infinite;
+}
+
+@keyframes toolPulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 40px rgba(255, 0, 128, 0.6),
+      0 0 80px rgba(0, 255, 136, 0.3);
+  }
+  50% { 
+    box-shadow: 
+      0 0 60px rgba(255, 0, 128, 0.8),
+      0 0 100px rgba(0, 255, 136, 0.5);
+  }
+}
+
+.tool-name {
+  font-size: 2rem;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #ff0080, #00ff88);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tool-description {
+  font-size: 1rem;
+  color: #ddd;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.tool-features {
+  flex: 1;
+  margin-bottom: 2rem;
+}
+
+.tool-features h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #00aaff;
+}
+
+.tool-features ul {
+  list-style: none;
+  padding: 0;
+}
+
+.tool-features li {
+  padding: 0.6rem 0;
+  color: #ccc;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  line-height: 1.5;
+}
+
+.feature-check {
+  color: #00ff88;
+  font-weight: 900;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.tool-pricing {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.pricing-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.pricing-option {
+  text-align: center;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.pricing-option:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #00ff88;
+}
+
+.pricing-option.highlight {
+  background: rgba(0, 255, 136, 0.1);
+  border: 2px solid #00ff88;
+  position: relative;
+}
+
+.price-label {
+  font-size: 0.85rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+}
+
+.pricing-option .price-amount {
+  font-size: 1.8rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #ff0080, #8800ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.pricing-option.highlight .price-amount {
+  background: linear-gradient(135deg, #00ff88, #00aaff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.savings-badge {
+  display: inline-block;
+  background: rgba(255, 0, 128, 0.2);
+  color: #ff0080;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.best-value-badge {
+  display: inline-block;
+  background: rgba(0, 255, 136, 0.3);
+  color: #00ff88;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.subscribe-btn {
+  width: 100%;
+  padding: 1.25rem 2rem;
+  background: linear-gradient(135deg, #ff0080, #8800ff);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(255, 0, 128, 0.3);
+}
+
+.subscribe-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 0, 128, 0.5);
+  background: linear-gradient(135deg, #ff0099, #9900ff);
+}
+
+@media (max-width: 768px) {
+  .tools-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .pricing-options {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .pricing-option .price-amount {
+    font-size: 1.5rem;
+  }
+
+  .tool-name {
+    font-size: 1.6rem;
+  }
+
+  .subscribe-btn {
+    font-size: 1rem;
+    padding: 1rem 1.5rem;
+  }
+}
