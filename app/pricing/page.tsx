@@ -162,9 +162,9 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative z-10">
       {/* Hero Section */}
-      <section className="bg-white border-b border-gray-200">
+      <section className="bg-white border-b border-gray-200 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
@@ -181,7 +181,7 @@ export default function PricingPage() {
       </section>
 
       {/* Pricing Cards */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {tiers.map((tier) => (
             <div
@@ -267,7 +267,7 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-6 border-b border-gray-200">
             <h2 className="text-2xl font-bold text-gray-900">Frequently Asked Questions</h2>
@@ -281,7 +281,7 @@ export default function PricingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gray-900 text-white">
+      <section className="bg-gray-900 text-white relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to start your business?</h2>
           <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
