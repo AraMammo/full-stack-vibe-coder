@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Navigation from '../components/Navigation';
 
 interface Tool {
   id: string;
@@ -179,7 +178,6 @@ export default function ToolsPage() {
 
   return (
     <>
-      <Navigation />
       <div className="noise"></div>
       <div className="grid-overlay"></div>
 

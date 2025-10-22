@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Navigation from '../components/Navigation';
 
 interface FAQItem {
   question: string;
@@ -207,7 +206,6 @@ export default function FAQPage() {
 
   return (
     <>
-      <Navigation />
       <div className="noise"></div>
       <div className="grid-overlay"></div>
 

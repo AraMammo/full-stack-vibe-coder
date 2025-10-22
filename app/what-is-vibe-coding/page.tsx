@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import Navigation from '../components/Navigation';
 
 export const metadata: Metadata = {
   title: "What is Vibe Coding? | Software Development in 2025 | FullStackVibeCoder",
@@ -62,8 +61,7 @@ export default function WhatIsVibeCodingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      
-      <Navigation />
+
       <div className="noise"></div>
       <div className="grid-overlay"></div>
 

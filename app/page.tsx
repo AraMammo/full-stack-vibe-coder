@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Navigation from './components/Navigation';
 import ChatInterface from './components/ChatInterface';
 
 export default function Home() {
@@ -232,7 +231,6 @@ export default function Home() {
 
   return (
     <>
-      <Navigation />
       <div className="noise"></div>
       <div className="grid-overlay"></div>
 

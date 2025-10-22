@@ -1,5 +1,3 @@
-import Navigation from '../components/Navigation';
-
 export default function BlogLayout({
   children,
 }: {
@@ -7,7 +5,6 @@ export default function BlogLayout({
 }) {
   return (
     <>
-      <Navigation />
       <div className="noise"></div>
       <div className="grid-overlay"></div>
       {children}
