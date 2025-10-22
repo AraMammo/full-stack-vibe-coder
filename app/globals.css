@@ -3248,3 +3248,258 @@ body {
     margin: 0 auto;
   }
 }
+
+/* Cyberpunk Footer Styles */
+.site-footer {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(26, 0, 51, 0.95) 100%);
+  border-top: 2px solid rgba(255, 0, 128, 0.3);
+  padding: 3rem 0 2rem;
+  margin-top: 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ff0080, #00ff88, #ff0080, transparent);
+  animation: footerGlow 3s ease-in-out infinite;
+}
+
+@keyframes footerGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  padding: 0.25rem 0.5rem;
+  position: relative;
+}
+
+.footer-link:hover {
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.footer-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #00ff88, transparent);
+  transition: transform 0.3s ease;
+}
+
+.footer-link:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.footer-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.footer-separator {
+  color: rgba(255, 0, 128, 0.3);
+  margin: 0 0.5rem;
+  font-size: 0.8rem;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-copyright {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-tech {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.footer-cookie-notice {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.footer-cookie-notice p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.footer-link-inline {
+  color: #00ff88;
+  text-decoration: underline;
+  transition: all 0.3s ease;
+}
+
+.footer-link-inline:hover {
+  color: #ff0080;
+  text-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
+}
+
+.cookie-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.cookie-btn {
+  padding: 0.5rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+}
+
+.cookie-btn.customize {
+  border-color: #ff0080;
+  color: #ff0080;
+}
+
+.cookie-btn.customize:hover {
+  background: rgba(255, 0, 128, 0.1);
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
+  transform: translateY(-2px);
+}
+
+.cookie-btn.reject {
+  border-color: #ffaa00;
+  color: #ffaa00;
+}
+
+.cookie-btn.reject:hover {
+  background: rgba(255, 170, 0, 0.1);
+  box-shadow: 0 0 20px rgba(255, 170, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.cookie-btn.accept {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 170, 255, 0.2));
+  border-color: #00ff88;
+  color: #00ff88;
+}
+
+.cookie-btn.accept:hover {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.3), rgba(0, 170, 255, 0.3));
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .site-footer {
+    padding: 2rem 0 1.5rem;
+  }
+  
+  .footer-container {
+    padding: 0 1rem;
+  }
+  
+  .footer-nav {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .footer-separator {
+    display: none;
+  }
+  
+  .cookie-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .cookie-btn {
+    width: 100%;
+  }
+}
+
+/* Enhanced Navigation Header Styles */
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  border-bottom: 2px solid rgba(255, 0, 128, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.navigation::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ff0080, #00ff88, #ff0080, transparent);
+  animation: navGlow 3s ease-in-out infinite;
+}
+
+@keyframes navGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Ensure pricing page content doesn't hide under fixed nav */
+.pricing-page {
+  padding-top: 80px;
+}
+
+/* Add main content spacing for fixed nav */
+main {
+  padding-top: 70px;
+}

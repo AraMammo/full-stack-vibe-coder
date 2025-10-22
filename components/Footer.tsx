@@ -21,43 +21,47 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-gray-50 border-t border-gray-200" role="contentinfo">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-6" aria-label="Footer navigation">
-          <Link
-            href="/privacy-policy"
-            className="text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded"
-          >
+    <footer className="site-footer" role="contentinfo">
+      <div className="footer-container">
+        <nav className="footer-nav" aria-label="Footer navigation">
+          <Link href="/privacy-policy" className="footer-link">
             Privacy Policy
           </Link>
-          <Link
-            href="/terms-of-service"
-            className="text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded"
-          >
+          <span className="footer-separator">|</span>
+          <Link href="/terms-of-service" className="footer-link">
             Terms of Service
           </Link>
-          <Link
-            href="/cookie-policy"
-            className="text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded"
-          >
+          <span className="footer-separator">|</span>
+          <Link href="/cookie-policy" className="footer-link">
             Cookie Policy
           </Link>
+          <span className="footer-separator">|</span>
           <button
             type="button"
             onClick={handleCookieSettings}
-            className="text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded underline"
+            className="footer-link footer-button"
           >
             Cookie Settings
           </button>
         </nav>
 
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
+        <div className="footer-bottom">
+          <p className="footer-copyright">
             &copy; {currentYear} FullStackVibeCoder. All rights reserved.
           </p>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="footer-tech">
             Built with Next.js, TypeScript, and Tailwind CSS
           </p>
+        </div>
+
+        <div className="footer-cookie-notice">
+          <p>We use strictly necessary cookies to make our site work. We'd also like to set optional analytics cookies to help us improve it. We won't set optional cookies unless you enable them.</p>
+          <p>Learn more in our <Link href="/cookie-policy" className="footer-link-inline">Cookie Policy</Link></p>
+          <div className="cookie-buttons">
+            <button onClick={handleCookieSettings} className="cookie-btn customize">Customize</button>
+            <button className="cookie-btn reject">Reject Optional</button>
+            <button className="cookie-btn accept">Accept All</button>
+          </div>
         </div>
       </div>
     </footer>
