@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "./tailwind.css";
 
 * {
   margin: 0;
@@ -3073,5 +3071,180 @@ body {
   .subscribe-btn {
     font-size: 1rem;
     padding: 1rem 1.5rem;
+  }
+}
+/* Pricing Page Specific Styles */
+.pricing-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #000000 0%, #1a0033 100%);
+  padding: 2rem;
+  padding-top: 100px;
+}
+
+.pricing-page-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.pricing-page-title {
+  font-size: 3rem;
+  font-weight: 900;
+  background: linear-gradient(45deg, #ff00ff, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+
+.pricing-page-subtitle {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.pricing-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pricing-tier-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.pricing-tier-card::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff);
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: -1;
+}
+
+.pricing-tier-card:hover::before {
+  opacity: 1;
+}
+
+.pricing-tier-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(255, 0, 255, 0.3);
+}
+
+.pricing-tier-card.popular-tier {
+  border: 2px solid #ff00ff;
+}
+
+.popular-badge {
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  background: linear-gradient(45deg, #ff00ff, #00ffff);
+  color: #000;
+  padding: 0.25rem 1rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 20px;
+}
+
+.tier-name {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #00ffff;
+  font-weight: bold;
+}
+
+.tier-price {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #ff00ff;
+  margin-bottom: 1rem;
+}
+
+.tier-price .price-unit {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: normal;
+}
+
+.tier-description {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.tier-features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+}
+
+.tier-features li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.tier-features li::before {
+  content: "✓";
+  color: #00ff00;
+  font-weight: bold;
+}
+
+.pricing-cta-button {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(45deg, #ff00ff, #00ffff);
+  border: none;
+  border-radius: 8px;
+  color: #000000;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+}
+
+.pricing-cta-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+}
+
+.pricing-cta-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .pricing-page-title {
+    font-size: 2rem;
+  }
+  
+  .pricing-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pricing-tier-card {
+    max-width: 400px;
+    margin: 0 auto;
   }
 }

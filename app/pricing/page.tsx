@@ -162,138 +162,108 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 relative z-10">
+    <div className="pricing-page">
       {/* Hero Section */}
-      <section className="bg-white border-b border-gray-200 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-              Business in a Box
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              From idea to launch-ready business. Choose the package that fits your needs.
-            </p>
-            <p className="text-sm text-gray-500 mt-4">
-              All packages are AI-generated based on your voice note. No templates, 100% custom.
-            </p>
-          </div>
-        </div>
+      <section className="pricing-page-header">
+        <h1 className="pricing-page-title">
+          Business in a Box
+        </h1>
+        <p className="pricing-page-subtitle">
+          From idea to launch-ready business. Choose the package that fits your needs.
+        </p>
+        <p className="pricing-page-subtitle" style={{ fontSize: '0.9rem', marginTop: '1rem' }}>
+          All packages are AI-generated based on your voice note. No templates, 100% custom.
+        </p>
       </section>
 
       {/* Pricing Cards */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {tiers.map((tier) => (
-            <div
-              key={tier.id}
-              className={`bg-white rounded-lg shadow-md border-2 transition-all hover:scale-105 hover:shadow-xl flex flex-col ${
-                tier.popular ? 'border-purple-500 relative' : 'border-gray-200'
-              }`}
-            >
-              {/* Badge */}
-              {tier.badge && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span
-                    className={`inline-block px-4 py-1 rounded-full text-xs font-bold text-white ${tier.badgeColor} shadow-lg`}
-                  >
-                    {tier.badge}
-                  </span>
-                </div>
-              )}
+      <div className="pricing-cards-grid">
+        {tiers.map((tier) => (
+          <div
+            key={tier.id}
+            className={`pricing-tier-card ${tier.popular ? 'popular-tier' : ''}`}
+          >
+            {/* Badge */}
+            {tier.badge && tier.popular && (
+              <span className="popular-badge">
+                {tier.badge}
+              </span>
+            )}
 
-              <div className="p-6 sm:p-8 flex-1 flex flex-col">
-                {/* Header */}
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">{tier.name}</h2>
-                  <div className="mb-4">
-                    <span className="text-4xl font-bold text-gray-900">${tier.price}</span>
-                    <span className="text-gray-600"> / one-time</span>
-                  </div>
-                  <p className="text-sm text-gray-600">{tier.description}</p>
-                </div>
+            {/* Header */}
+            <h2 className="tier-name">{tier.name}</h2>
+            <div className="tier-price">
+              ${tier.price}
+              <span className="price-unit"> / one-time</span>
+            </div>
+            <p className="tier-description">{tier.description}</p>
 
-                {/* Timeline & Delivery */}
-                <div className="mb-6 space-y-2">
-                  <div className="flex items-center text-sm text-gray-700">
-                    <svg className="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>Timeline: {tier.timeline}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-700">
-                    <svg className="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span>Delivery: {tier.delivery}</span>
-                  </div>
-                </div>
-
-                {/* Features */}
-                <div className="flex-1 mb-6">
-                  <ul className="space-y-3">
-                    {tier.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start">
-                        <svg
-                          className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span className={`text-sm ${feature.startsWith('+') ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* CTA Button */}
-                <button
-                  onClick={() => handleSelectTier(tier.id)}
-                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                    tier.popular
-                      ? 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500'
-                      : 'bg-gray-900 text-white hover:bg-gray-800 focus:ring-gray-900'
-                  }`}
-                >
-                  {tier.cta}
-                </button>
+            {/* Timeline & Delivery */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                <svg style={{ width: '20px', height: '20px', marginRight: '8px', fill: 'none', stroke: 'currentColor' }} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Timeline: {tier.timeline}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', color: 'rgba(255, 255, 255, 0.7)' }}>
+                <svg style={{ width: '20px', height: '20px', marginRight: '8px', fill: 'none', stroke: 'currentColor' }} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span>Delivery: {tier.delivery}</span>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
+
+            {/* Features */}
+            <ul className="tier-features">
+              {tier.features.map((feature, idx) => (
+                <li key={idx}>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+
+            {/* CTA Button */}
+            <button
+              onClick={() => handleSelectTier(tier.id)}
+              className="pricing-cta-button"
+            >
+              {tier.cta}
+            </button>
+          </div>
+        ))}
+      </div>
 
       {/* FAQ Section */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-6 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">Frequently Asked Questions</h2>
-          </div>
+      <section style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem 2rem' }}>
+        <div style={{ background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', padding: '2rem', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem', color: '#00ffff' }}>Frequently Asked Questions</h2>
           <div>
             {faqs.map((faq, idx) => (
-              <FAQItem key={idx} faq={faq} />
+              <div key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '1rem', marginBottom: '1rem' }}>
+                <h3 style={{ color: '#ff00ff', marginBottom: '0.5rem', fontSize: '1.1rem' }}>{faq.question}</h3>
+                <p style={{ color: 'rgba(255, 255, 255, 0.8)', lineHeight: '1.6' }}>{faq.answer}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gray-900 text-white relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to start your business?</h2>
-          <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-            Record a voice note about your idea, and get your complete business package delivered in under 2 hours.
-          </p>
-          <Link
-            href="/upload"
-            className="inline-flex items-center px-8 py-4 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white focus:ring-offset-gray-900"
-          >
-            Get Started Now →
-          </Link>
-        </div>
+      <section style={{ background: 'linear-gradient(45deg, #1a0033, #000)', padding: '4rem 2rem', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '1rem', background: 'linear-gradient(45deg, #ff00ff, #00ffff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          Ready to start your business?
+        </h2>
+        <p style={{ fontSize: '1.25rem', color: 'rgba(255, 255, 255, 0.7)', marginBottom: '2rem', maxWidth: '600px', margin: '0 auto 2rem' }}>
+          Record a voice note about your idea, and get your complete business package delivered in under 2 hours.
+        </p>
+        <Link
+          href="/upload"
+          className="pricing-cta-button"
+          style={{ display: 'inline-block', maxWidth: '300px' }}
+        >
+          Get Started Now →
+        </Link>
       </section>
     </div>
   );
