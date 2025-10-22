@@ -42,10 +42,13 @@
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.21",
     "drizzle-kit": "^0.31.5",
     "eslint": "^8.0.0",
     "eslint-config-next": "14.0.0",
+    "postcss": "^8.5.6",
     "prisma": "^6.17.1",
+    "tailwindcss": "^4.1.15",
     "tsx": "^4.20.6",
     "typescript": "^5.0.0"
   }
