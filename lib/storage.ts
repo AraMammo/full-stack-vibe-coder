@@ -1,14 +1,20 @@
-/**
- * Supabase Storage Utilities
- *
- * Handles file uploads, retrieval, and management using Supabase Storage.
- */
-
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+// Debug logging for environment variables
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('❌ Missing Supabase credentials:');
+  console.error('  NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? '✓ Set' : '✗ Missing');
+  console.error('  SUPABASE_SERVICE_ROLE_KEY:', supabaseServiceKey ? '✓ Set' : '✗ Missing');
+  throw new Error('Missing required Supabase environment variables');
+}
+
+console.log('✓ Supabase client initialized');
+console.log('  URL:', supabaseUrl.substring(0, 30) + '...');
+console.log('  Service key:', supabaseServiceKey.substring(0, 20) + '...');
 
 // Use service role key for server-side operations (bypasses RLS)
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
@@ -17,8 +23,7 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 export const STORAGE_BUCKETS = {
   VOICE_NOTES: 'voice-notes',
   PROPOSALS: 'proposals',
-  DELIVERABLES: 'deliverables',
-  BRANDING: 'branding-assets',
+  BIAB_DELIVERABLES: 'biab-deliverables',  // Add this line
 } as const;
 
 /**
@@ -171,7 +176,7 @@ export async function uploadDeliverable(
     const filePath = `${userId}/${projectId}/${sanitizedFileName}`;
 
     const { data, error } = await supabaseAdmin.storage
-      .from(STORAGE_BUCKETS.DELIVERABLES)
+      .from(STORAGE_BUCKETS.BIAB_DELIVERABLES)
       .upload(filePath, file, {
         upsert: false,
       });
@@ -182,7 +187,7 @@ export async function uploadDeliverable(
     }
 
     const { data: urlData } = supabaseAdmin.storage
-      .from(STORAGE_BUCKETS.DELIVERABLES)
+      .from(STORAGE_BUCKETS.BIAB_DELIVERABLES)
       .getPublicUrl(data.path);
 
     return {

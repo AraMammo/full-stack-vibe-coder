@@ -9,6 +9,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { StatusBadge } from '@/components/StatusBadge';
+import { BIABProjectCard } from '@/components/BIABProjectCard';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
@@ -17,6 +18,12 @@ export default async function DashboardPage() {
   if (!session?.user) {
     redirect('/api/auth/signin');
   }
+
+  // Fetch user's BIAB projects
+  const biabProjects = await prisma.project.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: 'desc' },
+  });
 
   // Fetch user's workflows
   const workflows = await prisma.workflow.findMany({
@@ -70,10 +77,12 @@ export default async function DashboardPage() {
 
   // Calculate stats
   const stats = {
-    total: workflows.length,
-    processing: workflows.filter(w => w.status === 'in_progress' || w.status === 'pending').length,
+    total: workflows.length + biabProjects.length,
+    processing: workflows.filter(w => w.status === 'in_progress' || w.status === 'pending').length +
+                biabProjects.filter(p => p.status === 'IN_PROGRESS' || p.status === 'PENDING').length,
     ready: workflows.filter(w => w.proposal?.status === 'pending_review').length,
-    approved: workflows.filter(w => w.proposal?.status === 'approved').length,
+    approved: workflows.filter(w => w.proposal?.status === 'approved').length +
+              biabProjects.filter(p => p.status === 'COMPLETED').length,
   };
 
   return (
@@ -125,34 +134,61 @@ export default async function DashboardPage() {
           />
         </div>
 
-        {/* Workflows List */}
-        <div className="bg-white shadow-sm rounded-lg border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Your Projects</h2>
-          </div>
-
-          {workflows.length === 0 ? (
-            <div className="px-6 py-12 text-center">
-              <div className="text-4xl mb-4">🚀</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
-              <p className="text-gray-600 mb-6">
-                Ready to build something? Upload a voice note with your idea.
-              </p>
-              <Link
-                href="/upload"
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-gray-800"
-              >
-                Get Started
-              </Link>
+        {/* BIAB Projects */}
+        {biabProjects.length > 0 && (
+          <div className="mb-8">
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Business in a Box Projects</h2>
+              <p className="text-sm text-gray-600">AI-generated business packages with real-time progress tracking</p>
             </div>
-          ) : (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {biabProjects.map((project) => (
+                <BIABProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Workflows List */}
+        {workflows.length > 0 && (
+          <div className="bg-white shadow-sm rounded-lg border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Custom Projects</h2>
+            </div>
             <div className="divide-y divide-gray-200">
               {workflowsWithProgress.map((workflow) => (
                 <WorkflowCard key={workflow.id} workflow={workflow} />
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {workflows.length === 0 && biabProjects.length === 0 && (
+          <div className="bg-white shadow-sm rounded-lg border border-gray-200">
+            <div className="px-6 py-12 text-center">
+              <div className="text-4xl mb-4">🚀</div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
+              <p className="text-gray-600 mb-6">
+                Ready to start your business? Choose a package and get started.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700"
+                >
+                  View Pricing
+                </Link>
+                <Link
+                  href="/upload"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Upload Voice Note
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

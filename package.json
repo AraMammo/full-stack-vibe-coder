@@ -17,10 +17,14 @@
     "@langchain/core": "^1.0.1",
     "@langchain/langgraph": "^1.0.0",
     "@neondatabase/serverless": "^1.0.2",
+    "@octokit/rest": "^22.0.0",
     "@prisma/client": "^6.17.1",
     "@stripe/stripe-js": "^8.0.0",
     "@supabase/supabase-js": "^2.76.0",
+    "@types/jszip": "^3.4.0",
+    "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",
+    "jszip": "^3.10.1",
     "next": "14.0.0",
     "next-auth": "^5.0.0-beta.29",
     "openai": "^4.20.0",
@@ -38,6 +42,7 @@
     "eslint": "^8.0.0",
     "eslint-config-next": "14.0.0",
     "prisma": "^6.17.1",
+    "tsx": "^4.20.6",
     "typescript": "^5.0.0"
   }
 }

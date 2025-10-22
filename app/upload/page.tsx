@@ -11,6 +11,27 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
+const tierConfig = {
+  VALIDATION_PACK: {
+    name: 'Validation Pack',
+    price: 47,
+    description: '5 business sections + PDF Report',
+    timeline: '15-20 minutes',
+  },
+  LAUNCH_BLUEPRINT: {
+    name: 'Launch Blueprint',
+    price: 197,
+    description: '16 business sections + 5 logos + pitch deck',
+    timeline: '45-60 minutes',
+  },
+  TURNKEY_SYSTEM: {
+    name: 'Turnkey System',
+    price: 497,
+    description: 'Everything + live website + complete handoff',
+    timeline: '90-120 minutes',
+  },
+};
+
 export default function UploadPage() {
   const { data: session, status } = useSession();
   const [recording, setRecording] = useState(false);
@@ -18,12 +39,30 @@ export default function UploadPage() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
+  const [selectedTier, setSelectedTier] = useState<string | null>(null);
+  const [showTierSelection, setShowTierSelection] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
+
+  // Read selected tier from sessionStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedTier = sessionStorage.getItem('selectedTier');
+      console.log('[Upload] 🔍 Checking sessionStorage for tier:', storedTier);
+
+      if (storedTier && (storedTier === 'VALIDATION_PACK' || storedTier === 'LAUNCH_BLUEPRINT' || storedTier === 'TURNKEY_SYSTEM')) {
+        console.log('[Upload] ✅ Valid tier found in sessionStorage:', storedTier);
+        setSelectedTier(storedTier);
+      } else {
+        console.log('[Upload] ⚠️ No valid tier in sessionStorage, showing selection UI');
+        setShowTierSelection(true);
+      }
+    }
+  }, []);
 
   // Redirect to sign in if not authenticated
   useEffect(() => {
@@ -98,11 +137,18 @@ export default function UploadPage() {
       return;
     }
 
+    if (!selectedTier) {
+      setError('Please select a tier before uploading.');
+      setShowTierSelection(true);
+      return;
+    }
+
     setUploading(true);
     setError(null);
 
     const formData = new FormData();
     formData.append('audio', audioBlob, `voice-note-${Date.now()}.webm`);
+    formData.append('biabTier', selectedTier);
     if (sessionId) {
       formData.append('sessionId', sessionId);
     }
@@ -137,6 +183,23 @@ export default function UploadPage() {
       setError('Network error. Please check your connection and try again.');
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleChangeTier = () => {
+    setShowTierSelection(true);
+  };
+
+  const handleSelectTier = (tier: string) => {
+    console.log('[Upload] 🎯 User selected tier:', tier);
+    setSelectedTier(tier);
+    setShowTierSelection(false);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('selectedTier', tier);
+      console.log('[Upload] 💾 Tier saved to sessionStorage:', tier);
+      // Verify it was saved
+      const verified = sessionStorage.getItem('selectedTier');
+      console.log('[Upload] ✓ Verification - sessionStorage now contains:', verified);
     }
   };
 
@@ -178,6 +241,79 @@ export default function UploadPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Selected Tier Display */}
+        {selectedTier && !showTierSelection && (
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-8">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold text-purple-900 mb-2">Selected Package</h2>
+                <div className="space-y-1">
+                  <p className="text-purple-800">
+                    <strong>{tierConfig[selectedTier as keyof typeof tierConfig].name}</strong> - $
+                    {tierConfig[selectedTier as keyof typeof tierConfig].price}
+                  </p>
+                  <p className="text-sm text-purple-700">
+                    {tierConfig[selectedTier as keyof typeof tierConfig].description}
+                  </p>
+                  <p className="text-xs text-purple-600">
+                    Expected delivery: {tierConfig[selectedTier as keyof typeof tierConfig].timeline}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleChangeTier}
+                className="ml-4 px-4 py-2 text-sm font-medium text-purple-700 bg-white border border-purple-300 rounded-md hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              >
+                Change Tier
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Tier Selection Modal */}
+        {showTierSelection && (
+          <div className="bg-white border-2 border-purple-500 rounded-lg p-6 mb-8 shadow-lg">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Select Your Package</h2>
+            <p className="text-sm text-gray-600 mb-6">
+              Choose the package that best fits your needs. You can upgrade later if needed.
+            </p>
+            <div className="space-y-4">
+              {Object.entries(tierConfig).map(([key, tier]) => (
+                <button
+                  key={key}
+                  onClick={() => handleSelectTier(key)}
+                  className={`w-full text-left p-4 border-2 rounded-lg transition-all hover:border-purple-500 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    selectedTier === key ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900">{tier.name}</h3>
+                    <span className="text-2xl font-bold text-purple-600">${tier.price}</span>
+                  </div>
+                  <p className="text-sm text-gray-700 mb-1">{tier.description}</p>
+                  <p className="text-xs text-gray-600">Delivery: {tier.timeline}</p>
+                </button>
+              ))}
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => router.push('/pricing')}
+                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              >
+                View Full Pricing
+              </button>
+              {selectedTier && (
+                <button
+                  onClick={() => setShowTierSelection(false)}
+                  className="flex-1 px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                >
+                  Continue with {tierConfig[selectedTier as keyof typeof tierConfig].name}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Instructions */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
           <h2 className="text-lg font-semibold text-blue-900 mb-3">
@@ -327,20 +463,22 @@ export default function UploadPage() {
           <h3 className="text-sm font-semibold text-gray-900 mb-4">What happens next?</h3>
           <ol className="space-y-3 text-sm text-gray-700">
             <li className="flex">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-900 text-white text-xs flex items-center justify-center mr-3">1</span>
-              <span>Your voice note is transcribed using AI</span>
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-600 text-white text-xs flex items-center justify-center mr-3">1</span>
+              <span>Your voice note is transcribed and analyzed by AI</span>
             </li>
             <li className="flex">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-900 text-white text-xs flex items-center justify-center mr-3">2</span>
-              <span>Our AI agents analyze your requirements and create a detailed project scope</span>
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-600 text-white text-xs flex items-center justify-center mr-3">2</span>
+              <span>Our AI generates all sections of your business package in real-time</span>
             </li>
             <li className="flex">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-900 text-white text-xs flex items-center justify-center mr-3">3</span>
-              <span>You receive a complete proposal with timeline and pricing (usually within 2-3 minutes)</span>
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-600 text-white text-xs flex items-center justify-center mr-3">3</span>
+              <span>Track live progress on your dashboard as each section completes</span>
             </li>
             <li className="flex">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-900 text-white text-xs flex items-center justify-center mr-3">4</span>
-              <span>Review, approve, or request revisions</span>
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-600 text-white text-xs flex items-center justify-center mr-3">4</span>
+              <span>Download your complete package when ready (
+                {selectedTier ? tierConfig[selectedTier as keyof typeof tierConfig].timeline : '15-120 minutes'}
+              )</span>
             </li>
           </ol>
         </div>

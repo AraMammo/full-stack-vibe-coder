@@ -141,3 +141,9 @@ vite.config.ts.timestamp-*
 
 /app/generated/prisma
 drizzle/
+
+# macOS
+.DS_Store
+
+# Turbo
+.turbo
