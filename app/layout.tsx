@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { SessionProvider } from './providers/SessionProvider';
 import { Navigation } from '@/components/Navigation/Navigation';
 import { Footer } from '@/components/Footer';
@@ -10,13 +10,14 @@ export const metadata: Metadata = {
   description: 'Turn business ideas into production-ready software. Voice-to-proposal AI platform for rapid development.',
   keywords: ['AI development', 'software development', 'full stack', 'rapid development', 'business automation'],
   authors: [{ name: 'FullStackVibeCoder' }],
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-  },
-  themeColor: '#000000', // Pure black background
   manifest: '/manifest.json',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#000000',
 };
 
 export default function RootLayout({
