@@ -8,54 +8,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================
-// ENUMS
-// ============================================
-
-enum BIABTier {
-  VALIDATION_PACK   // $47 - 5 prompts, PDF only
-  LAUNCH_BLUEPRINT  // $197 - All 16 prompts + logos + ZIP
-  TURNKEY_SYSTEM    // $497 - Everything + live website + handoff
-}
-
-enum ProjectStatus {
-  PENDING           // Payment received, not started
-  IN_PROGRESS       // Prompts executing
-  PACKAGING         // Creating deliverables
-  COMPLETED         // Ready for download
-  FAILED            // Error occurred
-}
-
-// ============================================
-// MODELS
-// ============================================
-
 model Project {
   id                  String        @id @default(uuid())
   userId              String
   projectName         String
-  businessConcept     String        @db.Text
+  businessConcept     String
   biabTier            BIABTier
   status              ProjectStatus @default(PENDING)
   progress            Int           @default(0)
   totalPrompts        Int           @default(0)
   completedPrompts    Int           @default(0)
-
-  // Tier 3 specific fields
   githubRepoUrl       String?
   vercelDeploymentUrl String?
   supabaseProjectId   String?
-
-  // v0 Integration fields
-  v0ChatId            String?       // v0 chat ID from deployment
-  v0PreviewUrl        String?       // v0 preview/edit URL
-  v0DeployUrl         String?       // v0 demo/live URL (if deployed)
-  v0GeneratedAt       DateTime?     // When v0 generation completed
-
-  // Metadata
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   completedAt         DateTime?
+  v0ChatId            String?
+  v0DeployUrl         String?
+  v0GeneratedAt       DateTime?
+  v0PreviewUrl        String?
 
   @@index([userId])
   @@index([status])
@@ -128,37 +100,37 @@ model tool_submissions {
 }
 
 model PromptTemplate {
-  id               Int               @id @default(autoincrement())
-  promptId         String            @unique
-  promptName       String
-  promptSection    String
-  systemPrompt     String            @db.Text
-  userPrompt       String            @db.Text
-  isRequired       Boolean           @default(true)
-  orderIndex       Int
-  estimatedTokens  Int
-  dependencies     String[]
-  includedInTiers  BIABTier[]        // Which tiers include this prompt
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  executions       PromptExecution[]
+  id              Int               @id @default(autoincrement())
+  promptId        String            @unique
+  promptName      String
+  promptSection   String
+  systemPrompt    String
+  userPrompt      String
+  isRequired      Boolean           @default(true)
+  orderIndex      Int
+  estimatedTokens Int
+  dependencies    String[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  includedInTiers BIABTier[]
+  executions      PromptExecution[]
 
   @@map("prompt_templates")
 }
 
 model PromptExecution {
-  id               Int            @id @default(autoincrement())
-  promptId         Int
-  prompt           PromptTemplate @relation(fields: [promptId], references: [id], onDelete: Cascade)
-  projectId        String
-  input            String         @db.Text
-  output           String         @db.Text
-  tokensUsed       Int
-  executionTimeMs  Int?
-  status           String         @default("completed") // "completed", "failed", "in_progress"
-  executedAt       DateTime       @default(now())
-  completedAt      DateTime?
-  createdAt        DateTime       @default(now())
+  id              Int            @id @default(autoincrement())
+  promptId        Int
+  projectId       String
+  input           String
+  output          String
+  tokensUsed      Int
+  executionTimeMs Int?
+  executedAt      DateTime       @default(now())
+  createdAt       DateTime       @default(now())
+  completedAt     DateTime?
+  status          String         @default("completed")
+  prompt          PromptTemplate @relation(fields: [promptId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
   @@index([promptId])
@@ -181,4 +153,18 @@ model DeliveryPackage {
   @@index([userId])
   @@index([expiresAt])
   @@map("delivery_packages")
+}
+
+enum BIABTier {
+  VALIDATION_PACK
+  LAUNCH_BLUEPRINT
+  TURNKEY_SYSTEM
+}
+
+enum ProjectStatus {
+  PENDING
+  IN_PROGRESS
+  PACKAGING
+  COMPLETED
+  FAILED
 }

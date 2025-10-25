@@ -15,8 +15,8 @@ localPort = 37097
 externalPort = 3001
 
 [[ports]]
-localPort = 41737
-externalPort = 3002
+localPort = 40363
+externalPort = 3003
 
 [workflows]
 runButton = "Project"
@@ -44,3 +44,8 @@ outputType = "webview"
 
 [nix]
 channel = "stable-25_05"
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["npm", "start"]
+build = ["npm", "run", "build"]

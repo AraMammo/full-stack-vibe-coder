@@ -1,4 +1,4 @@
--- CreateTable
+-- CreateTable (with IF NOT EXISTS to handle existing tables)
 CREATE TABLE IF NOT EXISTS "prompt_templates" (
     "id" SERIAL NOT NULL,
     "promptId" TEXT NOT NULL,

@@ -5,13 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "build:prod": "prisma db push --skip-generate && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "db:push": "drizzle-kit push",
-    "db:migrate": "prisma migrate deploy",
-    "db:migrate:dev": "prisma migrate dev",
-    "db:migrate:resolve": "prisma migrate resolve --applied",
+    "db:push": "prisma db push",
+    "db:sync": "prisma db pull && prisma generate && prisma db push",
     "postinstall": "prisma generate"
   },
   "dependencies": {
