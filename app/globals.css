@@ -23,7 +23,7 @@ body {
   background: rgba(0, 0, 0, 0.95);
   border-bottom: 2px solid rgba(255, 0, 128, 0.3);
   backdrop-filter: blur(10px);
-  z-index: 1000;
+  z-index: 999999 !important;
   pointer-events: auto;
 }
 
@@ -3474,7 +3474,7 @@ body {
   border-bottom: 2px solid rgba(255, 0, 128, 0.3);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  z-index: 1000;
+  z-index: 999999 !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
