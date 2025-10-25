@@ -57,11 +57,23 @@ export async function POST(request: NextRequest) {
     console.log(`[API] Completed prompts: ${result.executionsSummary?.completedPrompts}`);
     console.log(`[API] Total tokens: ${result.executionsSummary?.totalTokensUsed.toLocaleString()}`);
 
+    // Log v0 deployment if available
+    if (result.v0Deployment?.previewUrl) {
+      console.log(`[API] v0 deployment: ${result.v0Deployment.previewUrl}`);
+    }
+
     return NextResponse.json({
       success: true,
       projectId: result.projectId,
       summary: result.executionsSummary,
       executionIds: result.executionIds,
+      v0: result.v0Deployment ? {
+        chatId: result.v0Deployment.chatId,
+        previewUrl: result.v0Deployment.previewUrl,
+        deployUrl: result.v0Deployment.deployUrl,
+        generatedAt: result.v0Deployment.generatedAt,
+        status: result.v0Deployment.deployUrl ? 'deployed' : 'generated',
+      } : undefined,
     });
 
   } catch (error) {

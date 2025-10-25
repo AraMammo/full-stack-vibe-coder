@@ -46,6 +46,12 @@ model Project {
   vercelDeploymentUrl String?
   supabaseProjectId   String?
 
+  // v0 Integration fields
+  v0ChatId            String?       // v0 chat ID from deployment
+  v0PreviewUrl        String?       // v0 preview/edit URL
+  v0DeployUrl         String?       // v0 demo/live URL (if deployed)
+  v0GeneratedAt       DateTime?     // When v0 generation completed
+
   // Metadata
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
@@ -54,6 +60,7 @@ model Project {
   @@index([userId])
   @@index([status])
   @@index([biabTier])
+  @@index([v0ChatId])
   @@map("projects")
 }
 

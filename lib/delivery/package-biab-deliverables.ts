@@ -34,6 +34,10 @@ export interface PackagingOptions {
   deploymentUrl?: string; // For TURNKEY_SYSTEM
   supabaseProjectId?: string; // For TURNKEY_SYSTEM
   projectName?: string;
+  // v0 deployment info
+  v0ChatId?: string;
+  v0PreviewUrl?: string;
+  v0DeployUrl?: string;
 }
 
 interface SectionOutputs {
@@ -66,6 +70,26 @@ export async function packageBIABDeliverables(
   try {
     console.log(`[Package BIAB] Starting packaging for project ${projectId}`);
     console.log(`[Package BIAB] Tier: ${options.tier}`);
+
+    // Query project to get v0 deployment info
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!project) {
+      return {
+        success: false,
+        error: 'Project not found',
+      };
+    }
+
+    // Add v0 data to options if available
+    if (project.v0ChatId) {
+      options.v0ChatId = project.v0ChatId;
+      options.v0PreviewUrl = project.v0PreviewUrl || undefined;
+      options.v0DeployUrl = project.v0DeployUrl || undefined;
+      console.log(`[Package BIAB] Including v0 deployment info: ${project.v0PreviewUrl}`);
+    }
 
     // Query all prompt executions for this project
     const executions = await prisma.promptExecution.findMany({
@@ -354,7 +378,12 @@ async function createZIPPackage(
   const zip = new JSZip();
 
   // Add README at root
-  const readme = generateREADME(projectId, sectionOutputs, options.tier);
+  const v0Info = options.v0ChatId ? {
+    chatId: options.v0ChatId,
+    previewUrl: options.v0PreviewUrl,
+    deployUrl: options.v0DeployUrl,
+  } : undefined;
+  const readme = generateREADME(projectId, sectionOutputs, options.tier, v0Info);
   zip.file('README.md', readme);
 
   // Create folders by section
@@ -428,6 +457,20 @@ async function createZIPPackage(
     }
   }
 
+  // LAUNCH_BLUEPRINT and TURNKEY_SYSTEM: Add v0 deployment info
+  if (options.tier !== BIABTier.VALIDATION_PACK && (options.v0ChatId || options.v0PreviewUrl)) {
+    const v0Folder = zip.folder('v0-deployment');
+
+    if (v0Folder) {
+      const v0Content = `# v0 Deployment Information\n\nYour application has been automatically deployed to Vercel v0!\n\n## Live URLs\n\n**Preview & Edit:**\n- URL: ${options.v0PreviewUrl || 'Not available'}\n- Chat ID: ${options.v0ChatId || 'Not available'}\n\n${options.v0DeployUrl ? `**Live Demo:**\n- URL: ${options.v0DeployUrl}\n\n` : ''}## What is v0?\n\nv0 is Vercel's AI-powered code generation platform. Your application has been automatically generated and is ready to preview, edit, and deploy.\n\n## Next Steps\n\n1. **Visit the Preview URL**\n   - Open ${options.v0PreviewUrl} in your browser\n   - You'll see your application running live\n\n2. **Make Changes**\n   - Use the chat interface to request modifications\n   - Edit code directly in the v0 editor\n   - See changes reflected in real-time\n\n3. **Deploy to Production**\n   - Click "Deploy" in the v0 interface\n   - Your app will be published to Vercel\n   - Get a permanent production URL\n\n4. **Customize Further**\n   - Download the code from v0\n   - Clone to GitHub repository\n   - Continue development locally\n\n## Alternative: Use the Replit Prompt\n\nIf you prefer to build manually or customize heavily:\n- Check the "Launch-Tools" folder for the Replit prompt\n- Use this prompt with any AI coding assistant\n- Build exactly to your specifications\n\n## Support\n\nFor help with v0 or your deployment:\n- v0 Documentation: https://v0.dev/docs\n- Vercel Support: https://vercel.com/support\n- FullStackVibeCoder: support@fullstackvibecoder.com\n`;
+
+      v0Folder.file('README.md', v0Content);
+
+      // Add quick access file with just the URLs
+      v0Folder.file('DEPLOYMENT_URLS.txt', `v0 Preview & Edit: ${options.v0PreviewUrl || 'Not available'}\nv0 Chat ID: ${options.v0ChatId || 'Not available'}\n${options.v0DeployUrl ? `v0 Live Demo: ${options.v0DeployUrl}\n` : ''}\nGenerated: ${new Date().toISOString()}\n`);
+    }
+  }
+
   // TURNKEY_SYSTEM: Add handoff documentation
   if (options.tier === BIABTier.TURNKEY_SYSTEM) {
     const handoffFolder = zip.folder('handoff-documentation');
@@ -462,7 +505,7 @@ async function createZIPPackage(
 /**
  * Generate README file for the package
  */
-function generateREADME(projectId: string, sectionOutputs: SectionOutputs[], tier: BIABTier): string {
+function generateREADME(projectId: string, sectionOutputs: SectionOutputs[], tier: BIABTier, v0Info?: { chatId?: string; previewUrl?: string; deployUrl?: string }): string {
   const totalOutputs = sectionOutputs.reduce((sum, s) => sum + s.outputs.length, 0);
   const sections = sectionOutputs.map(s => s.section).join(', ');
 
@@ -503,7 +546,7 @@ ${section.outputs.map((output, j) => `- ${j + 1}-${sanitizeFileName(output.promp
 
 ${sectionOutputs.map((section, i) => `${i + 1}. **${section.section}** (${section.outputs.length} documents)`).join('\n')}
 
-## Support
+## ${v0Info && v0Info.previewUrl ? '🚀 Live Deployment\n\nYour application has been automatically deployed to v0!\n\n**Preview & Edit:** ' + v0Info.previewUrl + '\n' + (v0Info.deployUrl ? '**Live Demo:** ' + v0Info.deployUrl + '\n' : '') + '\nSee the `v0-deployment/` folder for complete deployment information and instructions.\n\n## ' : ''}Support
 
 For questions or support, contact: support@fullstackvibecoder.com
 

@@ -147,3 +147,6 @@ drizzle/
 
 # Turbo
 .turbo
+
+# v0-sdk (separate git repo, installed via npm)
+v0-sdk/

@@ -36,6 +36,7 @@
     "react-dom": "^18.2.0",
     "stripe": "^19.1.0",
     "tailwindcss": "^4.1.15",
+    "v0-sdk": "^0.15.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {

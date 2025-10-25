@@ -32,6 +32,12 @@ export interface BIABExecutionResult {
   };
   executionIds?: number[];
   logoUrls?: string[]; // Tier 2+ only
+  v0Deployment?: {
+    chatId?: string;
+    previewUrl?: string;
+    deployUrl?: string;
+    generatedAt?: Date;
+  }; // Tier 2+ only (v0 integration)
   deploymentInfo?: {
     githubRepoUrl?: string;
     vercelDeploymentUrl?: string;
@@ -163,6 +169,9 @@ export class BIABOrchestratorAgent {
           // Handle logo generation if this is visual_identity_05 for LAUNCH_BLUEPRINT/TURNKEY tiers
           await this.handleLogoGeneration(execution, prompt.promptId, input.tier, input.projectId);
 
+          // Handle v0 deployment if this is replit_site_16 for LAUNCH_BLUEPRINT/TURNKEY tiers
+          await this.handleV0Deployment(execution, prompt.promptId, input.tier, input.projectId);
+
           executionIds.push(execution.id);
           totalTokensUsed += tokensUsed;
 
@@ -239,7 +248,12 @@ export class BIABOrchestratorAgent {
       console.log(`[BIAB Orchestrator] Total time: ${(totalExecutionTimeMs / 1000).toFixed(2)}s`);
       console.log(`[BIAB Orchestrator] By section:`, sectionCounts);
 
-      return {
+      // Query project to get v0 deployment info for the result
+      const project = await this.prisma.project.findUnique({
+        where: { id: input.projectId },
+      });
+
+      const result: BIABExecutionResult = {
         success: true,
         projectId: input.projectId,
         tier: input.tier,
@@ -252,6 +266,19 @@ export class BIABOrchestratorAgent {
         },
         executionIds,
       };
+
+      // Add v0 deployment info if available
+      if (project?.v0ChatId) {
+        result.v0Deployment = {
+          chatId: project.v0ChatId,
+          previewUrl: project.v0PreviewUrl || undefined,
+          deployUrl: project.v0DeployUrl || undefined,
+          generatedAt: project.v0GeneratedAt || undefined,
+        };
+        console.log(`[BIAB Orchestrator] v0 deployment included in result: ${project.v0PreviewUrl}`);
+      }
+
+      return result;
 
     } catch (error) {
       console.error('[BIAB Orchestrator] Execution failed:', error);
@@ -448,6 +475,134 @@ ${brandOutput.substring(0, 2000)}` // Limit to first 2000 chars
     } catch (error: any) {
       console.error('[BIAB Orchestrator] Failed to create logo prompt:', error.message);
       throw new Error(`Logo prompt generation failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Handle v0 deployment for LAUNCH_BLUEPRINT and TURNKEY_SYSTEM tiers
+   * Triggered after replit_site_16 prompt execution
+   */
+  private async handleV0Deployment(
+    execution: any,
+    promptId: string,
+    tier: BIABTier,
+    projectId: string
+  ): Promise<void> {
+    // Only deploy for LAUNCH_BLUEPRINT and TURNKEY_SYSTEM
+    if (tier !== 'LAUNCH_BLUEPRINT' && tier !== 'TURNKEY_SYSTEM') {
+      return;
+    }
+
+    // Only trigger on replit_site_16 prompt
+    if (promptId !== 'replit_site_16') {
+      return;
+    }
+
+    try {
+      console.log('[BIAB Orchestrator] 🚀 Deploying to v0...');
+
+      // Import v0 client and brand extractor
+      const { generateV0App, formatReplitPromptForV0 } = await import('../services/v0-client');
+      const { extractBrandStrategy, formatBrandStrategyForV0 } = await import('../services/brand-strategy-extractor');
+
+      // Step 1: Extract brand strategy from visual_identity_05
+      console.log('[BIAB Orchestrator] Extracting brand strategy...');
+      const brandStrategy = await extractBrandStrategy(projectId);
+
+      // Step 2: Validate logo URLs if present
+      if (brandStrategy?.logos?.primary) {
+        console.log('[BIAB Orchestrator] Validating logo URLs...');
+        const { checkUrlAccessible } = await import('../services/brand-strategy-extractor');
+
+        const logoAccessible = await checkUrlAccessible(brandStrategy.logos.primary);
+        if (!logoAccessible) {
+          console.warn(`[BIAB Orchestrator] ⚠️  Primary logo URL not accessible: ${brandStrategy.logos.primary}`);
+          console.warn('[BIAB Orchestrator] v0 may not be able to display the logo');
+        } else {
+          console.log(`[BIAB Orchestrator] ✓ Logo URL verified: ${brandStrategy.logos.primary}`);
+        }
+      }
+
+      // Step 3: Extract and format the prompt
+      const replitPrompt = formatReplitPromptForV0(execution.output);
+
+      console.log(`[BIAB Orchestrator] Formatted prompt length: ${replitPrompt.length} characters`);
+
+      // Step 4: Build custom system prompt with brand strategy
+      let systemPrompt = 'You are an expert full-stack developer. Build a production-ready Next.js application based on the requirements provided. Use modern best practices, TypeScript, and Tailwind CSS.';
+
+      if (brandStrategy) {
+        const brandInstructions = formatBrandStrategyForV0(brandStrategy);
+        systemPrompt += brandInstructions;
+        console.log('[BIAB Orchestrator] ✓ Brand strategy added to system prompt');
+        if (brandStrategy.logos?.variations.length) {
+          console.log(`[BIAB Orchestrator]   Logos: ${brandStrategy.logos.variations.length} variations`);
+        }
+        console.log(`[BIAB Orchestrator]   Colors: ${brandStrategy.colors.all.length} found`);
+        console.log(`[BIAB Orchestrator]   Fonts: ${brandStrategy.typography.all.length} found`);
+      } else {
+        console.log('[BIAB Orchestrator] ⚠️  No brand strategy found, using default system prompt');
+      }
+
+      // Step 4: Generate app via v0
+      const v0Result = await generateV0App({
+        prompt: replitPrompt,
+        systemPrompt, // Include brand strategy
+        chatPrivacy: 'private', // Keep private by default
+        waitForCompletion: true, // Wait for generation to complete (up to 60 seconds)
+      });
+
+      if (!v0Result.success) {
+        throw new Error(v0Result.error || 'v0 deployment failed');
+      }
+
+      console.log(`[BIAB Orchestrator] ✓ v0 deployment successful`);
+      console.log(`[BIAB Orchestrator]   Chat ID: ${v0Result.chatId}`);
+      console.log(`[BIAB Orchestrator]   Web URL: ${v0Result.webUrl}`);
+
+      // Step 3: Append deployment URLs to execution output
+      const deploymentSection = `\n\n## 🚀 Live Deployment\n\nYour application has been automatically deployed to v0!\n\n**Preview & Edit:**\n- URL: ${v0Result.webUrl}\n- Chat ID: ${v0Result.chatId}\n- Status: ${v0Result.metadata?.status || 'completed'}\n\n${v0Result.demoUrl ? `**Live Demo:**\n- URL: ${v0Result.demoUrl}\n\n` : ''}**Next Steps:**\n1. Visit the preview URL to see your application\n2. Use the chat interface to make refinements\n3. Click "Deploy" in v0 to publish to Vercel\n4. Customize the code using the Replit prompt above\n\n**Note:** The v0 chat is private and only accessible to you.`;
+
+      // Update the execution in database
+      await this.prisma.promptExecution.update({
+        where: { id: execution.id },
+        data: {
+          output: execution.output + deploymentSection,
+        },
+      });
+
+      // Step 4: Store v0 URLs in Project table
+      try {
+        await this.prisma.project.update({
+          where: { id: projectId },
+          data: {
+            v0ChatId: v0Result.chatId,
+            v0PreviewUrl: v0Result.webUrl,
+            v0DeployUrl: v0Result.demoUrl,
+            v0GeneratedAt: new Date(),
+          },
+        });
+        console.log('[BIAB Orchestrator] ✓ v0 URLs stored in Project table');
+      } catch (dbError) {
+        console.error('[BIAB Orchestrator] Failed to store v0 URLs in database:', dbError);
+      }
+
+      console.log('[BIAB Orchestrator] ✓ v0 deployment info added to output');
+
+    } catch (error: any) {
+      console.error('[BIAB Orchestrator] ✗ v0 deployment failed:', error.message);
+
+      // Don't fail entire execution - add error note to output
+      try {
+        await this.prisma.promptExecution.update({
+          where: { id: execution.id },
+          data: {
+            output: execution.output + `\n\n## v0 Deployment\n\n⚠️ Automatic deployment to v0 failed: ${error.message}\n\nYou can still use the Replit prompt above to build the application manually, or deploy it to v0 yourself by visiting https://v0.dev and pasting the prompt.`,
+          },
+        });
+      } catch (updateError) {
+        console.error('[BIAB Orchestrator] Failed to update execution with error:', updateError);
+      }
     }
   }
 
