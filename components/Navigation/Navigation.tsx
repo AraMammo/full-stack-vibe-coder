@@ -76,7 +76,7 @@ export function Navigation() {
       </a>
 
       <nav
-        className="fixed top-0 left-0 right-0 z-[1000] pointer-events-none"
+        className="fixed top-0 left-0 right-0 z-[999999] pointer-events-none"
         aria-label="Main navigation"
       >
         <div className="relative px-6 py-6 max-w-[2560px] mx-auto pointer-events-auto">
