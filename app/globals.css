@@ -14,8 +14,6 @@ body {
   cursor: crosshair;
 }
 
-/* Removed unused navigation styles - Navigation component uses Tailwind CSS classes */
-
 .layer {
   position: fixed;
   width: 100%;
@@ -3240,16 +3238,4 @@ body {
   .cookie-btn {
     width: 100%;
   }
-}
-
-/* Removed duplicate navigation styles - Navigation component uses Tailwind CSS classes */
-
-/* Ensure pricing page content doesn't hide under fixed nav */
-.pricing-page {
-  padding-top: 80px;
-}
-
-/* Add main content spacing for fixed nav */
-main {
-  padding-top: 70px;
 }
