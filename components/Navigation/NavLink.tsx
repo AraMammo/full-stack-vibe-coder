@@ -50,9 +50,9 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
         >
           <span
             className={`
-              block text-base font-medium
+              block text-base font-semibold
               transition-all duration-200
-              ${isActive || isHovered ? '' : 'text-white'}
+              ${isActive || isHovered ? '' : 'text-white/90'}
             `}
             style={
               isActive || isHovered
@@ -112,7 +112,7 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
 
       <span
         className={`
-          block px-4 py-2 text-base font-medium rounded-lg
+          block px-4 py-2 text-base font-semibold rounded-lg
           transition-all duration-200
           ${isHovered ? 'translate-x-2' : 'translate-x-0'}
           ${isActive ? 'pl-6' : ''}
@@ -124,8 +124,9 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
+                filter: 'brightness(1.2)',
               }
-            : { color: 'white' }
+            : { color: 'rgba(255, 255, 255, 0.95)' }
         }
       >
         {label}

@@ -25,15 +25,15 @@ export function NavCard({ navItems, currentPath, isVisible }: NavCardProps) {
     <div
       className={`
         w-[280px] lg:w-[300px]
-        bg-black/85 backdrop-blur-xl
-        border border-white/10
+        bg-black/95 backdrop-blur-xl
+        border-2 border-pink-500/50
         rounded-xl
-        shadow-[0_8px_32px_rgba(0,0,0,0.6)]
+        shadow-[0_8px_32px_rgba(236,72,153,0.4),0_8px_32px_rgba(0,0,0,0.8)]
         p-5
         transition-all duration-500 ease-out
         hover:scale-[1.02]
-        hover:shadow-[0_8px_32px_rgba(236,72,153,0.3),0_8px_32px_rgba(6,182,212,0.3)]
-        hover:border-white/20
+        hover:shadow-[0_12px_48px_rgba(236,72,153,0.5),0_12px_48px_rgba(6,182,212,0.5)]
+        hover:border-pink-500/70
         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-5'}
       `}
       style={{
