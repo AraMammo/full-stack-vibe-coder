@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { db } from '@/server/db';
-import { toolSubmissions } from '@shared/schema';
+import { toolSubmissions } from '@/shared/schema';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

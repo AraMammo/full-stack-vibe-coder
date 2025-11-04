@@ -130,11 +130,24 @@ function enableAnalytics(): void {
   console.log('Analytics enabled (no analytics currently configured)');
 }
 
+export interface CookieInfo {
+  name: string;
+  purpose: string;
+  duration: string;
+  type: string;
+}
+
+export interface UsedCookies {
+  necessary: CookieInfo[];
+  analytics: CookieInfo[];
+  functional: CookieInfo[];
+}
+
 /**
  * Get list of cookies used by the application
  * For display in cookie policy
  */
-export function getUsedCookies() {
+export function getUsedCookies(): UsedCookies {
   return {
     necessary: [
       {

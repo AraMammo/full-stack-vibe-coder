@@ -2,19 +2,18 @@
  * Project Plan API
  *
  * Returns the execution plan for a project (tasks grouped by phase)
+ * TODO: Implement Task model and Project relations in Prisma schema before enabling this route
  */
 
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/db';
+import { auth } from '@/lib/auth';
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       return NextResponse.json(
@@ -23,6 +22,16 @@ export async function GET(
       );
     }
 
+    // Feature not yet implemented - Task model and Project relations need to be added to Prisma schema
+    return NextResponse.json(
+      {
+        error: 'Feature not implemented',
+        message: 'Project plan API requires Task model and Project relations in database schema'
+      },
+      { status: 501 }
+    );
+
+    /* TODO: Uncomment when Task model and relations are added to Prisma schema
     const projectId = params.id;
 
     // Fetch project
@@ -135,6 +144,7 @@ export async function GET(
       },
       phases,
     });
+    */
 
   } catch (error) {
     console.error('Project plan error:', error);

@@ -11,8 +11,8 @@ import Google from 'next-auth/providers/google';
 import { prisma } from './db';
 
 export const authConfig = {
-  adapter: PrismaAdapter(prisma),
-  
+  adapter: PrismaAdapter(prisma) as any, // Type assertion to handle @auth/core version mismatch
+
   secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET ?? 'dev-secret-change-in-production',
 
   providers: [
@@ -115,8 +115,11 @@ export async function requireAuth() {
 
 /**
  * Helper function to get user from database with full details
+ * TODO: User model doesn't exist in schema - uncomment when added
  */
 export async function getUserWithDetails(userId: string) {
+  throw new Error('User model not implemented in schema');
+  /*
   return await prisma.user.findUnique({
     where: { id: userId },
     include: {
@@ -137,4 +140,5 @@ export async function getUserWithDetails(userId: string) {
       },
     },
   });
+  */
 }

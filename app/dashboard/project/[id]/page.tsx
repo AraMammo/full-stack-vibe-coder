@@ -5,8 +5,7 @@
  */
 
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { StatusBadge } from '@/components/StatusBadge';
 import { ProjectDetailClient } from './ProjectDetailClient';
@@ -28,7 +27,7 @@ const tierConfig = {
 };
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user) {
     redirect('/api/auth/signin');

@@ -473,8 +473,8 @@ export const ExecutionPlanSchema = z.object({
   })),
   summary: z.object({
     totalTasks: z.number(),
-    tasksByPhase: z.record(z.number()),
-    tasksByAgent: z.record(z.number()),
+    tasksByPhase: z.record(z.string(), z.number()),
+    tasksByAgent: z.record(z.string(), z.number()),
     criticalPath: z.array(z.string()),
   }),
 });

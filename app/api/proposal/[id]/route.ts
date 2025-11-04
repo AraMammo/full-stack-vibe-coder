@@ -1,20 +1,19 @@
 /**
- * Proposal Detail API
+ * Proposal Details API
  *
- * Returns full proposal data for viewing
+ * Returns full proposal details for client review
+ * TODO: Implement Proposal model in Prisma schema before enabling this route
  */
 
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/db';
+import { auth } from '@/lib/auth';
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       return NextResponse.json(
@@ -23,71 +22,21 @@ export async function GET(
       );
     }
 
-    const proposalId = params.id;
-
-    // Fetch proposal with all related data
-    const proposal = await prisma.proposal.findUnique({
-      where: { id: proposalId },
-      include: {
-        user: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
-        workflow: {
-          include: {
-            voiceNote: {
-              select: {
-                transcript: true,
-                createdAt: true,
-              },
-            },
-            steps: {
-              orderBy: {
-                stepOrder: 'asc',
-              },
-            },
-          },
-        },
-        approvals: {
-          orderBy: {
-            createdAt: 'desc',
-          },
-        },
-        project: {
-          select: {
-            id: true,
-            status: true,
-            progress: true,
-          },
-        },
+    // Feature not yet implemented - Proposal model needs to be added to Prisma schema
+    return NextResponse.json(
+      {
+        error: 'Feature not implemented',
+        message: 'Proposal details API requires Proposal model in database schema'
       },
-    });
-
-    if (!proposal) {
-      return NextResponse.json(
-        { error: 'Proposal not found' },
-        { status: 404 }
-      );
-    }
-
-    // Verify ownership
-    if (proposal.userId !== session.user.id) {
-      return NextResponse.json(
-        { error: 'Forbidden' },
-        { status: 403 }
-      );
-    }
-
-    return NextResponse.json(proposal);
+      { status: 501 }
+    );
 
   } catch (error) {
-    console.error('Proposal API error:', error);
+    console.error('Get proposal error:', error);
 
     return NextResponse.json(
       {
-        error: 'Failed to load proposal',
+        error: 'Failed to fetch proposal',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }

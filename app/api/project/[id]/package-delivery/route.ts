@@ -34,8 +34,39 @@ export async function POST(
 
     console.log(`[API] Package delivery request for project: ${projectId}`);
 
+    // Fetch project to get tier
+    const { prisma } = await import('@/lib/db');
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { biabTier: true, projectName: true, userId: true },
+    });
+
+    if (!project) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Project not found',
+        },
+        { status: 404 }
+      );
+    }
+
+    // Verify ownership
+    if (project.userId !== validatedData.userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Forbidden',
+        },
+        { status: 403 }
+      );
+    }
+
     // Create delivery package
-    const result = await packageBIABDeliverables(projectId, validatedData.userId);
+    const result = await packageBIABDeliverables(projectId, validatedData.userId, {
+      tier: project.biabTier,
+      projectName: project.projectName,
+    });
 
     if (!result.success) {
       return NextResponse.json(
@@ -68,7 +99,7 @@ export async function POST(
         {
           success: false,
           error: 'Invalid request data',
-          details: error.errors,
+          details: error.issues,
         },
         { status: 400 }
       );

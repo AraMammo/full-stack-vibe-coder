@@ -5,8 +5,7 @@
  */
 
 import { NextRequest } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
 export const runtime = 'nodejs';
@@ -34,7 +33,7 @@ export async function GET(
   const projectId = params.id;
 
   // Verify user authentication and authorization
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user) {
     return new Response('Unauthorized', { status: 401 });
   }

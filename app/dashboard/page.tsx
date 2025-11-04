@@ -5,15 +5,14 @@
  */
 
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { StatusBadge } from '@/components/StatusBadge';
 import { BIABProjectCard } from '@/components/BIABProjectCard';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user) {
     redirect('/api/auth/signin');
@@ -25,7 +24,9 @@ export default async function DashboardPage() {
     orderBy: { createdAt: 'desc' },
   });
 
-  // Fetch user's workflows
+  // Workflow model not yet implemented - return empty data
+  // TODO: Uncomment when Workflow model is added to Prisma schema
+  /*
   const workflows = await prisma.workflow.findMany({
     where: { userId: session.user.id },
     include: {
@@ -62,11 +63,14 @@ export default async function DashboardPage() {
       createdAt: 'desc',
     },
   });
+  */
+
+  const workflows: any[] = [];
 
   // Calculate progress for each workflow
-  const workflowsWithProgress = workflows.map(workflow => {
+  const workflowsWithProgress = workflows.map((workflow: any) => {
     const totalSteps = 4; // intake, scope, estimator, proposal
-    const completedSteps = workflow.steps.filter(s => s.status === 'completed').length;
+    const completedSteps = workflow.steps?.filter((s: any) => s.status === 'completed').length || 0;
     const progress = Math.round((completedSteps / totalSteps) * 100);
 
     return {
