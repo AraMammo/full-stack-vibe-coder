@@ -2,21 +2,15 @@
  * Agent Execution API
  *
  * Manually trigger specialist agents to execute tasks
+ * TODO: Implement Task model in Prisma schema before enabling this route
  */
 
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/db';
-import { FrontendAgent } from '@/lib/agents/frontend-agent';
-// Import other agents as they're implemented
-// import { BackendAgent } from '@/lib/agents/backend-agent';
-// import { DesignAgent } from '@/lib/agents/design-agent';
-// import { ContentAgent } from '@/lib/agents/content-agent';
+import { auth } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       return NextResponse.json(
@@ -25,6 +19,16 @@ export async function POST(request: Request) {
       );
     }
 
+    // Feature not yet implemented - Task model needs to be added to Prisma schema
+    return NextResponse.json(
+      {
+        error: 'Feature not implemented',
+        message: 'Agent execution requires Task model in database schema'
+      },
+      { status: 501 }
+    );
+
+    /* TODO: Uncomment when Task model is added to Prisma schema
     const { taskId } = await request.json();
 
     if (!taskId || typeof taskId !== 'string') {
@@ -34,7 +38,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch task with project info
     const task = await prisma.task.findUnique({
       where: { id: taskId },
       include: {
@@ -197,6 +200,7 @@ export async function POST(request: Request) {
       },
       artifacts: updatedTask?.artifacts || [],
     });
+    */
 
   } catch (error) {
     console.error('Agent execution error:', error);

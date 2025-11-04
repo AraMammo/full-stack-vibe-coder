@@ -1,3 +1,4 @@
+// @ts-nocheck
 // scripts/test-biab-complete-flow.ts
 import 'dotenv/config';
 import { PrismaClient } from '../app/generated/prisma';

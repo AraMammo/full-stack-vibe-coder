@@ -3,21 +3,18 @@
  *
  * Returns the current status and progress of a workflow.
  * Used for polling or displaying real-time updates to the user.
+ * TODO: Implement Workflow model in Prisma schema before enabling this route
  */
 
 import { NextResponse } from 'next/server';
-import { workflowExecutor } from '@/lib/agents/workflow';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/db';
+import { auth } from '@/lib/auth';
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    // Authenticate user
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       return NextResponse.json(
@@ -26,6 +23,16 @@ export async function GET(
       );
     }
 
+    // Feature not yet implemented - Workflow model needs to be added to Prisma schema
+    return NextResponse.json(
+      {
+        error: 'Feature not implemented',
+        message: 'Workflow status API requires Workflow model in database schema'
+      },
+      { status: 501 }
+    );
+
+    /* TODO: Uncomment when Workflow model is added to Prisma schema
     const workflowId = params.id;
 
     // Verify workflow belongs to user
@@ -59,6 +66,7 @@ export async function GET(
     }
 
     return NextResponse.json(status);
+    */
 
   } catch (error) {
     console.error('Workflow status API error:', error);

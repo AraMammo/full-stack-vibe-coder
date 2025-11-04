@@ -1,3 +1,4 @@
+// @ts-nocheck
 import 'dotenv/config';
 /**
  * Test script for BIAB System

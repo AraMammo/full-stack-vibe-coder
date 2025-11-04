@@ -126,7 +126,7 @@ function extractColors(text: string): BrandStrategy['colors'] {
   const allColors = matches.map(hex => hex.startsWith('#') ? hex : `#${hex}`);
 
   // Remove duplicates
-  const uniqueColors = [...new Set(allColors)];
+  const uniqueColors = Array.from(new Set(allColors));
 
   // Try to identify primary, secondary, accent, neutral
   const colors: BrandStrategy['colors'] = {
@@ -228,8 +228,8 @@ function extractFonts(text: string): BrandStrategy['typography'] {
 function extractMood(text: string): string | undefined {
   // Look for mood/aesthetic section
   const moodPatterns = [
-    /(?:design\s+mood|aesthetic|style|vibe)[:\s]+(.+?)(?:\n\n|\n#|$)/is,
-    /##\s*(?:design\s+mood|aesthetic|style)\s*\n+(.+?)(?:\n\n|\n#|$)/is,
+    /(?:design\s+mood|aesthetic|style|vibe)[:\s]+([\s\S]+?)(?:\n\n|\n#|$)/i,
+    /##\s*(?:design\s+mood|aesthetic|style)\s*\n+([\s\S]+?)(?:\n\n|\n#|$)/i,
   ];
 
   for (const pattern of moodPatterns) {

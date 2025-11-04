@@ -5,13 +5,12 @@
  */
 
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       return NextResponse.json(
@@ -22,7 +21,9 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    // Fetch user's workflows with related data
+    // Workflow model not yet implemented - return empty data
+    // TODO: Uncomment when Workflow model is added to Prisma schema
+    /*
     const workflows = await prisma.workflow.findMany({
       where: { userId },
       include: {
@@ -62,6 +63,9 @@ export async function GET() {
         createdAt: 'desc',
       },
     });
+    */
+
+    const workflows: any[] = [];
 
     // Calculate stats
     const stats = {

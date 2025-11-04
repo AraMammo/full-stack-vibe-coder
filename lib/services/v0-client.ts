@@ -166,7 +166,7 @@ async function waitForCompletion(
 
       console.log(`[v0] Polling status (attempt ${attempts}/${maxAttempts})...`);
 
-      const chat = await v0.chats.getById({ id: chatId });
+      const chat = await v0.chats.getById({ chatId: chatId });
 
       if (!chat.latestVersion) {
         console.log('[v0] No version available yet, continuing to poll...');
@@ -215,7 +215,7 @@ export async function getV0Chat(chatId: string): Promise<ChatsCreateResponse | n
 
   try {
     console.log(`[v0] Fetching chat: ${chatId}`);
-    const chat = await v0.chats.getById({ id: chatId });
+    const chat = await v0.chats.getById({ chatId: chatId });
     return chat;
   } catch (error: any) {
     console.error(`[v0] Failed to fetch chat ${chatId}:`, error.message);
