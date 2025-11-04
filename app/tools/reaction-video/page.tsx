@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Navigation from '../../components/Navigation';
 
 interface Style {
   id: string;
@@ -390,7 +389,6 @@ export default function ReactionVideoPage() {
 
   return (
     <>
-      <Navigation />
       <div className="noise"></div>
       <div className="grid-overlay"></div>
 
