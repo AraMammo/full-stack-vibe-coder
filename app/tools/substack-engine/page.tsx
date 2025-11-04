@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Navigation from '../../components/Navigation';
+import { Navigation } from '@/components/Navigation/Navigation';
 
 export default function SubstackEnginePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

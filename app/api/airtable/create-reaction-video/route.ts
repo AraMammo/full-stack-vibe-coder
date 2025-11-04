@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/server/db';
-import { toolPurchases, toolSubmissions } from '@shared/schema';
+import { toolPurchases, toolSubmissions } from '@/shared/schema';
 import { eq, and } from 'drizzle-orm';
 
 const REACTION_VIDEO_BASE_ID = 'appiai3ZRE5nMRrjx';
