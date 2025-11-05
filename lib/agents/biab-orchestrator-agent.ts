@@ -17,6 +17,7 @@ export interface BIABExecutionInput {
   businessConcept: string; // Voice transcript or business description
   userId: string;
   tier: BIABTier; // Selected pricing tier
+  contextIds?: string[]; // Optional: User context IDs for RAG enhancement
 }
 
 export interface BIABExecutionResult {
@@ -75,6 +76,7 @@ export class BIABOrchestratorAgent {
   private model: string = 'claude-sonnet-4-5-20250929';
   private maxTokens: number = 2600; // Reduced from 8192 for 35% token reduction
   private progressCallback?: ProgressCallback;
+  private userContextFormatted?: string; // Formatted user context for RAG injection
 
   constructor(progressCallback?: ProgressCallback) {
     this.anthropic = new Anthropic({
@@ -95,6 +97,11 @@ export class BIABOrchestratorAgent {
       console.log(`[BIAB Orchestrator] Starting execution for project ${input.projectId}`);
       console.log(`[BIAB Orchestrator] Tier: ${input.tier}`);
       console.log(`[BIAB Orchestrator] Business concept: ${input.businessConcept.substring(0, 100)}...`);
+
+      // Load and format user context for RAG enhancement (if provided)
+      if (input.contextIds && input.contextIds.length > 0) {
+        await this.loadUserContext(input.userId, input.contextIds, input.businessConcept);
+      }
 
       // Load prompts for the selected tier, ordered by execution order
       const allPrompts = await this.prisma.promptTemplate.findMany({
@@ -335,9 +342,14 @@ export class BIABOrchestratorAgent {
     userPrompt: string
   ): Promise<{ output: string; tokensUsed: number }> {
     // Add conciseness directive to system prompt
-    const enhancedSystemPrompt = `${systemPrompt}
+    let enhancedSystemPrompt = `${systemPrompt}
 
 CRITICAL: Keep responses concise and actionable. Use structured formats (bullet points, tables) where appropriate. Focus on key insights and actionable recommendations over exhaustive analysis. Deliver maximum value in minimal words.`;
+
+    // Inject user context if available (RAG enhancement)
+    if (this.userContextFormatted) {
+      enhancedSystemPrompt += `\n\n${this.userContextFormatted}`;
+    }
 
     const response = await this.anthropic.messages.create({
       model: this.model,
@@ -603,6 +615,51 @@ ${brandOutput.substring(0, 2000)}` // Limit to first 2000 chars
       } catch (updateError) {
         console.error('[BIAB Orchestrator] Failed to update execution with error:', updateError);
       }
+    }
+  }
+
+  /**
+   * Load and format user context for RAG enhancement
+   * Retrieves relevant context chunks based on business concept query
+   */
+  private async loadUserContext(
+    userId: string,
+    contextIds: string[],
+    businessConcept: string
+  ): Promise<void> {
+    try {
+      console.log(`[BIAB Orchestrator] Loading user context (${contextIds.length} contexts)...`);
+
+      // Import RAG service dynamically
+      const { retrieveRelevantContext, formatContextForPrompt } = await import('../services/rag-service');
+
+      // Retrieve top 5 most relevant chunks based on business concept
+      const retrievalResult = await retrieveRelevantContext(
+        userId,
+        businessConcept,
+        {
+          topK: 5,
+          minSimilarity: 0.6,
+          contextIds, // Limit to specified contexts
+        }
+      );
+
+      if (retrievalResult.chunks.length === 0) {
+        console.log('[BIAB Orchestrator] No relevant context found');
+        this.userContextFormatted = undefined;
+        return;
+      }
+
+      // Format context for injection into prompts
+      this.userContextFormatted = formatContextForPrompt(retrievalResult);
+
+      console.log(`[BIAB Orchestrator] ✓ Loaded ${retrievalResult.chunks.length} relevant context chunks`);
+      console.log(`[BIAB Orchestrator] Context size: ${this.userContextFormatted.length} chars`);
+
+    } catch (error: any) {
+      console.error('[BIAB Orchestrator] ✗ Failed to load user context:', error.message);
+      // Don't fail execution - just skip context enhancement
+      this.userContextFormatted = undefined;
     }
   }
 

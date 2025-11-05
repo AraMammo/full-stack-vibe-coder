@@ -19,6 +19,7 @@ const ExecuteBIABSchema = z.object({
   businessConcept: z.string().min(10, 'Business concept must be at least 10 characters'),
   userId: z.string().min(1, 'User ID is required'),
   tier: z.enum([BIABTier.VALIDATION_PACK, BIABTier.LAUNCH_BLUEPRINT, BIABTier.TURNKEY_SYSTEM]),
+  contextIds: z.array(z.string()).optional(), // Optional: User context IDs for RAG enhancement
 });
 
 // ============================================
@@ -41,6 +42,7 @@ export async function POST(request: NextRequest) {
       businessConcept: validatedData.businessConcept,
       userId: validatedData.userId,
       tier: validatedData.tier,
+      contextIds: validatedData.contextIds, // Pass context IDs for RAG enhancement
     });
 
     if (!result.success) {

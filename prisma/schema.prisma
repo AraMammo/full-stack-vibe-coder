@@ -28,6 +28,7 @@ model Project {
   v0DeployUrl         String?
   v0GeneratedAt       DateTime?
   v0PreviewUrl        String?
+  contextIds          String[]      @default([])
 
   @@index([userId])
   @@index([status])
@@ -155,10 +156,61 @@ model DeliveryPackage {
   @@map("delivery_packages")
 }
 
+model UserContext {
+  id          String            @id @default(uuid())
+  userId      String
+  fileName    String
+  fileType    ContextFileType
+  fileSize    Int
+  storagePath String
+  downloadUrl String?
+  uploadedAt  DateTime          @default(now())
+  processedAt DateTime?
+  status      ContextStatus     @default(PENDING)
+  metadata    Json?
+  chunks      ContextChunk[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([userId, status])
+  @@map("user_contexts")
+}
+
+model ContextChunk {
+  id          String      @id @default(uuid())
+  contextId   String
+  chunkIndex  Int
+  text        String      @db.Text
+  embedding   Json
+  metadata    Json?
+  createdAt   DateTime    @default(now())
+  context     UserContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
+
+  @@index([contextId])
+  @@index([contextId, chunkIndex])
+  @@map("context_chunks")
+}
+
 enum BIABTier {
   VALIDATION_PACK
   LAUNCH_BLUEPRINT
   TURNKEY_SYSTEM
+}
+
+enum ContextFileType {
+  PDF
+  TEXT
+  MARKDOWN
+  DOCX
+  URL
+  IMAGE
+}
+
+enum ContextStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
 }
 
 enum ProjectStatus {
