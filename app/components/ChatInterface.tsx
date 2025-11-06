@@ -15,7 +15,7 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([
     { 
       role: 'assistant', 
-      content: "Hey! Tell me what you're working on or what you need help with. I'll point you in the right direction." 
+      content: "Hey! We've got lots of tools. Describe what you need and I'll point you in the right direction." 
     }
   ]);
   const [inputText, setInputText] = useState('');

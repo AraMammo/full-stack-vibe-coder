@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import ChatInterface from './components/ChatInterface';
+import { useEffect, useRef, useState, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import ChatInterface from "./components/ChatInterface";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [showForm, setShowForm] = useState(false);
-  const [formSubject, setFormSubject] = useState('');
+  const [formSubject, setFormSubject] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -19,18 +19,18 @@ export default function Home() {
   // Handle URL parameters for contact form
   useEffect(() => {
     try {
-      const contact = searchParams.get('contact');
-      const subject = searchParams.get('subject');
-      
-      if (contact === 'true' && subject) {
+      const contact = searchParams.get("contact");
+      const subject = searchParams.get("subject");
+
+      if (contact === "true" && subject) {
         openForm(decodeURIComponent(subject));
         // Clean up URL with a small delay to avoid race conditions
         setTimeout(() => {
-          router.replace('/', { scroll: false });
+          router.replace("/", { scroll: false });
         }, 100);
       }
     } catch (error) {
-      console.error('Error handling URL parameters:', error);
+      console.error("Error handling URL parameters:", error);
     }
   }, [searchParams, router, openForm]);
 
@@ -38,7 +38,7 @@ export default function Home() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     canvas.width = window.innerWidth;
@@ -49,27 +49,27 @@ export default function Home() {
       canvas.height = window.innerHeight;
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Morphing text animation
     const phrases = [
-      'products that matter',
-      'solutions for real problems',
-      'end-to-end systems',
-      'friction removed',
-      'tech that works for people'
+      "products that matter",
+      "solutions for real problems",
+      "end-to-end systems",
+      "friction removed",
+      "tech that works for people",
     ];
 
     let currentPhrase = 0;
-    const morphingEl = document.getElementById('morphing');
+    const morphingEl = document.getElementById("morphing");
 
     const morphInterval = setInterval(() => {
       if (!morphingEl) return;
-      morphingEl.style.opacity = '0';
+      morphingEl.style.opacity = "0";
       setTimeout(() => {
         currentPhrase = (currentPhrase + 1) % phrases.length;
         morphingEl.textContent = phrases[currentPhrase];
-        morphingEl.style.opacity = '1';
+        morphingEl.style.opacity = "1";
       }, 500);
     }, 3000);
 
@@ -123,7 +123,7 @@ export default function Home() {
       mouseY = e.clientY;
     };
 
-    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener("mousemove", handleMouseMove);
 
     function connectParticles() {
       if (!ctx) return;
@@ -160,10 +160,10 @@ export default function Home() {
 
     function animate() {
       if (!ctx || !canvas) return;
-      ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+      ctx.fillStyle = "rgba(10, 10, 10, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      particles.forEach(particle => {
+      particles.forEach((particle) => {
         particle.update();
         particle.draw();
       });
@@ -176,8 +176,8 @@ export default function Home() {
 
     // Card 3D tilt effect
     const handleCardMouseMove = (e: MouseEvent) => {
-      const cards = document.querySelectorAll('.chaos-card');
-      cards.forEach(card => {
+      const cards = document.querySelectorAll(".chaos-card");
+      cards.forEach((card) => {
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -185,18 +185,19 @@ export default function Home() {
         if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
           const rotateX = (y / rect.height - 0.5) * 10;
           const rotateY = (x / rect.width - 0.5) * -10;
-          (card as HTMLElement).style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+          (card as HTMLElement).style.transform =
+            `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
         }
       });
     };
 
-    document.addEventListener('mousemove', handleCardMouseMove);
+    document.addEventListener("mousemove", handleCardMouseMove);
 
     // Add mouseleave listeners after a delay to ensure cards exist
     setTimeout(() => {
-      document.querySelectorAll('.chaos-card').forEach(card => {
-        card.addEventListener('mouseleave', () => {
-          (card as HTMLElement).style.transform = '';
+      document.querySelectorAll(".chaos-card").forEach((card) => {
+        card.addEventListener("mouseleave", () => {
+          (card as HTMLElement).style.transform = "";
         });
       });
     }, 100);
@@ -216,19 +217,19 @@ export default function Home() {
     // Listen for contact form events from navigation
     const handleContactFormEvent = (event: any) => {
       try {
-        openForm(event.detail?.subject || 'General Inquiry');
+        openForm(event.detail?.subject || "General Inquiry");
       } catch (error) {
-        console.error('Error handling contact form event:', error);
+        console.error("Error handling contact form event:", error);
       }
     };
 
-    window.addEventListener('openContactForm', handleContactFormEvent);
+    window.addEventListener("openContactForm", handleContactFormEvent);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mousemove', handleCardMouseMove);
-      window.removeEventListener('openContactForm', handleContactFormEvent);
+      window.removeEventListener("resize", handleResize);
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mousemove", handleCardMouseMove);
+      window.removeEventListener("openContactForm", handleContactFormEvent);
       clearInterval(morphInterval);
       // clearInterval(glitchInterval); // Disabled with glitch effect
     };
@@ -248,42 +249,58 @@ export default function Home() {
 
       <canvas ref={canvasRef} id="canvas"></canvas>
 
-      <div className="main-content" style={{paddingTop: '120px'}}>
+      <div className="main-content" style={{ paddingTop: "120px" }}>
         {/* Value Proposition */}
-        <div className="value-prop-container" style={{marginBottom: '2rem'}}>
+        <div className="value-prop-container" style={{ marginBottom: "2rem" }}>
           <h2
             className="value-prop-headline"
             style={{
-              background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              marginBottom: '1rem',
+              background:
+                "linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              marginBottom: "1rem",
             }}
           >
-            Voice note to live business. 48 hours. $497.
+            Voice note to live business. 
+            10-mins. $497.
           </h2>
-          <p className="value-prop-subheadline" style={{marginBottom: '2rem'}}>
-            Brand strategy, working site, technical docs. Everything you need to launch.
+          <p
+            className="value-prop-subheadline"
+            style={{ marginBottom: "2rem" }}
+          >
+            Brand strategy, working site, technical docs. Everything you need to
+            launch.
           </p>
         </div>
 
-        <div style={{width: '100%', maxWidth: '900px', margin: '0 auto'}}>
+        <div style={{ width: "100%", maxWidth: "900px", margin: "0 auto" }}>
           <ChatInterface />
         </div>
 
-        <a href="/what-is-vibe-coding" className="inline-link" style={{marginTop: '2rem', marginBottom: '3rem', display: 'block'}}>New to vibe coding? Learn more →</a>
+        <a
+          href="/what-is-vibe-coding"
+          className="inline-link"
+          style={{ marginTop: "2rem", marginBottom: "3rem", display: "block" }}
+        >
+          What's Vibe Coding? Learn more →
+        </a>
 
         <div className="chaos-grid">
           <div className="chaos-card">
             <h3 className="card-title">
-              <span className="badge-new" style={{marginRight: '0.5rem'}}>NEW</span>
+              <span className="badge-new" style={{ marginRight: "0.5rem" }}>
+                NEW
+              </span>
               Pre-Built Tools
             </h3>
             <p className="card-desc">
-              Ready-to-deploy SaaS products. Substack newsletter automation, video reaction tools, and more. Each tool is complete and production-ready.
+              Ready-to-deploy SaaS products. Substack newsletter automation,
+              video reaction tools, and more. Each tool is complete and
+              production-ready.
             </p>
-            <a className="card-btn" onClick={() => router.push('/tools')}>
+            <a className="card-btn" onClick={() => router.push("/tools")}>
               Explore Pre-Built Tools →
             </a>
           </div>
@@ -291,9 +308,13 @@ export default function Home() {
           <div className="chaos-card">
             <h3 className="card-title">Who Are We?</h3>
             <p className="card-desc">
-              Ara ran a real estate team in Toronto. Got frustrated waiting for tech that never shipped. Learned to code. But here&apos;s the weapon: full stack developer AND end-to-end marketer. Branding. Meta ads. Google campaigns. The whole stack. This is what happens when operators become builders.
+              Ara ran a real estate team in Toronto. Got frustrated waiting for
+              tech that never shipped. Learned to code. But here&apos;s the
+              weapon: full stack developer AND end-to-end marketer. Branding.
+              Meta ads. Google campaigns. The whole stack. This is what happens
+              when operators become builders.
             </p>
-            <a className="card-btn" onClick={() => openForm('Tell Me More')}>
+            <a className="card-btn" onClick={() => openForm("Tell Me More")}>
               The origin story →
             </a>
           </div>
@@ -301,9 +322,12 @@ export default function Home() {
           <div className="chaos-card">
             <h3 className="card-title">Launch Your Business</h3>
             <p className="card-desc">
-              Got an idea? Turn your business idea into a live company in 48 hours. Complete turn-key business: Website. Branding. Business Plan. Marketing. Everything. Faster than anyone else on the planet.
+              Got an idea? Turn your business idea into a live company in 48
+              hours. Complete turn-key business: Website. Branding. Business
+              Plan. Marketing. Everything. Faster than anyone else on the
+              planet.
             </p>
-            <a className="card-btn" onClick={() => router.push('/pricing')}>
+            <a className="card-btn" onClick={() => router.push("/pricing")}>
               Turn Your Idea Into A Live Business →
             </a>
           </div>
@@ -311,9 +335,13 @@ export default function Home() {
           <div className="chaos-card">
             <h3 className="card-title">How We Work</h3>
             <p className="card-desc">
-              You describe the problem. We build the solution. End-to-end. No endless meetings. No project managers. Just results.
+              You describe the problem. We build the solution. End-to-end. No
+              endless meetings. No project managers. Just results.
             </p>
-            <a className="card-btn" onClick={() => openForm("Let's Work Together")}>
+            <a
+              className="card-btn"
+              onClick={() => openForm("Let's Work Together")}
+            >
               Let&apos;s work together →
             </a>
           </div>
@@ -327,10 +355,7 @@ export default function Home() {
       </div>
 
       {showForm && (
-        <ContactForm 
-          subject={formSubject} 
-          onClose={() => setShowForm(false)} 
-        />
+        <ContactForm subject={formSubject} onClose={() => setShowForm(false)} />
       )}
     </>
   );
@@ -343,17 +368,24 @@ interface ContactFormProps {
 
 function ContactForm({ subject, onClose }: ContactFormProps) {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
+    name: "",
+    email: "",
+    message: "",
   });
-  const [glitchText, setGlitchText] = useState('SEND MESSAGE');
+  const [glitchText, setGlitchText] = useState("SEND MESSAGE");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const glitchPhrases = ['SEND MESSAGE', 'SHIP IT', 'DEPLOY', 'LAUNCH', 'BUILD', 'EXECUTE'];
+    const glitchPhrases = [
+      "SEND MESSAGE",
+      "SHIP IT",
+      "DEPLOY",
+      "LAUNCH",
+      "BUILD",
+      "EXECUTE",
+    ];
     let currentIndex = 0;
-    
+
     const interval = setInterval(() => {
       currentIndex = (currentIndex + 1) % glitchPhrases.length;
       setGlitchText(glitchPhrases[currentIndex]);
@@ -368,29 +400,33 @@ function ContactForm({ subject, onClose }: ContactFormProps) {
 
     // Simulate submission with mailto fallback
     const mailtoLink = `mailto:ara@fullstackvibecoder.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`,
     )}`;
-    
+
     window.location.href = mailtoLink;
-    
+
     setTimeout(() => {
       setIsSubmitting(false);
       onClose();
     }, 1000);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
   return (
     <div className="form-overlay" onClick={onClose}>
       <div className="form-container" onClick={(e) => e.stopPropagation()}>
-        <button className="form-close" onClick={onClose}>×</button>
-        
+        <button className="form-close" onClick={onClose}>
+          ×
+        </button>
+
         <div className="form-glitch-title" data-text={subject}>
           {subject}
         </div>
@@ -438,11 +474,7 @@ function ContactForm({ subject, onClose }: ContactFormProps) {
             <div className="input-glitch"></div>
           </div>
 
-          <button 
-            type="submit" 
-            className="form-submit"
-            disabled={isSubmitting}
-          >
+          <button type="submit" className="form-submit" disabled={isSubmitting}>
             <span className="submit-glitch" data-text={glitchText}>
               {glitchText}
             </span>
