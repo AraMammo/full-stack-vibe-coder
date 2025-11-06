@@ -246,14 +246,6 @@ export default function Home() {
       <canvas ref={canvasRef} id="canvas"></canvas>
 
       <div className="main-content">
-        <div className="glitch-container">
-          <h1 className="main-title" data-text="FULLSTACK">FULLSTACK</h1>
-          <h1 className="main-title" data-text="VIBE">VIBE</h1>
-          <h1 className="main-title" data-text="CODER">CODER</h1>
-        </div>
-        
-        <a href="/what-is-vibe-coding" className="inline-link">New to vibe coding? Learn more →</a>
-
         <div className="featured-badge-float">
           <button
             className="featured-badge"
@@ -265,11 +257,13 @@ export default function Home() {
           </button>
         </div>
 
-        <p className="tagline">
+        <ChatInterface />
+        
+        <p className="tagline" style={{marginTop: '2rem'}}>
           World&apos;s fastest full stack developers. Tell us your problem. We&apos;ll fix it and make sure it never happens again.
         </p>
-
-        <ChatInterface />
+        
+        <a href="/what-is-vibe-coding" className="inline-link" style={{marginTop: '1rem'}}>New to vibe coding? Learn more →</a>
 
         <div className="chaos-grid">
           <div className="chaos-card">
