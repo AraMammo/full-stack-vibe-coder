@@ -29,12 +29,11 @@ const navItems: NavItem[] = [
 export function Navigation() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   // Entrance animation on mount
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 400);
-    return () => clearTimeout(timer);
+    setIsVisible(true);
   }, []);
 
   // Close mobile menu on route change
