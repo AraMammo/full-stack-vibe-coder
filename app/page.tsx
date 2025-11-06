@@ -263,15 +263,25 @@ export default function Home() {
               marginBottom: "1rem",
             }}
           >
-            Voice note to live business. 
-            48 hours. $497.
+            Business in a Box
           </h2>
           <p
             className="value-prop-subheadline"
-            style={{ marginBottom: "2rem" }}
+            style={{ marginBottom: "1rem", fontSize: "1.3rem", fontWeight: "600" }}
           >
-            Brand strategy, working site, technical docs. Everything you need to
-            launch.
+            Record a voice note. Get your complete business package in under 30 minutes.
+          </p>
+          <p
+            className="value-prop-subheadline"
+            style={{ marginBottom: "1rem" }}
+          >
+            Market research, brand identity, live working website, and a step-by-step guide to publish it on your own domain.
+          </p>
+          <p
+            className="value-prop-subheadline"
+            style={{ marginBottom: "2rem", opacity: "0.9" }}
+          >
+            No jargon. No consultants. Just everything you need to go live.
           </p>
         </div>
 
@@ -322,13 +332,12 @@ export default function Home() {
           <div className="chaos-card">
             <h3 className="card-title">Launch Your Business</h3>
             <p className="card-desc">
-              Got an idea? Turn your business idea into a live company in 48
-              hours. Complete turn-key business: Website. Branding. Business
-              Plan. Marketing. Everything. Faster than anyone else on the
-              planet.
+              Got an idea? Turn your business idea into a complete business package in under 30
+              minutes. Market research. Brand identity. Live working website. Step-by-step
+              publishing guide. Everything you need to go live.
             </p>
             <a className="card-btn" onClick={() => router.push("/pricing")}>
-              Turn Your Idea Into A Live Business →
+              Get Your Complete Business Package →
             </a>
           </div>
 

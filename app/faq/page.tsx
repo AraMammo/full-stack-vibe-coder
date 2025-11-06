@@ -69,18 +69,18 @@ export default function FAQPage() {
       )
     },
     {
-      question: "How long does it take to get a proposal?",
+      question: "How long does delivery take?",
       answer: (
         <div className="faq-answer-content">
           <p>
-            You get a detailed proposal in 6 hours. Most clients get theirs in 2-3 hours.
+            Business In A Box packages are delivered in under 30 minutes. Most complete in 10-20 minutes.
           </p>
           <p>
-            Record a 5-minute voice note describing your project. Our AI analyzes it, generates a technical plan, 
-            estimates timeline and cost, then delivers a complete proposal.
+            Record a voice note describing your business idea. Our AI generates everything—market research,
+            brand identity, live website, and publishing guide—and delivers it all as a downloadable package.
           </p>
           <p>
-            No meetings. No sales calls. Just clear, honest assessment of what you need and what it costs.
+            No meetings. No sales calls. Just record your idea and receive everything you need to launch.
           </p>
         </div>
       )
@@ -89,14 +89,14 @@ export default function FAQPage() {
       question: "What's included in Business In A Box?",
       answer: (
         <div className="faq-answer-content">
-          <p>Everything you need to launch a business in 48 hours:</p>
+          <p>Everything you need to launch your business, delivered in under 30 minutes:</p>
           <ul>
-            <li><strong>Complete Website:</strong> Professional, responsive, built to your specifications</li>
-            <li><strong>Brand Identity:</strong> Logo, color scheme, typography, and brand guidelines</li>
-            <li><strong>Business Plan:</strong> Comprehensive strategy and financial projections</li>
-            <li><strong>Marketing Strategy:</strong> Social media, content, and growth marketing plan</li>
-            <li><strong>48-Hour Delivery:</strong> Everything delivered in 48 hours or less</li>
-            <li><strong>Full Ownership:</strong> You own everything—no ongoing fees or subscriptions</li>
+            <li><strong>Live Working Website:</strong> Deployed to a development link you can test immediately</li>
+            <li><strong>Brand Identity:</strong> 5 custom logo designs, color scheme, typography, and brand guidelines</li>
+            <li><strong>Business Analysis:</strong> Market research, competitor analysis, and business model validation</li>
+            <li><strong>Publishing Guide:</strong> Step-by-step instructions to connect your own domain and go live</li>
+            <li><strong>30-Minute Delivery:</strong> Complete package delivered in under 30 minutes</li>
+            <li><strong>Full Ownership:</strong> You own everything—all code, designs, and assets</li>
           </ul>
         </div>
       )
@@ -106,18 +106,19 @@ export default function FAQPage() {
       answer: (
         <div className="faq-answer-content">
           <p>
-            <strong>Business In A Box:</strong> $297 (normally $997) - Limited launch special
+            <strong>Business In A Box:</strong> Starting at $47
           </p>
           <p>
-            This includes everything you need to start a business: website, branding, business plan, and marketing strategy. 
-            Delivered in 48 hours. You own everything.
+            Three tiers available: Validation Pack ($47), Launch Blueprint ($197), and Turnkey System ($497).
+            Each includes market research, brand identity, and everything you need to launch.
+            Delivered in under 30 minutes. You own everything.
           </p>
           <p>
-            <strong>Enterprise Automation:</strong> Starting at $20,000
+            <strong>Custom Development:</strong> Contact for pricing
           </p>
           <p>
-            For companies spending $100K+ per year on manual processes. We automate entire businesses end-to-end. 
-            Average projects range from $75,000 - $250,000 and typically reduce operational costs by 60% in 90 days.
+            For companies needing custom software, automation, or integrations beyond the standard packages.
+            We build end-to-end solutions tailored to your specific needs.
           </p>
         </div>
       )

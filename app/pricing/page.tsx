@@ -30,13 +30,13 @@ const tiers: Tier[] = [
     name: "Validation Pack",
     price: 47,
     description: "Validate your business idea before investing heavily",
-    timeline: "5 minutes",
-    delivery: "PDF Report",
+    timeline: "Under 5 minutes",
+    delivery: "Comprehensive PDF Report",
     features: [
       "Business Model Analysis",
       "Competitive Research",
       "Target Audience Definition",
-      "Pricing Strategy",
+      "Pricing Strategy Recommendations",
       "Go-to-Market Plan",
     ],
     cta: "Start Validation",
@@ -47,18 +47,18 @@ const tiers: Tier[] = [
     price: 197,
     badge: "MOST POPULAR",
     badgeColor: "bg-purple-500",
-    description: "Complete business plan with brand assets",
-    timeline: "10 minutes",
-    delivery: "Organized ZIP with Brand Assets",
+    description: "Complete business plan with professional brand identity",
+    timeline: "Under 15 minutes",
+    delivery: "Organized ZIP Package with Brand Assets",
     features: [
       "Everything in Validation Pack",
-      "+ 11 Additional Business Sections",
-      "+ 5 Custom Logo Designs",
-      "+ Investor Pitch Deck (designed)",
-      "Comprehensive Market Analysis",
-      "Financial Projections & Budget",
+      "+ 11 Additional Business Planning Sections",
+      "+ 5 Custom AI-Generated Logo Designs",
+      "+ Professional Investor Pitch Deck",
+      "Comprehensive Market & Competitor Analysis",
+      "Financial Projections & Budget Planning",
     ],
-    cta: "Launch My Business",
+    cta: "Get Your Business Blueprint",
     popular: true,
   },
   {
@@ -67,19 +67,19 @@ const tiers: Tier[] = [
     price: 497,
     badge: "COMPLETE SOLUTION",
     badgeColor: "bg-gradient-to-r from-yellow-400 to-orange-500",
-    description: "Live website + complete technical infrastructure",
-    timeline: "28 minutes",
-    delivery: "Live URL + Admin Access",
+    description: "Live working website with step-by-step publishing guide",
+    timeline: "Under 30 minutes",
+    delivery: "Live Development Link + Publishing Guide",
     features: [
       "Everything in Launch Blueprint",
-      "+ Live Website (deployed to Vercel)",
-      "+ GitHub Repository (transferred to you)",
-      "+ Supabase Backend Setup",
-      "+ Stripe Payment Integration",
-      "+ Email System Configuration",
-      "+ Complete Handoff Documentation",
+      "+ Live Working Website (deployed on Vercel)",
+      "+ Complete Step-by-Step Publishing Guide",
+      "+ GitHub Repository Access",
+      "+ Backend Database Setup (Supabase)",
+      "+ Payment System Integration (Stripe)",
+      "+ Email Configuration",
     ],
-    cta: "Go Turnkey",
+    cta: "Get Complete System",
   },
 ];
 
@@ -97,7 +97,7 @@ const faqs: FAQ[] = [
   {
     question: "How long does delivery take?",
     answer:
-      "Validation Pack: 15-20 minutes. Launch Blueprint: 45-60 minutes. Turnkey System: 90-120 minutes. You'll see real-time progress on your dashboard and receive an email when complete.",
+      "All packages are delivered in under 30 minutes. Validation Pack typically takes 5-10 minutes, Launch Blueprint 10-20 minutes, and Turnkey System under 30 minutes. You'll see real-time progress and receive an email when complete.",
   },
   {
     question: "Can I upgrade later?",
@@ -198,7 +198,7 @@ export default function PricingPage() {
       <section className="pricing-page-header">
         <h1 className="pricing-page-title">Business in a Box</h1>
         <p className="pricing-page-subtitle">
-          From idea to launch-ready business. Choose the package that fits your
+          From idea to complete business package. Choose what fits your
           needs.
         </p>
         <p
@@ -208,13 +208,20 @@ export default function PricingPage() {
           All packages are AI-generated based on your voice note. No templates,
           100% custom.
         </p>
+        <p
+          className="pricing-page-subtitle"
+          style={{ fontSize: "0.95rem", marginTop: "1rem", fontWeight: "600" }}
+        >
+          Starting from scratch? Get everything you need to build and launch your business.<br/>
+          Already operating? Get professional branding, a working website, and digital assets to compete online.
+        </p>
       </section>
 
       {/* What You Receive Section */}
       <section className="deliverables-showcase">
         <h2 className="deliverables-title">What You Receive</h2>
         <p className="deliverables-subtitle">
-          Complete business infrastructure delivered in 48 hours
+          Complete business package delivered in under 30 minutes
         </p>
 
         <div className="deliverables-grid">
@@ -254,8 +261,8 @@ export default function PricingPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
               </svg>
             </div>
-            <h3>Live Website</h3>
-            <p>Production-ready website deployed to Vercel with your custom domain</p>
+            <h3>Live Working Website</h3>
+            <p>A live website deployed to a development link you can click through and test immediately</p>
           </div>
 
           <div className="deliverable-item">
@@ -264,8 +271,8 @@ export default function PricingPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
               </svg>
             </div>
-            <h3>Technical Docs</h3>
-            <p>Development prompts, API documentation, and handoff instructions</p>
+            <h3>Publishing Guide</h3>
+            <p>Step-by-step guide to connect your own domain and publish your site—everything from our delivery to your live site</p>
           </div>
 
           <div className="deliverable-item">
@@ -274,14 +281,14 @@ export default function PricingPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3>48-Hour Delivery</h3>
-            <p>Complete business package delivered within 2 days, not 2 months</p>
+            <h3>30-Minute Delivery</h3>
+            <p>Complete business package delivered in under 30 minutes, not 30 days</p>
           </div>
         </div>
 
         {/* Timeline Visualization */}
         <div className="delivery-timeline">
-          <h3 className="timeline-title">Your 48-Hour Journey</h3>
+          <h3 className="timeline-title">How It Works</h3>
           <div className="timeline-steps">
             <div className="timeline-step">
               <div className="step-number">1</div>
@@ -294,16 +301,16 @@ export default function PricingPage() {
             <div className="timeline-step">
               <div className="step-number">2</div>
               <div className="step-content">
-                <h4>AI Processes & Generates</h4>
-                <p>15-120 minutes</p>
+                <h4>AI Generates Everything</h4>
+                <p>Under 30 minutes</p>
               </div>
             </div>
             <div className="timeline-arrow">→</div>
             <div className="timeline-step">
               <div className="step-number">3</div>
               <div className="step-content">
-                <h4>Review & Launch</h4>
-                <p>Within 48 hours</p>
+                <h4>Review & Publish</h4>
+                <p>Follow the guide</p>
               </div>
             </div>
           </div>
@@ -514,7 +521,7 @@ export default function PricingPage() {
           }}
         >
           Record a voice note about your idea, and get your complete business
-          package delivered in under 2 hours.
+          package delivered in under 30 minutes.
         </p>
         <Link
           href="/upload"

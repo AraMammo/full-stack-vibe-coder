@@ -21,11 +21,11 @@ export default function SuccessPage() {
           </h2>
 
           <p style={{ fontSize: '1.2rem', color: '#ccc', marginBottom: '2rem', lineHeight: 1.6 }}>
-            We received your voice note and payment. Our AI is now creating your complete business kit.
+            We received your voice note and payment. Our AI is now generating your complete business package.
           </p>
 
-          <div style={{ 
-            background: 'rgba(0, 255, 136, 0.1)', 
+          <div style={{
+            background: 'rgba(0, 255, 136, 0.1)',
             border: '2px solid #00ff88',
             padding: '2rem',
             marginBottom: '2rem'
@@ -33,22 +33,25 @@ export default function SuccessPage() {
             <p style={{ fontSize: '1.1rem', color: '#00ff88', marginBottom: '1rem' }}>
               <strong>What Happens Next:</strong>
             </p>
-            <ul style={{ 
-              textAlign: 'left', 
-              maxWidth: '500px', 
+            <ul style={{
+              textAlign: 'left',
+              maxWidth: '500px',
               margin: '0 auto',
               color: '#ccc',
               lineHeight: 2
             }}>
-              <li>✓ AI analyzes your business idea (30 mins)</li>
-              <li>✓ Website & branding generated (12 hours)</li>
-              <li>✓ Business plan & marketing copy created (24 hours)</li>
-              <li>✓ Everything delivered to your email (48 hours)</li>
+              <li>✓ AI analyzes your business idea</li>
+              <li>✓ Live website & brand identity generated</li>
+              <li>✓ Business analysis & publishing guide created</li>
+              <li>✓ Complete package delivered to your email</li>
             </ul>
+            <p style={{ fontSize: '1.2rem', color: '#00ff88', marginTop: '1.5rem', fontWeight: 700 }}>
+              Everything ready in under 30 minutes.
+            </p>
           </div>
 
           <p style={{ fontSize: '1rem', color: '#999' }}>
-            Check your email for updates. We'll send you everything within 48 hours.
+            Check your email for the download link. Most packages are ready in 10-20 minutes.
           </p>
 
           <a 
