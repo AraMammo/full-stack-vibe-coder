@@ -198,15 +198,17 @@ export default function Home() {
       });
     });
 
-    // Random glitch effect
-    const glitchInterval = setInterval(() => {
-      const titles = document.querySelectorAll('.main-title');
-      const random = titles[Math.floor(Math.random() * titles.length)] as HTMLElement;
-      random.style.transform = `translateX(${Math.random() * 4 - 2}px)`;
-      setTimeout(() => {
-        random.style.transform = '';
-      }, 100);
-    }, 3000);
+    // Random glitch effect - DISABLED (no .main-title elements in current layout)
+    // const glitchInterval = setInterval(() => {
+    //   const titles = document.querySelectorAll('.main-title');
+    //   if (titles.length > 0) {
+    //     const random = titles[Math.floor(Math.random() * titles.length)] as HTMLElement;
+    //     random.style.transform = `translateX(${Math.random() * 4 - 2}px)`;
+    //     setTimeout(() => {
+    //       random.style.transform = '';
+    //     }, 100);
+    //   }
+    // }, 3000);
 
     // Listen for contact form events from navigation
     const handleContactFormEvent = (event: any) => {
@@ -225,7 +227,7 @@ export default function Home() {
       document.removeEventListener('mousemove', handleCardMouseMove);
       window.removeEventListener('openContactForm', handleContactFormEvent);
       clearInterval(morphInterval);
-      clearInterval(glitchInterval);
+      // clearInterval(glitchInterval); // Disabled with glitch effect
     };
   }, [openForm]);
 
@@ -253,8 +255,8 @@ export default function Home() {
         <a href="/what-is-vibe-coding" className="inline-link">New to vibe coding? Learn more →</a>
 
         <div className="featured-badge-float">
-          <button 
-            className="featured-badge" 
+          <button
+            className="featured-badge"
             onClick={() => router.push('/tools')}
           >
             <span className="badge-new">NEW</span>

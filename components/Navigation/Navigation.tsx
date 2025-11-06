@@ -1,8 +1,8 @@
 /**
  * Main Navigation Component
  *
- * Hybrid unconventional navigation with floating card design.
- * Maximizes screen space while maintaining accessibility.
+ * Horizontal navigation bar with cyberpunk aesthetic.
+ * Glass morphism effect with pink/cyan accents.
  */
 
 'use client';
@@ -10,7 +10,7 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { NavCard } from './NavCard';
+import { NavLink } from './NavLink';
 import { MobileMenu } from './MobileMenu';
 
 export interface NavItem {
@@ -75,12 +75,18 @@ export function Navigation() {
       </a>
 
       <nav
-        className="fixed top-0 left-0 right-0 z-[999999]"
+        className={`
+          fixed top-0 left-0 right-0 z-[999999]
+          bg-black/95 backdrop-blur-xl
+          border-b-2 border-pink-500/50
+          transition-all duration-500
+          ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}
+        `}
         aria-label="Main navigation"
       >
-        <div className="relative px-6 py-6 max-w-[2560px] mx-auto">
-          {/* Logo - Top Left */}
-          <div className="absolute top-6 left-6">
+        <div className="max-w-[2560px] mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo - Left Side */}
             <Link
               href="/"
               className="block group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black rounded-lg"
@@ -95,40 +101,48 @@ export function Navigation() {
                 Fullstack Vibe Coder
               </span>
             </Link>
-          </div>
 
-          {/* Desktop: Floating Nav Card - Top Right */}
-          <div className="hidden md:block absolute top-6 right-6">
-            <NavCard navItems={navItems} currentPath={pathname} isVisible={isVisible} />
-          </div>
+            {/* Desktop Navigation - Right Side */}
+            <div className="hidden md:flex items-center gap-1">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.href}
+                  label={item.label}
+                  href={item.href}
+                  isActive={pathname === item.href}
+                  isContact={item.isContact || false}
+                />
+              ))}
+            </div>
 
-          {/* Mobile: Hamburger Button - Top Right */}
-          <div className="md:hidden absolute top-6 right-6">
-            <button
-              type="button"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="relative w-12 h-12 flex flex-col items-center justify-center gap-1.5 bg-black/85 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl transition-all duration-300 hover:border-pink-500/50 hover:shadow-pink-500/20 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black group"
-              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={isMobileMenuOpen}
-              aria-controls="mobile-menu"
-            >
-              {/* Animated Hamburger Icon */}
-              <span
-                className={`block h-0.5 w-6 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
-                  isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''
-                }`}
-              />
-              <span
-                className={`block h-0.5 w-6 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
-                  isMobileMenuOpen ? 'opacity-0' : ''
-                }`}
-              />
-              <span
-                className={`block h-0.5 w-6 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
-                  isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''
-                }`}
-              />
-            </button>
+            {/* Mobile: Hamburger Button */}
+            <div className="md:hidden">
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="relative w-12 h-12 flex flex-col items-center justify-center gap-1.5 bg-black/85 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl transition-all duration-300 hover:border-pink-500/50 hover:shadow-pink-500/20 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black group"
+                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-menu"
+              >
+                {/* Animated Hamburger Icon */}
+                <span
+                  className={`block h-0.5 w-6 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
+                    isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''
+                  }`}
+                />
+                <span
+                  className={`block h-0.5 w-6 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
+                    isMobileMenuOpen ? 'opacity-0' : ''
+                  }`}
+                />
+                <span
+                  className={`block h-0.5 w-6 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
+                    isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         </div>
       </nav>

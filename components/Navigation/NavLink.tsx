@@ -1,8 +1,8 @@
 /**
  * NavLink Component
  *
- * Individual navigation link with gradient hover states and active indicators.
- * Handles both regular links and emphasized contact link.
+ * Individual navigation link optimized for horizontal navbar display.
+ * Handles both regular links and emphasized contact link with cyberpunk styling.
  */
 
 'use client';
@@ -25,19 +25,19 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
     return (
       <Link
         href={href}
-        className="relative block group focus:outline-none"
+        className="relative inline-block group focus:outline-none ml-2"
         aria-current={isActive ? 'page' : undefined}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <div
           className={`
-            relative px-4 py-3 rounded-lg
+            relative px-5 py-2.5 rounded-lg
             border-2
             transition-all duration-200
             ${
               isActive || isHovered
-                ? 'bg-gradient-to-r from-pink-500/10 to-cyan-500/10'
+                ? 'bg-gradient-to-r from-pink-500/10 to-cyan-500/10 scale-105'
                 : 'bg-transparent'
             }
           `}
@@ -45,12 +45,12 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
             borderImage: isActive || isHovered
               ? 'linear-gradient(135deg, #ec4899, #06b6d4) 1'
               : 'none',
-            borderColor: isActive || isHovered ? 'transparent' : 'rgba(255, 255, 255, 0.1)',
+            borderColor: isActive || isHovered ? 'transparent' : 'rgba(255, 255, 255, 0.15)',
           }}
         >
           <span
             className={`
-              block text-base font-semibold
+              block text-sm font-bold whitespace-nowrap
               transition-all duration-200
               ${isActive || isHovered ? '' : 'text-white/90'}
             `}
@@ -71,7 +71,7 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
           {/* Glow effect on hover */}
           {isHovered && (
             <div
-              className="absolute inset-0 rounded-lg opacity-50 blur-xl -z-10"
+              className="absolute inset-0 rounded-lg opacity-40 blur-xl -z-10"
               style={{
                 background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
               }}
@@ -90,32 +90,20 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
     );
   }
 
-  // Regular Link
+  // Regular Link - Horizontal layout optimized
   return (
     <Link
       href={href}
-      className="relative flex items-center group focus:outline-none"
+      className="relative inline-flex items-center group focus:outline-none"
       aria-current={isActive ? 'page' : undefined}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Active indicator dot */}
-      {isActive && (
-        <div
-          className="absolute left-0 w-1.5 h-4 rounded-full animate-scale-in"
-          style={{
-            background: 'linear-gradient(180deg, #ec4899 0%, #06b6d4 100%)',
-            boxShadow: '0 0 8px rgba(236, 72, 153, 0.8)',
-          }}
-        />
-      )}
-
       <span
         className={`
-          block px-4 py-2 text-base font-semibold rounded-lg
+          block px-4 py-2.5 text-sm font-semibold rounded-lg whitespace-nowrap
           transition-all duration-200
-          ${isHovered ? 'translate-x-2' : 'translate-x-0'}
-          ${isActive ? 'pl-6' : ''}
+          ${isActive || isHovered ? 'scale-105' : 'scale-100'}
         `}
         style={
           isActive || isHovered
@@ -126,16 +114,27 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
                 backgroundClip: 'text',
                 filter: 'brightness(1.2)',
               }
-            : { color: 'rgba(255, 255, 255, 0.95)' }
+            : { color: 'rgba(255, 255, 255, 0.90)' }
         }
       >
         {label}
       </span>
 
-      {/* Hover glow */}
-      {isHovered && (
+      {/* Active indicator - bottom border */}
+      {isActive && (
         <div
-          className="absolute inset-0 rounded-lg opacity-30 blur-lg pointer-events-none"
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-3/4 rounded-full"
+          style={{
+            background: 'linear-gradient(90deg, #ec4899 0%, #06b6d4 100%)',
+            boxShadow: '0 0 8px rgba(236, 72, 153, 0.8)',
+          }}
+        />
+      )}
+
+      {/* Hover glow */}
+      {isHovered && !isActive && (
+        <div
+          className="absolute inset-0 rounded-lg opacity-20 blur-lg pointer-events-none"
           style={{
             background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
           }}
