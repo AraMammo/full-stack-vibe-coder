@@ -2,7 +2,7 @@
 
 ## Overview
 
-FullStackVibeCoder is an AI-driven development agency platform that transforms voice notes into complete business solutions. It uses a multi-agent AI orchestration architecture to analyze client requirements, generate proposals, and execute development tasks autonomously. The platform offers "Business In A Box" solutions and enterprise automation projects, aiming to provide a complete startup kit or extensive AI-driven project development. It also includes a "Tools Marketplace" offering pre-built AI-powered SaaS products.
+FullStackVibeCoder is an AI-driven development agency platform that transforms voice notes into complete business solutions. It uses a multi-agent AI orchestration architecture to analyze client requirements, generate proposals, and execute development tasks autonomously. The platform offers "Business In A Box" solutions and enterprise automation projects, aiming to provide a complete startup kit or extensive AI-driven project development. It also includes a "Tools Marketplace" offering pre-built AI-powered SaaS products (currently marked as "coming soon").
 
 ## User Preferences
 

@@ -354,6 +354,56 @@ body {
   transform: translateX(5px);
 }
 
+/* Coming Soon Overlay for chaos-card */
+.card-coming-soon-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(3px);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.card-coming-soon-overlay .coming-soon-badge {
+  background: linear-gradient(135deg, #ff0080, #00ff88);
+  padding: 0.5rem 1.5rem;
+  border-radius: 30px;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+.card-coming-soon-overlay .coming-soon-badge span {
+  color: #000;
+  font-weight: 900;
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.6);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 0, 128, 0.9);
+  }
+}
+
+/* Make clickable cards more interactive */
+.clickable-card {
+  cursor: pointer !important;
+}
+
+.clickable-card .card-btn {
+  pointer-events: none;
+}
+
 .featured-badge-float {
   position: fixed;
   top: 15%;

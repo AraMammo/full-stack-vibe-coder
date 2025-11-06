@@ -298,7 +298,10 @@ export default function Home() {
         </a>
 
         <div className="chaos-grid">
-          <div className="chaos-card">
+          <div className="chaos-card clickable-card" 
+            onClick={() => router.push("/tools")}
+            style={{ position: 'relative', overflow: 'hidden', cursor: 'pointer' }}
+          >
             <h3 className="card-title">
               <span className="badge-new" style={{ marginRight: "0.5rem" }}>
                 NEW
@@ -310,9 +313,16 @@ export default function Home() {
               video reaction tools, and more. Each tool is complete and
               production-ready.
             </p>
-            <a className="card-btn" onClick={() => router.push("/tools")}>
+            <a className="card-btn">
               Explore Pre-Built Tools →
             </a>
+            
+            {/* Coming Soon Overlay */}
+            <div className="card-coming-soon-overlay">
+              <div className="coming-soon-badge">
+                <span>COMING SOON</span>
+              </div>
+            </div>
           </div>
 
           <div className="chaos-card">
