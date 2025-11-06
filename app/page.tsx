@@ -264,7 +264,7 @@ export default function Home() {
             }}
           >
             Voice note to live business. 
-            10-mins. $497.
+            48 hours. $497.
           </h2>
           <p
             className="value-prop-subheadline"

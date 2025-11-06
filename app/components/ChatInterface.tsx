@@ -283,21 +283,21 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
           border: 2px solid #ff0080;
           border-radius: 12px;
           padding: 12px;
-          margin: 20px 0;
+          margin: 15px 0;
           max-width: 1000px;
           margin-left: auto;
           margin-right: auto;
         }
 
         .chat-messages {
-          min-height: 200px;
-          max-height: 200px;
+          min-height: 80px;
+          max-height: 150px;
           overflow-y: auto;
-          margin-bottom: 20px;
+          margin-bottom: 12px;
         }
 
         .message {
-          margin-bottom: 16px;
+          margin-bottom: 8px;
           display: flex;
         }
 
@@ -310,7 +310,7 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
         }
 
         .message-content {
-          padding: 12px 16px;
+          padding: 6px 12px;
           border-radius: 8px;
           max-width: 70%;
         }
@@ -352,12 +352,12 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
 
         .chat-input-container {
           border-top: 1px solid rgba(255, 0, 128, 0.3);
-          padding-top: 16px;
+          padding-top: 10px;
         }
 
         .input-wrapper {
           display: flex;
-          gap: 10px;
+          gap: 8px;
           align-items: center;
         }
 
@@ -366,7 +366,7 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
           background: rgba(0, 0, 0, 0.5);
           border: 1px solid #00ff88;
           border-radius: 8px;
-          padding: 12px 16px;
+          padding: 8px 12px;
           color: white;
           font-size: 14px;
         }
@@ -380,9 +380,9 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
           background: rgba(0, 170, 255, 0.2);
           border: 2px solid #00aaff;
           border-radius: 50%;
-          width: 48px;
-          height: 48px;
-          font-size: 20px;
+          width: 36px;
+          height: 36px;
+          font-size: 18px;
           cursor: pointer;
           transition: all 0.3s;
         }
