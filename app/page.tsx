@@ -245,20 +245,9 @@ export default function Home() {
 
       <canvas ref={canvasRef} id="canvas"></canvas>
 
-      <div className="main-content">
-        <div className="featured-badge-float">
-          <button
-            className="featured-badge"
-            onClick={() => router.push('/tools')}
-          >
-            <span className="badge-new">NEW</span>
-            <span className="badge-title">Pre-Built Tools</span>
-            <span className="badge-subtitle">Substack • Video</span>
-          </button>
-        </div>
-
+      <div className="main-content" style={{paddingTop: '120px'}}>
         {/* Value Proposition */}
-        <div className="value-prop-container">
+        <div className="value-prop-container" style={{marginBottom: '2rem'}}>
           <h2
             className="value-prop-headline"
             style={{
@@ -266,11 +255,12 @@ export default function Home() {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
+              marginBottom: '1rem',
             }}
           >
             Voice note to live business. 48 hours. $497.
           </h2>
-          <p className="value-prop-subheadline">
+          <p className="value-prop-subheadline" style={{marginBottom: '2rem'}}>
             Brand strategy, working site, technical docs. Everything you need to launch.
           </p>
         </div>
@@ -281,12 +271,15 @@ export default function Home() {
 
         <div className="chaos-grid">
           <div className="chaos-card">
-            <h3 className="card-title">Got a Problem?</h3>
+            <h3 className="card-title">
+              <span className="badge-new" style={{marginRight: '0.5rem'}}>NEW</span>
+              Pre-Built Tools
+            </h3>
             <p className="card-desc">
-              We don&apos;t care what it is. If it&apos;s broken, slow, or eating your time—we&apos;ll build you a solution that works.
+              Ready-to-deploy SaaS products. Substack newsletter automation, video reaction tools, and more. Each tool is complete and production-ready.
             </p>
-            <a className="card-btn" onClick={() => openForm('I Have A Problem')}>
-              Tell us what&apos;s broken →
+            <a className="card-btn" onClick={() => router.push('/tools')}>
+              Explore Pre-Built Tools →
             </a>
           </div>
 
