@@ -142,23 +142,43 @@ function FAQItem({ faq }: { faq: FAQ }) {
 
 export default function PricingPage() {
   const router = useRouter();
+  const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSelectTier = (tierId: string) => {
+  const handleSelectTier = async (tierId: string) => {
     console.log('[Pricing] 🎯 User clicked tier:', tierId);
+    setLoading(tierId);
+    setError(null);
 
-    // Store selected tier in sessionStorage
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('selectedTier', tierId);
-      console.log('[Pricing] 💾 Tier saved to sessionStorage:', tierId);
+    try {
+      // Call create-checkout API
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tier: tierId }),
+      });
 
-      // Verify it was saved
-      const verified = sessionStorage.getItem('selectedTier');
-      console.log('[Pricing] ✓ Verification - sessionStorage contains:', verified);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      console.log('[Pricing] ✓ Checkout session created:', data.sessionId);
+      console.log('[Pricing] 🚀 Redirecting to Stripe checkout...');
+
+      // Redirect to Stripe checkout
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+
+    } catch (err: any) {
+      console.error('[Pricing] ✗ Checkout error:', err.message);
+      setError(err.message || 'Something went wrong. Please try again.');
+      setLoading(null);
     }
-
-    console.log('[Pricing] 🚀 Redirecting to /upload');
-    // Redirect to upload page
-    router.push('/upload');
   };
 
   return (
@@ -227,12 +247,33 @@ export default function PricingPage() {
             <button
               onClick={() => handleSelectTier(tier.id)}
               className="pricing-cta-button"
+              disabled={loading !== null}
+              style={{
+                opacity: loading !== null && loading !== tier.id ? 0.5 : 1,
+                cursor: loading !== null ? 'wait' : 'pointer',
+              }}
             >
-              {tier.cta}
+              {loading === tier.id ? 'Loading...' : tier.cta}
             </button>
           </div>
         ))}
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div style={{
+          maxWidth: '600px',
+          margin: '2rem auto',
+          padding: '1rem',
+          background: 'rgba(239, 68, 68, 0.1)',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          borderRadius: '8px',
+          color: '#ef4444',
+          textAlign: 'center'
+        }}>
+          {error}
+        </div>
+      )}
 
       {/* FAQ Section */}
       <section style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem 2rem' }}>

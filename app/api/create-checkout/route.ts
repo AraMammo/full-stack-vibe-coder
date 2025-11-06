@@ -1,12 +1,77 @@
-import { NextResponse } from 'next/server';
+/**
+ * Stripe Checkout API
+ *
+ * POST /api/create-checkout
+ * Creates Stripe checkout session for BIAB tiers
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { z } from 'zod';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
+  apiVersion: '2024-11-20.acacia',
 });
 
-export async function POST() {
+// ============================================
+// TIER CONFIGURATION
+// ============================================
+
+interface TierConfig {
+  name: string;
+  description: string;
+  price: number; // in cents
+}
+
+const TIER_CONFIG: Record<string, TierConfig> = {
+  VALIDATION_PACK: {
+    name: 'Validation Pack',
+    description: 'Validate your business idea with 5 core analysis sections',
+    price: 4700, // $47.00
+  },
+  LAUNCH_BLUEPRINT: {
+    name: 'Launch Blueprint',
+    description: 'Complete business plan with 16 sections + 5 AI-generated logos',
+    price: 19700, // $197.00
+  },
+  TURNKEY_SYSTEM: {
+    name: 'Turnkey System',
+    description: 'Everything + live website deployment with full infrastructure',
+    price: 49700, // $497.00
+  },
+};
+
+// ============================================
+// REQUEST VALIDATION
+// ============================================
+
+const CheckoutSchema = z.object({
+  tier: z.enum(['VALIDATION_PACK', 'LAUNCH_BLUEPRINT', 'TURNKEY_SYSTEM']),
+  userEmail: z.string().email().optional(),
+});
+
+// ============================================
+// POST HANDLER
+// ============================================
+
+export async function POST(request: NextRequest) {
   try {
+    // Parse and validate request
+    const body = await request.json();
+    const { tier, userEmail } = CheckoutSchema.parse(body);
+
+    // Get tier configuration
+    const tierConfig = TIER_CONFIG[tier];
+    if (!tierConfig) {
+      return NextResponse.json(
+        { error: 'Invalid tier selected' },
+        { status: 400 }
+      );
+    }
+
+    console.log(`[Stripe] Creating checkout for ${tierConfig.name} ($${tierConfig.price / 100})`);
+
+    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -14,23 +79,43 @@ export async function POST() {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'Business In A Box - Startup Kit',
-              description: 'Complete turn-key business: Website, Branding, Business Plan, Marketing & More',
+              name: `Business In A Box - ${tierConfig.name}`,
+              description: tierConfig.description,
             },
-            unit_amount: 29700, // $297.00
+            unit_amount: tierConfig.price,
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/upload?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment`,
+      customer_email: userEmail,
+      metadata: {
+        tier,
+        // Will be populated by webhook after payment
+      },
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/pricing`,
     });
 
-    return NextResponse.json({ sessionId: session.id });
-  } catch (err) {
+    console.log(`[Stripe] ✓ Checkout session created: ${session.id}`);
+
+    return NextResponse.json({
+      sessionId: session.id,
+      url: session.url,
+    });
+
+  } catch (error: any) {
+    console.error('[Stripe] Checkout error:', error);
+
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid request data', details: error.issues },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Error creating checkout session' },
+      { error: 'Error creating checkout session', message: error.message },
       { status: 500 }
     );
   }

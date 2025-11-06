@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { BIABOrchestratorAgent } from '@/lib/agents/biab-orchestrator-agent';
-import { BIABTier } from '@/app/generated/prisma';
+import { BIABTier, PrismaClient } from '@/app/generated/prisma';
 import { z } from 'zod';
 
 // ============================================
@@ -27,6 +27,8 @@ const ExecuteBIABSchema = z.object({
 // ============================================
 
 export async function POST(request: NextRequest) {
+  const prisma = new PrismaClient();
+
   try {
     // Parse and validate request body
     const body = await request.json();
@@ -35,7 +37,49 @@ export async function POST(request: NextRequest) {
     console.log(`[API] BIAB execution request for project: ${validatedData.projectId}`);
     console.log(`[API] Tier: ${validatedData.tier}`);
 
-    // Execute BIAB Orchestrator
+    // ============================================
+    // PAYMENT VERIFICATION
+    // ============================================
+    console.log(`[API] Verifying payment for ${validatedData.userId}...`);
+
+    const payment = await prisma.payment.findFirst({
+      where: {
+        userId: validatedData.userId,
+        tier: validatedData.tier,
+        status: 'COMPLETED',
+      },
+      orderBy: {
+        completedAt: 'desc',
+      },
+    });
+
+    if (!payment) {
+      console.error(`[API] ✗ No payment found for user ${validatedData.userId} with tier ${validatedData.tier}`);
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Payment required',
+          message: `No valid payment found for tier: ${validatedData.tier}`,
+          code: 'PAYMENT_REQUIRED',
+        },
+        { status: 402 }
+      );
+    }
+
+    console.log(`[API] ✓ Payment verified: ${payment.id} ($${payment.amount / 100})`);
+
+    // Update payment with projectId
+    if (!payment.projectId) {
+      await prisma.payment.update({
+        where: { id: payment.id },
+        data: { projectId: validatedData.projectId },
+      });
+      console.log(`[API] ✓ Linked payment to project: ${validatedData.projectId}`);
+    }
+
+    // ============================================
+    // EXECUTE BIAB ORCHESTRATOR
+    // ============================================
     const orchestrator = new BIABOrchestratorAgent();
     const result = await orchestrator.execute({
       projectId: validatedData.projectId,
@@ -101,6 +145,8 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
