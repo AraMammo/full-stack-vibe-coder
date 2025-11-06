@@ -183,7 +183,10 @@ export default function ToolsPage() {
 
       <canvas ref={canvasRef} id="canvas"></canvas>
 
-      <div className="main-content tools-page">
+      <div className="main-content tools-page" style={{ 
+        justifyContent: 'flex-start',
+        paddingTop: '120px'
+      }}>
         <div className="glitch-container">
           <h1 className="main-title" data-text="CONTENT">CONTENT</h1>
           <h1 className="main-title" data-text="AUTOMATION">AUTOMATION</h1>
