@@ -257,12 +257,26 @@ export default function Home() {
           </button>
         </div>
 
+        {/* Value Proposition */}
+        <div className="value-prop-container">
+          <h2
+            className="value-prop-headline"
+            style={{
+              background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            Voice note to live business. 48 hours. $497.
+          </h2>
+          <p className="value-prop-subheadline">
+            Brand strategy, working site, technical docs. Everything you need to launch.
+          </p>
+        </div>
+
         <ChatInterface />
-        
-        <p className="tagline" style={{marginTop: '2rem'}}>
-          World&apos;s fastest full stack developers. Tell us your problem. We&apos;ll fix it and make sure it never happens again.
-        </p>
-        
+
         <a href="/what-is-vibe-coding" className="inline-link" style={{marginTop: '1rem'}}>New to vibe coding? Learn more →</a>
 
         <div className="chaos-grid">
