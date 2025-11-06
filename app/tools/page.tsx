@@ -194,52 +194,74 @@ export default function ToolsPage() {
           Pre-built automation that saves you hours every week. Built by operators who understand the grind.
         </p>
 
+        {/* Tools Section with Coming Soon Overlay */}
+        <div className="tools-section-wrapper">
+          <div className="tools-grid tools-grid-locked">
+            {tools.map((tool) => (
+              <div key={tool.id} className="tool-card chaos-card">
+                <h2 className="tool-name">{tool.name}</h2>
+                <p className="tool-description">{tool.description}</p>
 
-        <div className="tools-grid">
-          {tools.map((tool) => (
-            <div key={tool.id} className="tool-card chaos-card">
-              <h2 className="tool-name">{tool.name}</h2>
-              <p className="tool-description">{tool.description}</p>
-              
-              <div className="tool-features">
-                <h3>What you get:</h3>
-                <ul>
-                  {tool.features.map((feature, index) => (
-                    <li key={index}>
-                      <span className="feature-check">✓</span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                <div className="tool-features">
+                  <h3>What you get:</h3>
+                  <ul>
+                    {tool.features.map((feature, index) => (
+                      <li key={index}>
+                        <span className="feature-check">✓</span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-              <div className="tool-pricing">
-                <div className="pricing-options">
-                  <div className="pricing-option">
-                    <div className="price-label">Monthly</div>
-                    <div className="price-amount">${tool.monthlyPrice}/mo</div>
-                  </div>
-                  <div className="pricing-option">
-                    <div className="price-label">Annual</div>
-                    <div className="price-amount">${tool.annualPrice}/yr</div>
-                    <div className="savings-badge">Save ${(tool.monthlyPrice * 12) - tool.annualPrice}</div>
-                  </div>
-                  <div className="pricing-option highlight">
-                    <div className="price-label">Lifetime</div>
-                    <div className="price-amount">${tool.lifetimePrice}</div>
-                    <div className="best-value-badge">Best Value</div>
+                <div className="tool-pricing">
+                  <div className="pricing-options">
+                    <div className="pricing-option">
+                      <div className="price-label">Monthly</div>
+                      <div className="price-amount">${tool.monthlyPrice}/mo</div>
+                    </div>
+                    <div className="pricing-option">
+                      <div className="price-label">Annual</div>
+                      <div className="price-amount">${tool.annualPrice}/yr</div>
+                      <div className="savings-badge">Save ${(tool.monthlyPrice * 12) - tool.annualPrice}</div>
+                    </div>
+                    <div className="pricing-option highlight">
+                      <div className="price-label">Lifetime</div>
+                      <div className="price-amount">${tool.lifetimePrice}</div>
+                      <div className="best-value-badge">Best Value</div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
+                <button
+                  className="subscribe-btn"
+                  onClick={() => router.push(`/tools/${tool.slug}`)}
+                >
+                  View Details & Subscribe →
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Coming Soon Overlay */}
+          <div className="tools-coming-soon-overlay">
+            <div className="coming-soon-content">
+              <div className="coming-soon-badge">
+                <span className="badge-text">COMING SOON</span>
+              </div>
+              <h2 className="coming-soon-title">These Tools Are Being Perfected</h2>
+              <p className="coming-soon-description">
+                We're putting the final touches on these automation tools.
+                Sign up for Business in a Box below while you wait.
+              </p>
               <button
-                className="subscribe-btn"
-                onClick={() => router.push(`/tools/${tool.slug}`)}
+                className="coming-soon-cta"
+                onClick={() => router.push('/pricing')}
               >
-                View Details & Subscribe →
+                Explore Business in a Box →
               </button>
             </div>
-          ))}
+          </div>
         </div>
       </div>
 

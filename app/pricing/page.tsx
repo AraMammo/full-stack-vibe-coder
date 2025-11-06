@@ -210,6 +210,106 @@ export default function PricingPage() {
         </p>
       </section>
 
+      {/* What You Receive Section */}
+      <section className="deliverables-showcase">
+        <h2 className="deliverables-title">What You Receive</h2>
+        <p className="deliverables-subtitle">
+          Complete business infrastructure delivered in 48 hours
+        </p>
+
+        <div className="deliverables-grid">
+          <div className="deliverable-item">
+            <div className="deliverable-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3>Business Analysis</h3>
+            <p>Complete market research, competitor analysis, and business model validation</p>
+          </div>
+
+          <div className="deliverable-item">
+            <div className="deliverable-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+              </svg>
+            </div>
+            <h3>5 Custom Logos</h3>
+            <p>AI-generated logo designs tailored to your brand strategy and target market</p>
+          </div>
+
+          <div className="deliverable-item">
+            <div className="deliverable-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <h3>Brand Strategy</h3>
+            <p>Complete visual identity, messaging framework, and positioning strategy</p>
+          </div>
+
+          <div className="deliverable-item">
+            <div className="deliverable-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+              </svg>
+            </div>
+            <h3>Live Website</h3>
+            <p>Production-ready website deployed to Vercel with your custom domain</p>
+          </div>
+
+          <div className="deliverable-item">
+            <div className="deliverable-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+            </div>
+            <h3>Technical Docs</h3>
+            <p>Development prompts, API documentation, and handoff instructions</p>
+          </div>
+
+          <div className="deliverable-item">
+            <div className="deliverable-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3>48-Hour Delivery</h3>
+            <p>Complete business package delivered within 2 days, not 2 months</p>
+          </div>
+        </div>
+
+        {/* Timeline Visualization */}
+        <div className="delivery-timeline">
+          <h3 className="timeline-title">Your 48-Hour Journey</h3>
+          <div className="timeline-steps">
+            <div className="timeline-step">
+              <div className="step-number">1</div>
+              <div className="step-content">
+                <h4>Record Voice Note</h4>
+                <p>2 minutes</p>
+              </div>
+            </div>
+            <div className="timeline-arrow">→</div>
+            <div className="timeline-step">
+              <div className="step-number">2</div>
+              <div className="step-content">
+                <h4>AI Processes & Generates</h4>
+                <p>15-120 minutes</p>
+              </div>
+            </div>
+            <div className="timeline-arrow">→</div>
+            <div className="timeline-step">
+              <div className="step-number">3</div>
+              <div className="step-content">
+                <h4>Review & Launch</h4>
+                <p>Within 48 hours</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing Cards */}
       <div className="pricing-cards-grid">
         {tiers.map((tier) => (
