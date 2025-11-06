@@ -8,7 +8,7 @@ const openai = new OpenAI({
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const audioFile = formData.get('audio') as File;
+    const audioFile = formData.get('audio') as Blob;
 
     if (!audioFile) {
       return NextResponse.json(
@@ -17,8 +17,11 @@ export async function POST(request: Request) {
       );
     }
 
+    // Convert Blob to File with proper extension
+    const file = new File([audioFile], 'audio.webm', { type: 'audio/webm' });
+
     const transcription = await openai.audio.transcriptions.create({
-      file: audioFile,
+      file: file,
       model: 'whisper-1',
       language: 'en',
     });

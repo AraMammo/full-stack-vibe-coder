@@ -16,18 +16,15 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
     {
       role: "assistant",
       content:
-        "Hey! We've got lots of tools. Describe what you need and I'll point you in the right direction.",
+        "Got a business idea? Test it here! Describe your idea in a few sentences (or use the mic 🎤) and I'll give you a taste of what Business in a Box can create for you.",
     },
   ]);
   const [inputText, setInputText] = useState("");
   const [inputType, setInputType] = useState<"text" | "voice">("text");
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [recommendation, setRecommendation] = useState<string | null>(null);
+  const [businessSample, setBusinessSample] = useState<any>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -133,7 +130,12 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
         },
       ]);
 
-      setRecommendation(data.recommendedProduct);
+      setBusinessSample({
+        businessName: data.businessName,
+        valueProposition: data.valueProposition,
+        targetAudience: data.targetAudience,
+        keyFeatures: data.keyFeatures,
+      });
     } catch (error) {
       console.error("Error submitting:", error);
       alert("Something went wrong. Please try again.");
@@ -142,39 +144,8 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
     }
   };
 
-  const handleProductClick = (product: string) => {
-    setShowContactModal(true);
-  };
-
-  const handleContactSubmit = async () => {
-    if (!name.trim() || !email.trim()) {
-      alert("Please provide both name and email");
-      return;
-    }
-
-    try {
-      await fetch("/api/save-lead", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          recommendedProduct: recommendation,
-        }),
-      });
-
-      if (recommendation === "branding") {
-        window.location.href = "/branding";
-      } else if (recommendation === "tools") {
-        window.location.href = "/tools";
-      } else if (recommendation === "automation") {
-        window.location.href = "/automate";
-      }
-    } catch (error) {
-      console.error("Error saving lead:", error);
-    }
+  const handleGetFullPackage = () => {
+    window.location.href = "/pricing";
   };
 
   return (
@@ -186,15 +157,39 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
           </div>
         ))}
 
-        {recommendation && (
-          <div className="recommendation-cta">
+        {businessSample && (
+          <div className="business-sample-card">
+            <h3 className="sample-title">✨ Here's a Taste of What We Create:</h3>
+
+            <div className="sample-section">
+              <div className="sample-label">Business Name:</div>
+              <div className="sample-value">{businessSample.businessName}</div>
+            </div>
+
+            <div className="sample-section">
+              <div className="sample-label">Value Proposition:</div>
+              <div className="sample-value">{businessSample.valueProposition}</div>
+            </div>
+
+            <div className="sample-section">
+              <div className="sample-label">Target Audience:</div>
+              <div className="sample-value">{businessSample.targetAudience}</div>
+            </div>
+
+            <div className="sample-section">
+              <div className="sample-label">Key Features:</div>
+              <ul className="sample-features">
+                {businessSample.keyFeatures?.map((feature: string, idx: number) => (
+                  <li key={idx}>{feature}</li>
+                ))}
+              </ul>
+            </div>
+
             <button
-              onClick={() => handleProductClick(recommendation)}
+              onClick={handleGetFullPackage}
               className="cta-button"
             >
-              {recommendation === "branding" && "Get Your Branding Package →"}
-              {recommendation === "tools" && "Browse Automation Tools →"}
-              {recommendation === "automation" && "See Case Studies →"}
+              Get Your Complete Business Package (30 min delivery) →
             </button>
           </div>
         )}
@@ -231,51 +226,6 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
           </button>
         </div>
       </div>
-
-      {showContactModal && (
-        <div
-          className="modal-overlay"
-          onClick={() => setShowContactModal(false)}
-        >
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Let's get you started</h3>
-            <p>Just need your contact info to continue</p>
-
-            <input
-              type="text"
-              placeholder="Your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="modal-input"
-            />
-
-            <input
-              type="email"
-              placeholder="Your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="modal-input"
-            />
-
-            <div className="modal-buttons">
-              <button
-                onClick={() => setShowContactModal(false)}
-                className="modal-button cancel"
-                disabled={isSubmitting}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleContactSubmit}
-                className="modal-button submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Processing..." : "Submit"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <style jsx>{`
         .chat-container {
@@ -326,28 +276,83 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
           color: #00ff88;
         }
 
-        .recommendation-cta {
+        .business-sample-card {
           margin-top: 20px;
+          padding: 24px;
+          background: rgba(0, 255, 136, 0.05);
+          border: 2px solid #00ff88;
+          border-radius: 12px;
+        }
+
+        .sample-title {
+          color: #00ff88;
+          font-size: 20px;
+          font-weight: 700;
+          margin-bottom: 20px;
           text-align: center;
         }
 
+        .sample-section {
+          margin-bottom: 16px;
+        }
+
+        .sample-label {
+          color: #ff0080;
+          font-size: 13px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 6px;
+        }
+
+        .sample-value {
+          color: white;
+          font-size: 16px;
+          line-height: 1.5;
+        }
+
+        .sample-features {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        .sample-features li {
+          color: white;
+          font-size: 15px;
+          padding: 6px 0;
+          padding-left: 20px;
+          position: relative;
+        }
+
+        .sample-features li:before {
+          content: "✓";
+          position: absolute;
+          left: 0;
+          color: #00ff88;
+          font-weight: bold;
+        }
+
         .cta-button {
+          width: 100%;
+          margin-top: 20px;
           background: linear-gradient(135deg, #ff0080, #00ff88);
           color: white;
           border: none;
-          padding: 14px 28px;
+          padding: 16px 28px;
           font-size: 16px;
-          font-weight: 600;
+          font-weight: 700;
           border-radius: 8px;
           cursor: pointer;
           transition:
             transform 0.2s,
             box-shadow 0.2s;
+          text-align: center;
         }
 
         .cta-button:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(255, 0, 128, 0.4);
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(255, 0, 128, 0.5);
         }
 
         .chat-input-container {
@@ -428,89 +433,6 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
         }
 
         .send-button:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.8);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-        }
-
-        .modal-content {
-          background: #1a1a1a;
-          border: 2px solid #ff0080;
-          border-radius: 12px;
-          padding: 32px;
-          max-width: 400px;
-          width: 90%;
-        }
-
-        .modal-content h3 {
-          color: #ff0080;
-          margin: 0 0 8px 0;
-        }
-
-        .modal-content p {
-          color: #00ff88;
-          margin: 0 0 24px 0;
-        }
-
-        .modal-input {
-          width: 100%;
-          background: rgba(0, 0, 0, 0.5);
-          border: 1px solid #00ff88;
-          border-radius: 8px;
-          padding: 12px;
-          color: white;
-          margin-bottom: 16px;
-          font-size: 14px;
-        }
-
-        .modal-input:focus {
-          outline: none;
-          border-color: #ff0080;
-        }
-
-        .modal-buttons {
-          display: flex;
-          gap: 12px;
-          margin-top: 24px;
-        }
-
-        .modal-button {
-          flex: 1;
-          padding: 12px;
-          border-radius: 8px;
-          border: none;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
-
-        .modal-button.cancel {
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-        }
-
-        .modal-button.submit {
-          background: #ff0080;
-          color: white;
-        }
-
-        .modal-button:hover:not(:disabled) {
-          transform: translateY(-2px);
-        }
-
-        .modal-button:disabled {
           opacity: 0.5;
           cursor: not-allowed;
         }

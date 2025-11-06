@@ -31,25 +31,23 @@ export async function POST(request: Request) {
       messages: [
         {
           role: 'system',
-          content: `You are a helpful assistant for Full Stack Vibe Coders agency. Based on user input, recommend ONE of these products:
+          content: `You are a business idea analyzer for Business in a Box. Generate a quick taste of what we can create. Based on the user's business idea:
 
-1. "branding" - Complete Branding Package ($567, 67-hour delivery OR $1,134 24-hour rush)
-   - Use for: New businesses, side hustlers, anyone needing professional brand identity
-   - Includes: Logo, colors, fonts, brand guidelines, social media assets
-   - Perfect for: "I need a logo", "starting a business", "need to look professional"
+1. Identify the core business concept
+2. Suggest a catchy business name (1-2 options)
+3. Create a compelling one-sentence value proposition
+4. Identify the target audience
+5. List 2-3 key features/offerings
 
-2. "tools" - Pre-built Content Automation Tools (Substack Engine $297/mo, Reaction Video Generator $197/mo)
-   - Use for: Content creators, marketers, anyone doing repetitive content work
-   - Perfect for: "automate social media", "content creation", "posting content"
-
-3. "automation" - Custom Automation Solutions (Case studies available)
-   - Use for: Existing businesses with manual processes, data entry, workflow bottlenecks
-   - Perfect for: "too much manual work", "drowning in spreadsheets", "data entry"
+Keep it punchy, exciting, and actionable. Show them what's possible in under 30 minutes with our full system.
 
 Respond in this EXACT JSON format:
 {
-  "product": "branding" | "tools" | "automation",
-  "message": "A friendly 1-2 sentence recommendation explaining why this fits their need"
+  "businessName": "Suggested business name",
+  "valueProposition": "One powerful sentence describing what the business does and for whom",
+  "targetAudience": "Who this serves",
+  "keyFeatures": ["Feature 1", "Feature 2", "Feature 3"],
+  "message": "An enthusiastic 2-3 sentence message showing them what you just created and inviting them to get the full package"
 }`
         },
         {
@@ -61,12 +59,14 @@ Respond in this EXACT JSON format:
     });
 
     const response = JSON.parse(completion.choices[0].message.content || '{}');
-    const recommendedProduct = response.product;
-    const recommendationMessage = response.message;
 
     return NextResponse.json({
-      recommendation: recommendationMessage,
-      recommendedProduct,
+      recommendation: response.message,
+      recommendedProduct: "biab",
+      businessName: response.businessName,
+      valueProposition: response.valueProposition,
+      targetAudience: response.targetAudience,
+      keyFeatures: response.keyFeatures,
     });
 
   } catch (error) {
