@@ -267,7 +267,7 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
           background: rgba(0, 0, 0, 0.6);
           border: 2px solid #ff0080;
           border-radius: 12px;
-          padding: 24px;
+          padding: 12px;
           margin: 40px 0;
           max-width: 800px;
           margin-left: auto;
@@ -276,7 +276,7 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
 
         .chat-messages {
           min-height: 200px;
-          max-height: 400px;
+          max-height: 200px;
           overflow-y: auto;
           margin-bottom: 20px;
         }
