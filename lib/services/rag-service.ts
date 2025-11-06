@@ -243,7 +243,7 @@ export async function retrieveRelevantContext(
 
   try {
     const topK = options?.topK || 5;
-    const minSimilarity = options?.minSimilarity || 0.7;
+    const minSimilarity = options?.minSimilarity !== undefined ? options.minSimilarity : 0.7;
 
     console.log(`[RAG] Retrieving context for query: "${query.substring(0, 100)}..."`);
 
