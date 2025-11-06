@@ -63,9 +63,15 @@ export async function extractTextFromFile(
 
     // Route to appropriate extractor based on MIME type
     if (mimeType === 'application/pdf') {
-      const result = await extractFromPDF(buffer);
-      text = result.text;
-      metadata = { ...metadata, ...result.metadata };
+      try {
+        const result = await extractFromPDF(buffer);
+        text = result.text;
+        metadata = { ...metadata, ...result.metadata };
+      } catch (pdfError: any) {
+        console.warn('[PDF Extraction] PDF parsing unavailable, returning placeholder:', pdfError.message);
+        text = '[PDF content extraction temporarily unavailable. Please use a text-based format or contact support.]';
+        metadata.extractionError = 'PDF parsing not available';
+      }
     } else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
       const result = await extractFromDOCX(buffer);
       text = result.text;
@@ -121,6 +127,11 @@ export async function extractTextFromFile(
  * @returns Extracted text and metadata
  */
 async function extractFromPDF(buffer: Buffer): Promise<{ text: string; metadata: any }> {
+  // PDF parsing is temporarily disabled due to pdfjs-dist compatibility issues
+  // To re-enable: fix pdfjs-dist version conflicts and uncomment the code below
+  throw new Error('PDF parsing temporarily disabled. Please use text-based formats (TXT, MD, DOCX, HTML).');
+
+  /* DISABLED - Uncomment when pdf-parse/pdfjs-dist compatibility is fixed
   try {
     // Dynamically import pdf-parse
     const pdfParseModule = await import('pdf-parse') as any;
@@ -145,6 +156,7 @@ async function extractFromPDF(buffer: Buffer): Promise<{ text: string; metadata:
 
     throw error;
   }
+  */
 }
 
 /**
