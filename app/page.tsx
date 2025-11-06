@@ -192,11 +192,14 @@ export default function Home() {
 
     document.addEventListener('mousemove', handleCardMouseMove);
 
-    document.querySelectorAll('.chaos-card').forEach(card => {
-      card.addEventListener('mouseleave', () => {
-        (card as HTMLElement).style.transform = '';
+    // Add mouseleave listeners after a delay to ensure cards exist
+    setTimeout(() => {
+      document.querySelectorAll('.chaos-card').forEach(card => {
+        card.addEventListener('mouseleave', () => {
+          (card as HTMLElement).style.transform = '';
+        });
       });
-    });
+    }, 100);
 
     // Random glitch effect - DISABLED (no .main-title elements in current layout)
     // const glitchInterval = setInterval(() => {
@@ -265,9 +268,11 @@ export default function Home() {
           </p>
         </div>
 
-        <ChatInterface />
+        <div style={{width: '100%', maxWidth: '900px', margin: '0 auto'}}>
+          <ChatInterface />
+        </div>
 
-        <a href="/what-is-vibe-coding" className="inline-link" style={{marginTop: '1rem'}}>New to vibe coding? Learn more →</a>
+        <a href="/what-is-vibe-coding" className="inline-link" style={{marginTop: '2rem', marginBottom: '3rem', display: 'block'}}>New to vibe coding? Learn more →</a>
 
         <div className="chaos-grid">
           <div className="chaos-card">
