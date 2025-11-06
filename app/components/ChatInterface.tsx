@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef } from "react";
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
 }
 
@@ -13,21 +13,22 @@ interface ChatInterfaceProps {
 
 export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([
-    { 
-      role: 'assistant', 
-      content: "Hey! We've got lots of tools. Describe what you need and I'll point you in the right direction." 
-    }
+    {
+      role: "assistant",
+      content:
+        "Hey! We've got lots of tools. Describe what you need and I'll point you in the right direction.",
+    },
   ]);
-  const [inputText, setInputText] = useState('');
-  const [inputType, setInputType] = useState<'text' | 'voice'>('text');
+  const [inputText, setInputText] = useState("");
+  const [inputType, setInputType] = useState<"text" | "voice">("text");
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recommendation, setRecommendation] = useState<string | null>(null);
-  
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
@@ -45,28 +46,32 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
       };
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        stream.getTracks().forEach(track => track.stop());
-        
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/webm",
+        });
+        stream.getTracks().forEach((track) => track.stop());
+
         setIsTranscribing(true);
-        
+
         try {
           const formData = new FormData();
-          formData.append('audio', audioBlob);
+          formData.append("audio", audioBlob);
 
-          const res = await fetch('/api/transcribe', {
-            method: 'POST',
+          const res = await fetch("/api/transcribe", {
+            method: "POST",
             body: formData,
           });
 
-          if (!res.ok) throw new Error('Transcription failed');
+          if (!res.ok) throw new Error("Transcription failed");
 
           const data = await res.json();
           setInputText(data.text);
-          setInputType('voice');
+          setInputType("voice");
         } catch (error) {
-          console.error('Error transcribing:', error);
-          alert('Could not transcribe audio. Please try again or type your message.');
+          console.error("Error transcribing:", error);
+          alert(
+            "Could not transcribe audio. Please try again or type your message.",
+          );
         } finally {
           setIsTranscribing(false);
         }
@@ -75,8 +80,8 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
       mediaRecorder.start();
       setIsRecording(true);
     } catch (error) {
-      console.error('Error accessing microphone:', error);
-      alert('Could not access microphone. Please check permissions.');
+      console.error("Error accessing microphone:", error);
+      alert("Could not access microphone. Please check permissions.");
     }
   };
 
@@ -93,19 +98,22 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
     setIsSubmitting(true);
 
     try {
-      setMessages(prev => [...prev, { 
-        role: 'user', 
-        content: inputText
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "user",
+          content: inputText,
+        },
+      ]);
 
       const userInputCopy = inputText;
-      setInputText('');
-      setInputType('text');
+      setInputText("");
+      setInputType("text");
 
-      const res = await fetch('/api/analyze-need', {
-        method: 'POST',
+      const res = await fetch("/api/analyze-need", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           text: userInputCopy,
@@ -113,20 +121,22 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
         }),
       });
 
-      if (!res.ok) throw new Error('Failed to process request');
+      if (!res.ok) throw new Error("Failed to process request");
 
       const data = await res.json();
-      
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: data.recommendation 
-      }]);
-      
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: data.recommendation,
+        },
+      ]);
+
       setRecommendation(data.recommendedProduct);
-      
     } catch (error) {
-      console.error('Error submitting:', error);
-      alert('Something went wrong. Please try again.');
+      console.error("Error submitting:", error);
+      alert("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -138,15 +148,15 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
 
   const handleContactSubmit = async () => {
     if (!name.trim() || !email.trim()) {
-      alert('Please provide both name and email');
+      alert("Please provide both name and email");
       return;
     }
 
     try {
-      await fetch('/api/save-lead', {
-        method: 'POST',
+      await fetch("/api/save-lead", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name,
@@ -155,15 +165,15 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
         }),
       });
 
-      if (recommendation === 'branding') {
-        window.location.href = '/branding';
-      } else if (recommendation === 'tools') {
-        window.location.href = '/tools';
-      } else if (recommendation === 'automation') {
-        window.location.href = '/automate';
+      if (recommendation === "branding") {
+        window.location.href = "/branding";
+      } else if (recommendation === "tools") {
+        window.location.href = "/tools";
+      } else if (recommendation === "automation") {
+        window.location.href = "/automate";
       }
     } catch (error) {
-      console.error('Error saving lead:', error);
+      console.error("Error saving lead:", error);
     }
   };
 
@@ -172,21 +182,19 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
       <div className="chat-messages">
         {messages.map((msg, idx) => (
           <div key={idx} className={`message ${msg.role}`}>
-            <div className="message-content">
-              {msg.content}
-            </div>
+            <div className="message-content">{msg.content}</div>
           </div>
         ))}
-        
+
         {recommendation && (
           <div className="recommendation-cta">
-            <button 
+            <button
               onClick={() => handleProductClick(recommendation)}
               className="cta-button"
             >
-              {recommendation === 'branding' && 'Get Your Branding Package →'}
-              {recommendation === 'tools' && 'Browse Automation Tools →'}
-              {recommendation === 'automation' && 'See Case Studies →'}
+              {recommendation === "branding" && "Get Your Branding Package →"}
+              {recommendation === "tools" && "Browse Automation Tools →"}
+              {recommendation === "automation" && "See Case Studies →"}
             </button>
           </div>
         )}
@@ -198,17 +206,21 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleTextSubmit()}
-            placeholder={isTranscribing ? "Transcribing..." : "Type your message or use the mic..."}
+            onKeyPress={(e) => e.key === "Enter" && handleTextSubmit()}
+            placeholder={
+              isTranscribing
+                ? "Transcribing..."
+                : "Type your message or use the mic..."
+            }
             className="chat-input"
             disabled={isRecording || isTranscribing}
           />
           <button
             onClick={isRecording ? stopRecording : startRecording}
-            className={`mic-button ${isRecording ? 'recording' : ''}`}
+            className={`mic-button ${isRecording ? "recording" : ""}`}
             disabled={isTranscribing}
           >
-            {isRecording ? '⏹' : '🎤'}
+            {isRecording ? "⏹" : "🎤"}
           </button>
           <button
             onClick={handleTextSubmit}
@@ -221,11 +233,14 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
       </div>
 
       {showContactModal && (
-        <div className="modal-overlay" onClick={() => setShowContactModal(false)}>
+        <div
+          className="modal-overlay"
+          onClick={() => setShowContactModal(false)}
+        >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>Let's get you started</h3>
             <p>Just need your contact info to continue</p>
-            
+
             <input
               type="text"
               placeholder="Your name"
@@ -233,7 +248,7 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
               onChange={(e) => setName(e.target.value)}
               className="modal-input"
             />
-            
+
             <input
               type="email"
               placeholder="Your email"
@@ -241,21 +256,21 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
               onChange={(e) => setEmail(e.target.value)}
               className="modal-input"
             />
-            
+
             <div className="modal-buttons">
-              <button 
+              <button
                 onClick={() => setShowContactModal(false)}
                 className="modal-button cancel"
                 disabled={isSubmitting}
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={handleContactSubmit}
                 className="modal-button submit"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Processing...' : 'Submit'}
+                {isSubmitting ? "Processing..." : "Submit"}
               </button>
             </div>
           </div>
@@ -268,8 +283,8 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
           border: 2px solid #ff0080;
           border-radius: 12px;
           padding: 12px;
-          margin: 40px 0;
-          max-width: 800px;
+          margin: 20px 0;
+          max-width: 1000px;
           margin-left: auto;
           margin-right: auto;
         }
@@ -325,7 +340,9 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
           font-weight: 600;
           border-radius: 8px;
           cursor: pointer;
-          transition: transform 0.2s, box-shadow 0.2s;
+          transition:
+            transform 0.2s,
+            box-shadow 0.2s;
         }
 
         .cta-button:hover {
@@ -386,8 +403,13 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
         }
 
         @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
+          }
         }
 
         .send-button {
