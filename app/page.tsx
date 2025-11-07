@@ -346,7 +346,7 @@ export default function Home() {
               minutes. Live website, logo variations, competitive analysis, brand guidelines,
               business plan, marketing strategy. Everything you need to go live immediately.
             </p>
-            <a className="card-btn" onClick={() => router.push("/pricing")}>
+            <a className="card-btn" onClick={() => router.push("/get-started")}>
               Get Your Market-Ready Business Now →
             </a>
           </div>

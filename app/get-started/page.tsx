@@ -1,7 +1,7 @@
 /**
- * BIAB Pricing Page
+ * Market-Ready Business - Get Started Page
  *
- * 3-tier comparison layout for Business in a Box packages
+ * Transform your voice note into a complete market-ready business in 30 minutes
  */
 
 "use client";
@@ -29,8 +29,8 @@ const tiers: Tier[] = [
     id: "VALIDATION_PACK",
     name: "Validation Pack",
     price: 47,
-    description: "Validate your business idea before investing heavily",
-    timeline: "Under 5 minutes",
+    description: "Test your idea before investing heavily",
+    timeline: "5 minutes",
     delivery: "Comprehensive PDF Report",
     features: [
       "Business Model Analysis",
@@ -47,8 +47,8 @@ const tiers: Tier[] = [
     price: 197,
     badge: "MOST POPULAR",
     badgeColor: "bg-purple-500",
-    description: "Complete business plan with professional brand identity",
-    timeline: "Under 15 minutes",
+    description: "Complete business plan with professional brand",
+    timeline: "15 minutes",
     delivery: "Organized ZIP Package with Brand Assets",
     features: [
       "Everything in Validation Pack",
@@ -63,23 +63,24 @@ const tiers: Tier[] = [
   },
   {
     id: "TURNKEY_SYSTEM",
-    name: "Turnkey System",
+    name: "Market-Ready Business",
     price: 497,
     badge: "COMPLETE SOLUTION",
     badgeColor: "bg-gradient-to-r from-yellow-400 to-orange-500",
-    description: "Live working website with step-by-step publishing guide",
-    timeline: "Under 30 minutes",
-    delivery: "Live Development Link + Publishing Guide",
+    description: "Live website + everything you need to launch today",
+    timeline: "30 minutes",
+    delivery: "Working Website + Complete Launch Guide",
     features: [
-      "Everything in Launch Blueprint",
-      "+ Live Working Website (deployed on Vercel)",
-      "+ Complete Step-by-Step Publishing Guide",
-      "+ GitHub Repository Access",
-      "+ Backend Database Setup (Supabase)",
-      "+ Payment System Integration (Stripe)",
-      "+ Email Configuration",
+      "🌐 Live Website (deployed & working)",
+      "🎨 5 Custom Logo Variations",
+      "📊 Competitive Analysis Report",
+      "📈 Complete Business Plan",
+      "🎯 Marketing Strategy",
+      "💳 Payment System Ready",
+      "📧 Email System Configured",
+      "🚀 Step-by-Step Launch Guide",
     ],
-    cta: "Get Complete System",
+    cta: "Get Market-Ready Now",
   },
 ];
 
@@ -90,29 +91,29 @@ interface FAQ {
 
 const faqs: FAQ[] = [
   {
-    question: "What's included in each tier?",
+    question: "What makes this different from other business services?",
     answer:
-      "Each tier builds upon the previous one. Validation Pack gives you the core business analysis (5 sections). Launch Blueprint adds 11 more sections plus brand assets like logos and a pitch deck. Turnkey System includes everything plus a live, fully-functional website with backend infrastructure.",
+      "You record a voice note about your idea, and our AI builds everything custom for you in 30 minutes. No templates, no consultants, no waiting weeks. You get a live, working website plus all the business materials you need to start selling immediately.",
   },
   {
-    question: "How long does delivery take?",
+    question: "How does the 30-minute delivery work?",
     answer:
-      "All packages are delivered in under 30 minutes. Validation Pack typically takes 5-10 minutes, Launch Blueprint 10-20 minutes, and Turnkey System under 30 minutes. You'll see real-time progress and receive an email when complete.",
+      "After payment, you record a voice note describing your business idea. Our AI agents immediately start building your complete business package. You'll see real-time progress updates and receive everything within 30 minutes - guaranteed.",
   },
   {
-    question: "Can I upgrade later?",
+    question: "What if I already have a business?",
     answer:
-      "Yes! If you start with Validation Pack and want to upgrade to Launch Blueprint or Turnkey System, contact us and we'll apply your original payment as credit toward the upgrade.",
+      "Perfect! The Market-Ready Business package will give you a professional website, brand identity, and all the digital assets you need to compete online. Many existing businesses use this to finally get their online presence sorted.",
   },
   {
-    question: "What if I need changes?",
+    question: "Can I customize the website after delivery?",
     answer:
-      "The AI generates everything based on your voice note. If you need revisions, you can submit a new voice note with clarifications, or contact us for manual adjustments (additional fees may apply for extensive custom work).",
+      "Yes! You get full access to the code repository on GitHub. The launch guide includes instructions for making changes. If you need help with customization, we offer additional support packages.",
   },
   {
-    question: "Do you offer refunds?",
+    question: "What's your refund policy?",
     answer:
-      "Due to the instant, automated nature of the AI-generated deliverables, all sales are final. However, if there's a technical issue preventing delivery, we'll work with you to resolve it or issue a refund.",
+      "Due to the instant, AI-generated nature of deliverables, all sales are final. However, if there's a technical issue preventing delivery, we'll work with you to resolve it or issue a full refund.",
   },
 ];
 
@@ -196,32 +197,21 @@ export default function PricingPage() {
     <div className="pricing-page">
       {/* Hero Section */}
       <section className="pricing-page-header">
-        <h1 className="pricing-page-title">Business in a Box</h1>
-        <p className="pricing-page-subtitle">
-          From idea to complete business package. Choose what fits your
-          needs.
+        <h1 className="pricing-page-title">Voice Note → Market-Ready Business</h1>
+        <p className="pricing-page-subtitle" style={{ fontSize: "1.3rem", fontWeight: "600" }}>
+          30 minutes. $497. Everything you need to launch.
         </p>
-        <p
-          className="pricing-page-subtitle"
-          style={{ fontSize: "0.9rem", marginTop: "1rem" }}
-        >
-          All packages are AI-generated based on your voice note. No templates,
-          100% custom.
-        </p>
-        <p
-          className="pricing-page-subtitle"
-          style={{ fontSize: "0.95rem", marginTop: "1rem", fontWeight: "600" }}
-        >
-          Starting from scratch? Get everything you need to build and launch your business.<br/>
-          Already operating? Get professional branding, a working website, and digital assets to compete online.
+        <p className="pricing-page-subtitle" style={{ marginTop: "1rem" }}>
+          Record a voice note about your idea. Get a live website, logos, business plan,<br/>
+          competitive analysis, and complete launch guide. No templates. 100% custom.
         </p>
       </section>
 
-      {/* What You Receive Section */}
+      {/* What You Get Section - Visual showcase */}
       <section className="deliverables-showcase">
-        <h2 className="deliverables-title">What You Receive</h2>
+        <h2 className="deliverables-title">What You Actually Get</h2>
         <p className="deliverables-subtitle">
-          Complete business package delivered in under 30 minutes
+          Real deliverables. Working website. Ready to sell immediately.
         </p>
 
         <div className="deliverables-grid">
@@ -435,6 +425,194 @@ export default function PricingPage() {
         </div>
       )}
 
+      {/* Launch Guide Preview */}
+      <section style={{ padding: "4rem 2rem", background: "rgba(0, 255, 0, 0.02)" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <h2 style={{
+            fontSize: "2.5rem",
+            textAlign: "center",
+            marginBottom: "1rem",
+            backgroundImage: "linear-gradient(135deg, #00ff00, #00ffff)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}>
+            🚀 Your Website Launch Guide (Included with Market-Ready)
+          </h2>
+          <p style={{
+            textAlign: "center",
+            color: "#a0a0a0",
+            marginBottom: "3rem",
+            fontSize: "1.2rem",
+          }}>
+            We don't just build it. We show you exactly how to launch it.
+          </p>
+          
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+            gap: "30px",
+            marginBottom: "3rem",
+          }}>
+            {/* Step 1 */}
+            <div style={{
+              background: "rgba(0, 255, 0, 0.05)",
+              border: "1px solid rgba(0, 255, 0, 0.2)",
+              borderRadius: "15px",
+              padding: "30px",
+              position: "relative",
+            }}>
+              <div style={{
+                position: "absolute",
+                top: "-15px",
+                left: "30px",
+                background: "#00ff00",
+                color: "#000",
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "bold",
+              }}>1</div>
+              <h3 style={{ marginTop: "10px", marginBottom: "10px", color: "#00ff00" }}>
+                Choose Your Domain
+              </h3>
+              <p style={{ color: "#e0e0e0", marginBottom: "1rem" }}>
+                Step-by-step guide to selecting and purchasing the perfect domain name for your business.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Domain registrar recommendations</li>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Name selection best practices</li>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Cost breakdown ($10-15/year)</li>
+              </ul>
+            </div>
+
+            {/* Step 2 */}
+            <div style={{
+              background: "rgba(0, 255, 0, 0.05)",
+              border: "1px solid rgba(0, 255, 0, 0.2)",
+              borderRadius: "15px",
+              padding: "30px",
+              position: "relative",
+            }}>
+              <div style={{
+                position: "absolute",
+                top: "-15px",
+                left: "30px",
+                background: "#00ff00",
+                color: "#000",
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "bold",
+              }}>2</div>
+              <h3 style={{ marginTop: "10px", marginBottom: "10px", color: "#00ff00" }}>
+                Connect to Vercel
+              </h3>
+              <p style={{ color: "#e0e0e0", marginBottom: "1rem" }}>
+                Your site is already deployed on Vercel. We'll show you how to connect your custom domain.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Access your Vercel dashboard</li>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Add custom domain (with screenshots)</li>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Automatic SSL certificate setup</li>
+              </ul>
+            </div>
+
+            {/* Step 3 */}
+            <div style={{
+              background: "rgba(0, 255, 0, 0.05)",
+              border: "1px solid rgba(0, 255, 0, 0.2)",
+              borderRadius: "15px",
+              padding: "30px",
+              position: "relative",
+            }}>
+              <div style={{
+                position: "absolute",
+                top: "-15px",
+                left: "30px",
+                background: "#00ff00",
+                color: "#000",
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "bold",
+              }}>3</div>
+              <h3 style={{ marginTop: "10px", marginBottom: "10px", color: "#00ff00" }}>
+                Configure DNS
+              </h3>
+              <p style={{ color: "#e0e0e0", marginBottom: "1rem" }}>
+                Simple copy-paste instructions for your domain provider (GoDaddy, Namecheap, etc.)
+              </p>
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Provider-specific guides</li>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ A-record and CNAME setup</li>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Propagation timeline (5-30 min)</li>
+              </ul>
+            </div>
+
+            {/* Step 4 */}
+            <div style={{
+              background: "rgba(0, 255, 0, 0.05)",
+              border: "1px solid rgba(0, 255, 0, 0.2)",
+              borderRadius: "15px",
+              padding: "30px",
+              position: "relative",
+            }}>
+              <div style={{
+                position: "absolute",
+                top: "-15px",
+                left: "30px",
+                background: "#00ff00",
+                color: "#000",
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "bold",
+              }}>4</div>
+              <h3 style={{ marginTop: "10px", marginBottom: "10px", color: "#00ff00" }}>
+                Go Live!
+              </h3>
+              <p style={{ color: "#e0e0e0", marginBottom: "1rem" }}>
+                Final checks and your official launch checklist.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Test all forms and features</li>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Submit to Google Search Console</li>
+                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Launch announcement templates</li>
+              </ul>
+            </div>
+          </div>
+
+          <div style={{
+            background: "linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1))",
+            border: "1px solid rgba(139, 92, 246, 0.3)",
+            borderRadius: "15px",
+            padding: "30px",
+            textAlign: "center",
+          }}>
+            <h3 style={{ color: "#ff00ff", marginBottom: "1rem" }}>
+              🎁 Bonus: Post-Launch Support
+            </h3>
+            <p style={{ color: "#e0e0e0" }}>
+              Every Market-Ready Business includes 30 days of email support for technical questions.
+              We'll help you with domain issues, minor updates, and launching your marketing campaigns.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section
         style={{ maxWidth: "800px", margin: "0 auto", padding: "3rem 2rem" }}
@@ -490,46 +668,77 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Final CTA Section */}
       <section
         style={{
-          background: "linear-gradient(45deg, #1a0033, #000)",
-          padding: "4rem 2rem",
+          background: "radial-gradient(circle at center, rgba(139, 92, 246, 0.2) 0%, transparent 70%)",
+          padding: "5rem 2rem",
           textAlign: "center",
         }}
       >
         <h2
           style={{
-            fontSize: "2.5rem",
+            fontSize: "3rem",
             fontWeight: "bold",
             marginBottom: "1rem",
-            background: "linear-gradient(45deg, #ff00ff, #00ffff)",
+            backgroundImage: "linear-gradient(135deg, #00ff00, #00ffff)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
           }}
         >
-          Ready to start your business?
+          Ready to Launch Your Business?
         </h2>
         <p
           style={{
-            fontSize: "1.25rem",
+            fontSize: "1.5rem",
+            color: "#fff",
+            marginBottom: "1rem",
+            maxWidth: "600px",
+            margin: "0 auto 1rem",
+          }}
+        >
+          30 minutes from now, you could be live and selling.
+        </p>
+        <p
+          style={{
+            fontSize: "1.1rem",
             color: "rgba(255, 255, 255, 0.7)",
             marginBottom: "2rem",
-            maxWidth: "600px",
+            maxWidth: "700px",
             margin: "0 auto 2rem",
           }}
         >
-          Record a voice note about your idea, and get your complete business
-          package delivered in under 30 minutes.
+          Record a voice note about your idea. Get a complete business with live website,
+          logos, competitive analysis, and everything you need to start making money today.
         </p>
-        <Link
-          href="/upload"
-          className="pricing-cta-button"
-          style={{ display: "inline-block", maxWidth: "300px" }}
+        <button
+          onClick={() => handleSelectTier("TURNKEY_SYSTEM")}
+          disabled={loading !== null}
+          style={{
+            padding: "20px 40px",
+            fontSize: "1.3rem",
+            background: "linear-gradient(135deg, #00ff00, #00ffff)",
+            color: "#000",
+            border: "none",
+            borderRadius: "10px",
+            fontWeight: "bold",
+            cursor: loading !== null ? "wait" : "pointer",
+            transition: "all 0.3s",
+            opacity: loading !== null ? 0.7 : 1,
+          }}
         >
-          Get Started Now →
-        </Link>
+          {loading === "TURNKEY_SYSTEM" ? "Processing..." : "Get Your Market-Ready Business Now →"}
+        </button>
+        <p
+          style={{
+            marginTop: "2rem",
+            color: "#00ff00",
+            fontWeight: "600",
+          }}
+        >
+          100% custom. No templates. Delivered in 30 minutes or your money back.
+        </p>
       </section>
     </div>
   );
