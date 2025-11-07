@@ -21,7 +21,7 @@ export interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'What is Vibe Coding?', href: '/about' },
-  { label: 'Business in a Box', href: '/pricing' },
+  { label: 'Market-Ready Business', href: '/pricing' },
   { label: 'Tools', href: '/tools' },
   { label: 'Contact', href: '/contact', isContact: true },
 ];
