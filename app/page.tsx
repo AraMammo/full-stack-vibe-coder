@@ -340,14 +340,14 @@ export default function Home() {
           </div>
 
           <div className="chaos-card">
-            <h3 className="card-title">Launch Your Business</h3>
+            <h3 className="card-title">Launch Your Market-Ready Business</h3>
             <p className="card-desc">
-              Got an idea? Turn your business idea into a complete business package in under 30
-              minutes. Market research. Brand identity. Live working website. Step-by-step
-              publishing guide. Everything you need to go live.
+              Got an idea? Turn your voice note into a complete market-ready business in 30
+              minutes. Live website, logo variations, competitive analysis, brand guidelines,
+              business plan, marketing strategy. Everything you need to go live immediately.
             </p>
             <a className="card-btn" onClick={() => router.push("/pricing")}>
-              Get Your Complete Business Package →
+              Get Your Market-Ready Business Now →
             </a>
           </div>
 
