@@ -40,7 +40,7 @@ export function Footer() {
           <div className="footer-section">
             <h3 className="footer-heading">Services</h3>
             <ul className="footer-links">
-              <li><Link href="/get-started" className="footer-link-item">Business in a Box</Link></li>
+              <li><Link href="/get-started" className="footer-link-item">Market-Ready Business</Link></li>
               <li><Link href="/what-is-vibe-coding" className="footer-link-item">What is Vibe Coding?</Link></li>
               <li><Link href="/tools" className="footer-link-item">Automation Tools</Link></li>
               <li><Link href="/contact" className="footer-link-item">Custom Development</Link></li>
