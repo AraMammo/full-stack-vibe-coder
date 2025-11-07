@@ -1,12 +1,35 @@
 /**
- * v0 Client Wrapper
+ * v0 Client Wrapper (Stub Implementation)
  *
- * Integrates with Vercel v0 API to generate and deploy applications from prompts.
- * Used in BIAB orchestrator to convert replit-style prompts into live deployments.
+ * Previously integrated with Vercel v0 API to generate and deploy applications from prompts.
+ * This is now a stub implementation to prevent build errors after removing v0-sdk dependency.
+ * The v0-sdk package was removed due to Node.js version incompatibility (requires Node.js >= 22).
  */
 
-import { v0 } from 'v0-sdk';
-import type { ChatsCreateRequest, ChatsCreateResponse } from 'v0-sdk';
+// Stub type definitions to replace v0-sdk types
+interface ChatsCreateRequest {
+  message: string;
+  system?: string;
+  chatPrivacy?: string;
+  projectId?: string;
+  responseMode?: string;
+  modelConfiguration?: {
+    imageGenerations?: boolean;
+    thinking?: boolean;
+  };
+}
+
+interface ChatsCreateResponse {
+  id?: string;
+  webUrl?: string;
+  projectId?: string;
+  createdAt?: string;
+  privacy?: string;
+  latestVersion?: {
+    status?: string;
+    demoUrl?: string;
+  };
+}
 
 // ============================================
 // TYPES
@@ -84,8 +107,12 @@ export async function generateV0App(
 
     console.log('[v0] Calling v0.chats.create()...');
 
-    // Create chat and generate code
-    const response = await v0.chats.create(createParams) as ChatsCreateResponse;
+    // Stub implementation - return error since v0-sdk is not available
+    console.warn('[v0] v0-sdk integration disabled due to Node.js version incompatibility');
+    const response: ChatsCreateResponse = {
+      id: undefined,
+      webUrl: undefined,
+    };
 
     if (!response || !response.id) {
       throw new Error('Invalid response from v0 API - no chat ID returned');
@@ -166,7 +193,13 @@ async function waitForCompletion(
 
       console.log(`[v0] Polling status (attempt ${attempts}/${maxAttempts})...`);
 
-      const chat = await v0.chats.getById({ chatId: chatId });
+      // Stub implementation - v0-sdk not available
+      const chat: ChatsCreateResponse = {
+        id: chatId,
+        latestVersion: {
+          status: 'failed',
+        },
+      };
 
       if (!chat.latestVersion) {
         console.log('[v0] No version available yet, continuing to poll...');
@@ -215,8 +248,9 @@ export async function getV0Chat(chatId: string): Promise<ChatsCreateResponse | n
 
   try {
     console.log(`[v0] Fetching chat: ${chatId}`);
-    const chat = await v0.chats.getById({ chatId: chatId });
-    return chat;
+    // Stub implementation - v0-sdk not available
+    console.warn('[v0] v0-sdk integration disabled due to Node.js version incompatibility');
+    return null;
   } catch (error: any) {
     console.error(`[v0] Failed to fetch chat ${chatId}:`, error.message);
     return null;
