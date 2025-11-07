@@ -12,6 +12,8 @@ import { supabaseAdmin, STORAGE_BUCKETS } from '@/lib/storage';
 import JSZip from 'jszip';
 import { randomUUID } from 'crypto';
 import { generateHandoffDocumentation } from '@/lib/services/deployment-handoff';
+import { organizeDeliverables, type DeliverableFile } from './organize-deliverables';
+import { batchConvertToPDFs } from './convert-to-pdf';
 
 // ============================================
 // TYPES
@@ -367,7 +369,7 @@ function organizeBySection(executions: any[]): SectionOutputs[] {
 }
 
 /**
- * Create ZIP package with organized folder structure
+ * Create ZIP package with organized folder structure (NEW: With PDF and logical organization)
  * Includes logos for LAUNCH_BLUEPRINT+ and handoff docs for TURNKEY_SYSTEM
  */
 async function createZIPPackage(
@@ -375,32 +377,87 @@ async function createZIPPackage(
   projectId: string,
   options: PackagingOptions
 ): Promise<Buffer> {
+  console.log('[Package BIAB] Creating organized ZIP package with PDFs...');
+
   const zip = new JSZip();
+  const projectName = options.projectName || 'Your Business';
 
-  // Add README at root
-  const v0Info = options.v0ChatId ? {
-    chatId: options.v0ChatId,
-    previewUrl: options.v0PreviewUrl,
-    deployUrl: options.v0DeployUrl,
-  } : undefined;
-  const readme = generateREADME(projectId, sectionOutputs, options.tier, v0Info);
-  zip.file('README.md', readme);
+  // Step 1: Extract brand colors from brand strategy execution (if available)
+  console.log('[Package BIAB] Extracting brand colors...');
+  const brandColors = extractBrandColors(sectionOutputs);
 
-  // Create folders by section
+  // Step 2: Convert section outputs to deliverable format
+  console.log('[Package BIAB] Converting to deliverable format...');
+  const deliverables: DeliverableFile[] = [];
+
   for (const section of sectionOutputs) {
-    // Sanitize folder name
-    const folderName = sanitizeFolderName(section.section);
-    const folder = zip.folder(folderName);
+    for (const output of section.outputs) {
+      deliverables.push({
+        promptId: '', // Not needed for organization
+        promptName: output.promptName,
+        sectionName: section.section,
+        content: output.content,
+        outputFormat: 'markdown',
+      });
+    }
+  }
 
-    if (!folder) continue;
+  // Step 3: Organize deliverables into logical structure
+  console.log('[Package BIAB] Organizing into 10-phase structure...');
+  const organized = organizeDeliverables(deliverables, projectName);
 
-    // Add each prompt output as a markdown file
-    for (let i = 0; i < section.outputs.length; i++) {
-      const output = section.outputs[i];
-      const fileName = `${i + 1}-${sanitizeFileName(output.promptName)}.md`;
+  // Step 4: Convert all documents to PDF
+  console.log('[Package BIAB] Converting documents to PDF...');
+  const documentsToConvert: Array<{
+    filename: string;
+    content: string;
+    title: string;
+    section: string;
+  }> = [];
 
-      const content = generateMarkdownFile(output);
-      folder.file(fileName, content);
+  for (const folder of organized.folders) {
+    for (const file of folder.files) {
+      documentsToConvert.push({
+        filename: file.filename,
+        content: file.content,
+        title: file.title,
+        section: folder.displayName,
+      });
+    }
+  }
+
+  const pdfs = await batchConvertToPDFs(documentsToConvert, projectName, brandColors);
+  console.log(`[Package BIAB] ✓ Converted ${pdfs.length} documents to PDF`);
+
+  // Step 5: Build ZIP with organized structure
+  console.log('[Package BIAB] Building ZIP archive...');
+
+  // Add main README and GET_STARTED guide
+  zip.file('README.md', organized.readmeContent);
+  zip.file('GET_STARTED.md', organized.getStartedContent);
+
+  // Add each phase folder with README and documents
+  for (const folder of organized.folders) {
+    const zipFolder = zip.folder(folder.folderName);
+    if (!zipFolder) continue;
+
+    // Add phase README
+    zipFolder.file('README.md', folder.readmeContent);
+
+    // Add both PDF and markdown versions of each document
+    for (const file of folder.files) {
+      // Add markdown version
+      zipFolder.file(file.filename, generateMarkdownFile({
+        promptName: file.title,
+        content: file.content,
+        tokensUsed: 0, // Not tracked in new system
+      }));
+
+      // Add PDF version
+      const pdfFile = pdfs.find(p => p.filename === file.filename.replace('.md', '.pdf'));
+      if (pdfFile) {
+        zipFolder.file(pdfFile.filename, pdfFile.buffer);
+      }
     }
   }
 
@@ -596,6 +653,63 @@ function sanitizeFileName(name: string): string {
     .replace(/[^a-zA-Z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .toLowerCase();
+}
+
+/**
+ * Extract brand colors from brand strategy/visual identity execution
+ * Returns default cyberpunk colors if not found
+ */
+function extractBrandColors(sectionOutputs: SectionOutputs[]): {
+  primary: string;
+  secondary: string;
+  accent: string;
+} {
+  // Default colors (FullStackVibeCoder brand)
+  const defaultColors = {
+    primary: '#ec4899', // Pink
+    secondary: '#06b6d4', // Cyan
+    accent: '#10b981', // Green
+  };
+
+  try {
+    // Look for brand/visual identity content
+    const brandContent = sectionOutputs
+      .flatMap(s => s.outputs)
+      .find(o =>
+        o.promptName.toLowerCase().includes('brand') ||
+        o.promptName.toLowerCase().includes('visual identity')
+      );
+
+    if (!brandContent) {
+      console.log('[Package BIAB] No brand content found, using default colors');
+      return defaultColors;
+    }
+
+    // Extract hex colors from content (format: #RRGGBB)
+    const hexColorRegex = /#([A-Fa-f0-9]{6})/g;
+    const colors = [];
+    let match;
+
+    while ((match = hexColorRegex.exec(brandContent.content)) !== null) {
+      colors.push('#' + match[1].toLowerCase());
+    }
+
+    if (colors.length >= 3) {
+      console.log(`[Package BIAB] ✓ Extracted ${colors.length} brand colors`);
+      return {
+        primary: colors[0],
+        secondary: colors[1],
+        accent: colors[2],
+      };
+    }
+
+    console.log('[Package BIAB] Insufficient colors found, using defaults');
+    return defaultColors;
+
+  } catch (error) {
+    console.error('[Package BIAB] Error extracting colors:', error);
+    return defaultColors;
+  }
 }
 
 /**

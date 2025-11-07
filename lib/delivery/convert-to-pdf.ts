@@ -7,8 +7,6 @@
 
 import puppeteer from 'puppeteer';
 import MarkdownIt from 'markdown-it';
-import { promises as fs } from 'fs';
-import path from 'path';
 
 interface PDFConversionOptions {
   projectName: string;
