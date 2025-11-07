@@ -99,16 +99,6 @@ export function Footer() {
             Built with vibe coding | Next.js | TypeScript | AI-Powered Development
           </p>
         </div>
-
-        <div className="footer-cookie-notice">
-          <p>We use strictly necessary cookies to make our site work. We'd also like to set optional analytics cookies to help us improve it. We won't set optional cookies unless you enable them.</p>
-          <p>Learn more in our <Link href="/cookie-policy" className="footer-link-inline">Cookie Policy</Link></p>
-          <div className="cookie-buttons">
-            <button onClick={handleCookieSettings} className="cookie-btn customize">Customize</button>
-            <button className="cookie-btn reject">Reject Optional</button>
-            <button className="cookie-btn accept">Accept All</button>
-          </div>
-        </div>
       </div>
     </footer>
   );
