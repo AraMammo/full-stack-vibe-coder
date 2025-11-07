@@ -3,7 +3,10 @@ import { supabaseAdmin } from '../storage';
 
 interface DumplingImageResponse {
   id?: string;
-  output?: string[];
+  output?: string[]; // Old format (deprecated)
+  images?: Array<{ url: string }>; // New format (current)
+  creditUsage?: number;
+  model?: string;
   status?: string;
   error?: string;
 }
@@ -75,10 +78,22 @@ export async function generateLogos(
         throw new Error(`Dumpling error: ${data.error}`);
       }
 
-      // Extract image URL from response
-      const imageUrl = data.output?.[0];
+      // Extract image URL from response (support both old and new formats)
+      let imageUrl: string | undefined;
+
+      if (data.images && data.images.length > 0 && data.images[0].url) {
+        // New format: { images: [{ url: "..." }] }
+        imageUrl = data.images[0].url;
+        console.log(`[Dumpling] ✓ Got image URL (new format, credits: ${data.creditUsage || 'unknown'})`);
+      } else if (data.output && data.output.length > 0) {
+        // Old format: { output: ["..."] }
+        imageUrl = data.output[0];
+        console.log(`[Dumpling] ✓ Got image URL (old format)`);
+      }
 
       if (!imageUrl) {
+        console.error('[Dumpling] Response data:', JSON.stringify(data, null, 2));
+        console.error('[Dumpling] No image URL found in either images[0].url or output[0]');
         throw new Error('No image URL in Dumpling response');
       }
 
