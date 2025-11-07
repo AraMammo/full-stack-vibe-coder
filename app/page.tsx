@@ -263,25 +263,25 @@ export default function Home() {
               marginBottom: "1rem",
             }}
           >
-            Business in a Box
+            Voice note to Market-Ready Business. 30 minutes. $497.
           </h2>
           <p
             className="value-prop-subheadline"
             style={{ marginBottom: "1rem", fontSize: "1.3rem", fontWeight: "600" }}
           >
-            Record a voice note. Get your complete business package in under 30 minutes.
+            Complete website, logo variations, competitive analysis, brand guidelines.
           </p>
           <p
             className="value-prop-subheadline"
             style={{ marginBottom: "1rem" }}
           >
-            Market research, brand identity, live working website, and a step-by-step guide to publish it on your own domain.
+            Plus: Market research, business plan, technical documentation, marketing strategy, and step-by-step launch guide.
           </p>
           <p
             className="value-prop-subheadline"
             style={{ marginBottom: "2rem", opacity: "0.9" }}
           >
-            No jargon. No consultants. Just everything you need to go live.
+            Everything you need to go live. No consultants. No waiting.
           </p>
         </div>
 
