@@ -1,0 +1,111 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#000000"/>
+
+  <!-- Gradient background effect -->
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff0080;stop-opacity:0.1" />
+      <stop offset="50%" style="stop-color:#00ff88;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#00aaff;stop-opacity:0.1" />
+    </linearGradient>
+
+    <linearGradient id="title-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff0080;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#00ffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:1" />
+    </linearGradient>
+
+    <linearGradient id="border-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff0080;stop-opacity:1" />
+      <stop offset="33%" style="stop-color:#00ffff;stop-opacity:1" />
+      <stop offset="66%" style="stop-color:#00ff88;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00aaff;stop-opacity:1" />
+    </linearGradient>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="strong-glow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background gradient overlay -->
+  <rect width="1200" height="630" fill="url(#bg-gradient)"/>
+
+  <!-- Decorative corner elements -->
+  <path d="M30 30 L120 30 L120 40 M30 30 L30 120 L40 120" stroke="url(#border-gradient)" stroke-width="3" fill="none" opacity="0.8"/>
+  <path d="M1170 30 L1080 30 L1080 40 M1170 30 L1170 120 L1160 120" stroke="url(#border-gradient)" stroke-width="3" fill="none" opacity="0.8"/>
+  <path d="M30 600 L120 600 L120 590 M30 600 L30 510 L40 510" stroke="url(#border-gradient)" stroke-width="3" fill="none" opacity="0.8"/>
+  <path d="M1170 600 L1080 600 L1080 590 M1170 600 L1170 510 L1160 510" stroke="url(#border-gradient)" stroke-width="3" fill="none" opacity="0.8"/>
+
+  <!-- Central border frame -->
+  <rect x="80" y="120" width="1040" height="390" stroke="url(#border-gradient)" stroke-width="2" fill="none" opacity="0.3"/>
+
+  <!-- Grid pattern background -->
+  <g opacity="0.1">
+    <line x1="200" y1="0" x2="200" y2="630" stroke="#00ff88" stroke-width="1"/>
+    <line x1="400" y1="0" x2="400" y2="630" stroke="#00ff88" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="630" stroke="#00ff88" stroke-width="1"/>
+    <line x1="800" y1="0" x2="800" y2="630" stroke="#00ff88" stroke-width="1"/>
+    <line x1="1000" y1="0" x2="1000" y2="630" stroke="#00ff88" stroke-width="1"/>
+    <line x1="0" y1="157" x2="1200" y2="157" stroke="#ff0080" stroke-width="1"/>
+    <line x1="0" y1="315" x2="1200" y2="315" stroke="#ff0080" stroke-width="1"/>
+    <line x1="0" y1="472" x2="1200" y2="472" stroke="#ff0080" stroke-width="1"/>
+  </g>
+
+  <!-- Glitch effect lines -->
+  <line x1="150" y1="200" x2="350" y2="200" stroke="#00ffff" stroke-width="2" opacity="0.6" filter="url(#glow)"/>
+  <line x1="850" y1="430" x2="1050" y2="430" stroke="#ff0080" stroke-width="2" opacity="0.6" filter="url(#glow)"/>
+  <line x1="100" y1="350" x2="250" y2="350" stroke="#00ff88" stroke-width="2" opacity="0.5" filter="url(#glow)"/>
+
+  <!-- Main "V" logo centered -->
+  <path d="M520 180 L600 380 L680 180" stroke="url(#title-gradient)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#strong-glow)"/>
+
+  <!-- Main heading -->
+  <text x="600" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="900" fill="url(#title-gradient)" text-anchor="middle" filter="url(#strong-glow)">
+    VIBE CODING
+  </text>
+
+  <!-- Subheading -->
+  <text x="600" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="600" fill="#ffffff" text-anchor="middle" opacity="0.95">
+    AI-Powered Development
+  </text>
+
+  <!-- Tagline -->
+  <text x="600" y="390" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="400" fill="#00ff88" text-anchor="middle" opacity="0.9">
+    Build Production-Ready Apps 10x Faster
+  </text>
+
+  <!-- Business in a Box callout -->
+  <g transform="translate(600, 460)">
+    <rect x="-200" y="-25" width="400" height="60" rx="8" fill="rgba(255, 0, 128, 0.1)" stroke="url(#border-gradient)" stroke-width="2"/>
+    <text x="0" y="5" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#ffffff" text-anchor="middle">
+      Business in a Box
+    </text>
+    <text x="0" y="30" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="400" fill="#00ffff" text-anchor="middle">
+      Voice Note → Live Website in 30 Minutes
+    </text>
+  </g>
+
+  <!-- Website URL -->
+  <text x="600" y="570" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="500" fill="#999999" text-anchor="middle">
+    fullstackvibecoder.com
+  </text>
+
+  <!-- Decorative accent dots -->
+  <circle cx="150" cy="315" r="4" fill="#ff0080" opacity="0.8" filter="url(#glow)"/>
+  <circle cx="1050" cy="315" r="4" fill="#00ff88" opacity="0.8" filter="url(#glow)"/>
+  <circle cx="600" cy="150" r="3" fill="#00ffff" opacity="0.6" filter="url(#glow)"/>
+  <circle cx="600" cy="560" r="3" fill="#00aaff" opacity="0.6" filter="url(#glow)"/>
+</svg>

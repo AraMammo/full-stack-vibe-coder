@@ -1,0 +1,33 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="32" height="32" fill="#000000"/>
+
+  <!-- Cyberpunk gradient border -->
+  <rect x="1" y="1" width="30" height="30" stroke="url(#gradient1)" stroke-width="2" fill="none"/>
+
+  <!-- Stylized "V" for Vibe -->
+  <path d="M8 6 L16 24 L24 6" stroke="url(#gradient2)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Glitch effect line -->
+  <line x1="12" y1="12" x2="20" y2="12" stroke="#00ffff" stroke-width="1" opacity="0.7"/>
+  <line x1="10" y1="18" x2="22" y2="18" stroke="#ff0080" stroke-width="1" opacity="0.7"/>
+
+  <!-- Corner accents -->
+  <path d="M2 2 L6 2 L6 4" stroke="#00ff88" stroke-width="1" fill="none"/>
+  <path d="M30 2 L26 2 L26 4" stroke="#00ff88" stroke-width="1" fill="none"/>
+  <path d="M2 30 L6 30 L6 28" stroke="#ff0080" stroke-width="1" fill="none"/>
+  <path d="M30 30 L26 30 L26 28" stroke="#ff0080" stroke-width="1" fill="none"/>
+
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff0080;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#00ff88;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00aaff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff0080;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#00ffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

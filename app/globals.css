@@ -3558,6 +3558,65 @@ body {
   padding: 0 2rem;
 }
 
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 3rem;
+  margin-bottom: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(255, 0, 128, 0.2);
+}
+
+.footer-section {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #00ff88;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #00ff88, #00aaff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-description {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1rem;
+}
+
+.footer-description strong {
+  color: #ff0080;
+  font-weight: 700;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.75rem;
+}
+
+.footer-link-item {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.footer-link-item:hover {
+  color: #00ff88;
+  transform: translateX(5px);
+}
+
 .footer-nav {
   display: flex;
   justify-content: center;
