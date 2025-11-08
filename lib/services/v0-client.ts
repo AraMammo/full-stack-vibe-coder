@@ -1,35 +1,45 @@
 /**
- * v0 Client Wrapper (Stub Implementation)
+ * v0 Client Wrapper (REST API Implementation)
  *
- * Previously integrated with Vercel v0 API to generate and deploy applications from prompts.
- * This is now a stub implementation to prevent build errors after removing v0-sdk dependency.
- * The v0-sdk package was removed due to Node.js version incompatibility (requires Node.js >= 22).
+ * Direct integration with v0.dev Platform API using REST endpoints.
+ * No SDK dependencies required - uses native fetch.
+ *
+ * API Documentation: https://v0.dev/docs/api/platform/reference/chats/create
  */
 
-// Stub type definitions to replace v0-sdk types
+// Type definitions for v0 API
 interface ChatsCreateRequest {
   message: string;
   system?: string;
-  chatPrivacy?: string;
+  chatPrivacy?: 'public' | 'private' | 'team-edit' | 'team' | 'unlisted';
   projectId?: string;
-  responseMode?: string;
+  designSystemId?: string | null;
   modelConfiguration?: {
+    modelId?: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg';
     imageGenerations?: boolean;
     thinking?: boolean;
+    responseMode?: 'sync' | 'async' | 'experimental_stream';
   };
 }
 
 interface ChatsCreateResponse {
-  id?: string;
-  webUrl?: string;
-  projectId?: string;
-  createdAt?: string;
-  privacy?: string;
+  id: string;
+  object: 'chat';
+  messages: any[];
   latestVersion?: {
-    status?: string;
+    status?: 'pending' | 'in_progress' | 'completed' | 'failed';
     demoUrl?: string;
+    previewUrl?: string;
   };
+  webUrl: string;
+  apiUrl: string;
+  createdAt: string;
+  updatedAt: string;
+  projectId?: string;
+  privacy?: string;
 }
+
+const V0_API_BASE_URL = 'https://api.v0.dev';
 
 // ============================================
 // TYPES
@@ -98,58 +108,75 @@ export async function generateV0App(
       system: options.systemPrompt || 'You are an expert full-stack developer. Build a production-ready Next.js application based on the requirements provided. Use modern best practices, TypeScript, and Tailwind CSS.',
       chatPrivacy: options.chatPrivacy || 'private',
       projectId: options.projectId,
-      responseMode: 'sync', // Wait for initial response
       modelConfiguration: {
+        modelId: 'v0-1.5-lg', // Use largest model for best quality
         imageGenerations: false, // Don't need image generation for code
         thinking: false, // Skip thinking mode for faster response
+        responseMode: 'sync', // Wait for initial response
       },
     };
 
-    console.log('[v0] Calling v0.chats.create()...');
+    console.log('[v0] Calling v0 API...');
+    console.log(`[v0] Endpoint: ${V0_API_BASE_URL}/v1/chats`);
 
-    // Stub implementation - return error since v0-sdk is not available
-    console.warn('[v0] v0-sdk integration disabled due to Node.js version incompatibility');
-    const response: ChatsCreateResponse = {
-      id: undefined,
-      webUrl: undefined,
-    };
+    // Call v0 REST API
+    const response = await fetch(`${V0_API_BASE_URL}/v1/chats`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(createParams),
+    });
 
-    if (!response || !response.id) {
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => response.statusText);
+      throw new Error(
+        `v0 API returned ${response.status}: ${errorText}`
+      );
+    }
+
+    const data: ChatsCreateResponse = await response.json();
+
+    if (!data || !data.id) {
       throw new Error('Invalid response from v0 API - no chat ID returned');
     }
 
-    console.log(`[v0] ✓ Chat created: ${response.id}`);
-    console.log(`[v0] Web URL: ${response.webUrl}`);
+    console.log(`[v0] ✓ Chat created: ${data.id}`);
+    console.log(`[v0] Web URL: ${data.webUrl}`);
 
     // Extract deployment information
     const result: V0DeploymentResult = {
       success: true,
-      chatId: response.id,
-      webUrl: response.webUrl,
-      previewUrl: response.webUrl, // webUrl is the preview/edit URL
-      projectId: response.projectId,
+      chatId: data.id,
+      webUrl: data.webUrl,
+      previewUrl: data.webUrl, // webUrl is the preview/edit URL
+      projectId: data.projectId,
       metadata: {
-        createdAt: response.createdAt,
-        privacy: response.privacy,
-        status: response.latestVersion?.status || 'pending',
+        createdAt: data.createdAt,
+        privacy: data.privacy,
+        status: data.latestVersion?.status || 'pending',
       },
     };
 
     // If version has a demo URL, include it
-    if (response.latestVersion?.demoUrl) {
-      result.demoUrl = response.latestVersion.demoUrl;
-      console.log(`[v0] ✓ Demo URL: ${response.latestVersion.demoUrl}`);
+    if (data.latestVersion?.demoUrl) {
+      result.demoUrl = data.latestVersion.demoUrl;
+      console.log(`[v0] ✓ Demo URL: ${data.latestVersion.demoUrl}`);
     }
 
     // If waitForCompletion is true, poll until generation completes
-    if (options.waitForCompletion && response.latestVersion?.status === 'pending') {
+    if (options.waitForCompletion && data.latestVersion?.status === 'pending') {
       console.log('[v0] Waiting for generation to complete...');
-      const completedChat = await waitForCompletion(response.id);
+      const completedChat = await waitForCompletion(data.id, apiKey);
 
       if (completedChat) {
         result.metadata!.status = completedChat.latestVersion?.status || 'completed';
         if (completedChat.latestVersion?.demoUrl) {
           result.demoUrl = completedChat.latestVersion.demoUrl;
+        }
+        if (completedChat.latestVersion?.previewUrl) {
+          result.previewUrl = completedChat.latestVersion.previewUrl;
         }
       }
     }
@@ -171,12 +198,14 @@ export async function generateV0App(
  * Wait for v0 generation to complete by polling the chat status
  *
  * @param chatId - The chat ID to poll
+ * @param apiKey - v0 API key for authentication
  * @param maxAttempts - Maximum number of polling attempts (default: 20)
  * @param intervalMs - Interval between polling attempts in ms (default: 3000)
  * @returns The completed chat details or null if timeout
  */
 async function waitForCompletion(
   chatId: string,
+  apiKey: string,
   maxAttempts: number = 20,
   intervalMs: number = 3000
 ): Promise<ChatsCreateResponse | null> {
@@ -193,13 +222,21 @@ async function waitForCompletion(
 
       console.log(`[v0] Polling status (attempt ${attempts}/${maxAttempts})...`);
 
-      // Stub implementation - v0-sdk not available
-      const chat: ChatsCreateResponse = {
-        id: chatId,
-        latestVersion: {
-          status: 'failed',
+      // Get chat status via REST API
+      const response = await fetch(`${V0_API_BASE_URL}/v1/chats/${chatId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
         },
-      };
+      });
+
+      if (!response.ok) {
+        console.warn(`[v0] Polling request failed: ${response.status}`);
+        continue; // Continue polling despite errors
+      }
+
+      const chat: ChatsCreateResponse = await response.json();
 
       if (!chat.latestVersion) {
         console.log('[v0] No version available yet, continuing to poll...');
@@ -219,8 +256,8 @@ async function waitForCompletion(
         return null;
       }
 
-      // Status is 'pending', continue polling
-      console.log('[v0] Still pending, waiting...');
+      // Status is 'pending' or 'in_progress', continue polling
+      console.log('[v0] Still generating, waiting...');
 
     } catch (error: any) {
       console.error(`[v0] Polling error (attempt ${attempts}):`, error.message);
@@ -248,9 +285,24 @@ export async function getV0Chat(chatId: string): Promise<ChatsCreateResponse | n
 
   try {
     console.log(`[v0] Fetching chat: ${chatId}`);
-    // Stub implementation - v0-sdk not available
-    console.warn('[v0] v0-sdk integration disabled due to Node.js version incompatibility');
-    return null;
+
+    const response = await fetch(`${V0_API_BASE_URL}/v1/chats/${chatId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`[v0] Failed to fetch chat: ${response.status} ${response.statusText}`);
+      return null;
+    }
+
+    const chat: ChatsCreateResponse = await response.json();
+    console.log(`[v0] ✓ Chat retrieved: ${chat.id}`);
+    return chat;
+
   } catch (error: any) {
     console.error(`[v0] Failed to fetch chat ${chatId}:`, error.message);
     return null;
