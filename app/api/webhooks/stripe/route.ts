@@ -132,8 +132,8 @@ async function handleCheckoutCompleted(
     const project = await prisma.project.create({
       data: {
         userId: user.id,
-        name: `Business in a Box - ${tier.replace('_', ' ')}`,
-        tier,
+        projectName: `Business in a Box - ${tier.replace('_', ' ')}`,
+        biabTier: tier,
         businessConcept: '', // Will be populated when execution starts
         status: 'PENDING',
       },
