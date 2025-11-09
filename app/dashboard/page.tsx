@@ -5,17 +5,18 @@
  */
 
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { StatusBadge } from '@/components/StatusBadge';
 import { BIABProjectCard } from '@/components/BIABProjectCard';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    redirect('/api/auth/signin');
+    redirect('/auth/signin');
   }
 
   // Fetch user's BIAB projects

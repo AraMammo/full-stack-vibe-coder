@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 interface Tier {
@@ -155,20 +156,40 @@ function FAQItem({ faq }: { faq: FAQ }) {
 
 export default function PricingPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSelectTier = async (tierId: string) => {
     console.log("[Pricing] 🎯 User clicked tier:", tierId);
+
+    // Check authentication status
+    if (status === "loading") {
+      console.log("[Pricing] ⏳ Checking authentication status...");
+      return;
+    }
+
+    if (!session) {
+      console.log("[Pricing] 🔒 User not authenticated, redirecting to sign-in...");
+      // Redirect to sign-in with callback URL
+      const callbackUrl = encodeURIComponent(`/get-started?tier=${tierId}`);
+      router.push(`/auth/signin?callbackUrl=${callbackUrl}`);
+      return;
+    }
+
+    console.log("[Pricing] ✓ User authenticated:", session.user?.email);
     setLoading(tierId);
     setError(null);
 
     try {
-      // Call create-checkout API
+      // Call create-checkout API with user email
       const response = await fetch("/api/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tier: tierId }),
+        body: JSON.stringify({
+          tier: tierId,
+          userEmail: session.user?.email
+        }),
       });
 
       const data = await response.json();

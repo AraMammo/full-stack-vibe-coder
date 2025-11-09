@@ -6,14 +6,15 @@
  */
 
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import Link from 'next/link';
 
 export default async function ProposalPage({ params }: { params: { id: string } }) {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    redirect('/api/auth/signin');
+    redirect('/auth/signin');
   }
 
   // Feature not yet implemented - Proposal model doesn't exist in Prisma schema

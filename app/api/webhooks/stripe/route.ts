@@ -101,6 +101,23 @@ async function handleCheckoutCompleted(
       throw new Error('Missing tier or userEmail in session metadata');
     }
 
+    // Look up user by email
+    let user = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    // If user doesn't exist, create one (fallback, though they should already exist from sign-in)
+    if (!user) {
+      console.log(`[Stripe Webhook] User not found, creating new user: ${userEmail}`);
+      user = await prisma.user.create({
+        data: {
+          email: userEmail,
+          name: session.customer_details?.name || null,
+        },
+      });
+      console.log(`[Stripe Webhook] ✓ User created: ${user.id}`);
+    }
+
     // Check if payment already exists (idempotency)
     const existingPayment = await prisma.payment.findUnique({
       where: { stripeSessionId: session.id },
@@ -111,10 +128,23 @@ async function handleCheckoutCompleted(
       return;
     }
 
+    // Create project record
+    const project = await prisma.project.create({
+      data: {
+        userId: user.id,
+        name: `Business in a Box - ${tier.replace('_', ' ')}`,
+        tier,
+        businessConcept: '', // Will be populated when execution starts
+        status: 'PENDING',
+      },
+    });
+
+    console.log(`[Stripe Webhook] ✓ Project created: ${project.id}`);
+
     // Create payment record
     const payment = await prisma.payment.create({
       data: {
-        userId: userEmail, // Use email as userId (can link to auth later)
+        userId: user.id,
         userEmail,
         tier,
         amount,
@@ -123,6 +153,7 @@ async function handleCheckoutCompleted(
         stripeSessionId: session.id,
         stripePaymentIntentId: session.payment_intent as string | null,
         stripeCustomerId: session.customer as string | null,
+        projectId: project.id,
         metadata: session.metadata || {},
         completedAt: session.payment_status === 'paid' ? new Date() : null,
       },
@@ -130,12 +161,13 @@ async function handleCheckoutCompleted(
 
     console.log(`[Stripe Webhook] ✓ Payment created: ${payment.id} ($${amount / 100} ${tier})`);
 
-    // TODO: Send confirmation email via Postmark
+    // TODO: Send confirmation email via Postmark with project ID and next steps
     // await sendPaymentConfirmationEmail({
     //   email: userEmail,
     //   tier,
     //   amount,
     //   paymentId: payment.id,
+    //   projectId: project.id,
     // });
 
   } catch (error: any) {
