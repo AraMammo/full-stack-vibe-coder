@@ -35,30 +35,32 @@ export const authOptions: NextAuthOptions = {
 
   secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
 
-  // Cookie settings for Replit iframe environment
+  // Cookie settings for custom domain deployment
   cookies: {
     sessionToken: {
       name: `__Secure-next-auth.session-token`,
       options: {
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: 'lax',  // Changed from 'none' for custom domain
         path: '/',
-        secure: true
+        secure: true,
+        domain: process.env.NODE_ENV === 'production' ? '.fullstackvibecoder.com' : undefined
       }
     },
     callbackUrl: {
       name: `__Secure-next-auth.callback-url`,
       options: {
-        sameSite: 'none',
+        sameSite: 'lax',  // Changed from 'none' for custom domain
         path: '/',
-        secure: true
+        secure: true,
+        domain: process.env.NODE_ENV === 'production' ? '.fullstackvibecoder.com' : undefined
       }
     },
     csrfToken: {
       name: `__Host-next-auth.csrf-token`,
       options: {
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: 'lax',  // Changed from 'none' for custom domain
         path: '/',
         secure: true
       }
