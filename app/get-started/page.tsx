@@ -6,8 +6,8 @@
 
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -156,9 +156,21 @@ function FAQItem({ faq }: { faq: FAQ }) {
 
 export default function PricingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Auto-trigger checkout if user returns from sign-in with tier parameter
+  useEffect(() => {
+    const tier = searchParams.get('tier');
+    if (tier && session && status === 'authenticated' && !loading) {
+      console.log('[Pricing] 🔄 Auto-triggering checkout for tier:', tier);
+      handleSelectTier(tier);
+      // Clear the tier parameter from URL
+      router.replace('/get-started');
+    }
+  }, [session, status, searchParams]);
 
   const handleSelectTier = async (tierId: string) => {
     console.log("[Pricing] 🎯 User clicked tier:", tierId);

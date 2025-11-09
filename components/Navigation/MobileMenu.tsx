@@ -16,9 +16,11 @@ interface MobileMenuProps {
   onClose: () => void;
   navItems: NavItem[];
   currentPath: string;
+  isAuthenticated: boolean;
+  authLoading: boolean;
 }
 
-export function MobileMenu({ isOpen, onClose, navItems, currentPath }: MobileMenuProps) {
+export function MobileMenu({ isOpen, onClose, navItems, currentPath, isAuthenticated, authLoading }: MobileMenuProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
 
@@ -157,6 +159,105 @@ export function MobileMenu({ isOpen, onClose, navItems, currentPath }: MobileMen
                 </Link>
               );
             })}
+
+            {/* Auth-aware link */}
+            {!authLoading && (
+              isAuthenticated ? (
+                <Link
+                  href="/dashboard"
+                  className="relative block group focus:outline-none"
+                  aria-current={currentPath === '/dashboard' ? 'page' : undefined}
+                  onClick={onClose}
+                >
+                  <div className="relative">
+                    {currentPath === '/dashboard' && (
+                      <div
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-full"
+                        style={{
+                          background: 'linear-gradient(180deg, #ec4899 0%, #06b6d4 100%)',
+                          boxShadow: '0 0 12px rgba(236, 72, 153, 0.8)',
+                        }}
+                      />
+                    )}
+
+                    <span
+                      className={`
+                        block py-3 text-lg font-medium rounded-lg
+                        transition-all duration-200
+                        group-hover:translate-x-2
+                        ${currentPath === '/dashboard' ? 'pl-6' : 'pl-4'}
+                      `}
+                      style={
+                        currentPath === '/dashboard'
+                          ? {
+                              background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                              backgroundClip: 'text',
+                            }
+                          : { color: 'white' }
+                      }
+                    >
+                      Dashboard
+                    </span>
+
+                    <div
+                      className="absolute inset-0 rounded-lg opacity-0 group-focus-visible:opacity-100 transition-opacity"
+                      style={{
+                        boxShadow: '0 0 0 2px black, 0 0 0 4px #ec4899',
+                      }}
+                    />
+                  </div>
+                </Link>
+              ) : (
+                <Link
+                  href="/auth/signin"
+                  className="relative block group focus:outline-none"
+                  aria-current={currentPath === '/auth/signin' ? 'page' : undefined}
+                  onClick={onClose}
+                >
+                  <div className="relative">
+                    {currentPath === '/auth/signin' && (
+                      <div
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-full"
+                        style={{
+                          background: 'linear-gradient(180deg, #ec4899 0%, #06b6d4 100%)',
+                          boxShadow: '0 0 12px rgba(236, 72, 153, 0.8)',
+                        }}
+                      />
+                    )}
+
+                    <span
+                      className={`
+                        block py-3 text-lg font-medium rounded-lg
+                        transition-all duration-200
+                        group-hover:translate-x-2
+                        ${currentPath === '/auth/signin' ? 'pl-6' : 'pl-4'}
+                      `}
+                      style={
+                        currentPath === '/auth/signin'
+                          ? {
+                              background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                              backgroundClip: 'text',
+                            }
+                          : { color: 'white' }
+                      }
+                    >
+                      Sign In
+                    </span>
+
+                    <div
+                      className="absolute inset-0 rounded-lg opacity-0 group-focus-visible:opacity-100 transition-opacity"
+                      style={{
+                        boxShadow: '0 0 0 2px black, 0 0 0 4px #ec4899',
+                      }}
+                    />
+                  </div>
+                </Link>
+              )
+            )}
           </div>
 
           {/* Gradient Divider */}

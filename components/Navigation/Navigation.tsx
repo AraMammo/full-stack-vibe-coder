@@ -9,6 +9,7 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { NavLink } from './NavLink';
 import { MobileMenu } from './MobileMenu';
@@ -28,6 +29,7 @@ const navItems: NavItem[] = [
 
 export function Navigation() {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -113,6 +115,25 @@ export function Navigation() {
                   isContact={item.isContact || false}
                 />
               ))}
+
+              {/* Auth-aware link */}
+              {status !== 'loading' && (
+                session ? (
+                  <NavLink
+                    label="Dashboard"
+                    href="/dashboard"
+                    isActive={pathname === '/dashboard'}
+                    isContact={false}
+                  />
+                ) : (
+                  <NavLink
+                    label="Sign In"
+                    href="/auth/signin"
+                    isActive={pathname === '/auth/signin'}
+                    isContact={false}
+                  />
+                )
+              )}
             </div>
 
             {/* Mobile: Hamburger Button */}
@@ -153,6 +174,8 @@ export function Navigation() {
         onClose={() => setIsMobileMenuOpen(false)}
         navItems={navItems}
         currentPath={pathname}
+        isAuthenticated={!!session}
+        authLoading={status === 'loading'}
       />
     </>
   );
