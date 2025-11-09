@@ -81,12 +81,12 @@ export interface V0GenerateOptions {
 export async function generateV0App(
   options: V0GenerateOptions
 ): Promise<V0DeploymentResult> {
-  const apiKey = process.env.V0_API_KEY;
+  const apiKey = process.env.V0_API_KEY || process.env.VERCEL_V0_API_KEY;
 
   if (!apiKey) {
     return {
       success: false,
-      error: 'V0_API_KEY not configured in environment variables',
+      error: 'V0_API_KEY or VERCEL_V0_API_KEY not configured in environment variables',
     };
   }
 
@@ -276,10 +276,10 @@ async function waitForCompletion(
  * @returns Chat details or null if not found
  */
 export async function getV0Chat(chatId: string): Promise<ChatsCreateResponse | null> {
-  const apiKey = process.env.V0_API_KEY;
+  const apiKey = process.env.V0_API_KEY || process.env.VERCEL_V0_API_KEY;
 
   if (!apiKey) {
-    console.error('[v0] V0_API_KEY not configured');
+    console.error('[v0] V0_API_KEY or VERCEL_V0_API_KEY not configured');
     return null;
   }
 
@@ -315,10 +315,10 @@ export async function getV0Chat(chatId: string): Promise<ChatsCreateResponse | n
  * @returns True if connection successful, false otherwise
  */
 export async function testV0Connection(): Promise<boolean> {
-  const apiKey = process.env.V0_API_KEY;
+  const apiKey = process.env.V0_API_KEY || process.env.VERCEL_V0_API_KEY;
 
   if (!apiKey) {
-    console.error('[v0] V0_API_KEY not configured');
+    console.error('[v0] V0_API_KEY or VERCEL_V0_API_KEY not configured');
     return false;
   }
 
