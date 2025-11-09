@@ -39,7 +39,9 @@ async function createPromoCode() {
     console.log('Step 2: Creating promotion code "FSVC100"...');
 
     const promotionCode = await stripe.promotionCodes.create({
-      coupon: coupon.id,
+      promotion: {
+        coupon: coupon.id,
+      },
       code: 'FSVC100',
       active: true,
       metadata: {
@@ -51,7 +53,7 @@ async function createPromoCode() {
     console.log(`✅ Promotion Code created: ${promotionCode.id}`);
     console.log(`   Code: ${promotionCode.code}`);
     console.log(`   Active: ${promotionCode.active}`);
-    console.log(`   Coupon: ${promotionCode.coupon.id}`);
+    console.log(`   Coupon: ${(promotionCode as any).promotion?.coupon || coupon.id}`);
     console.log('');
 
     // Summary
