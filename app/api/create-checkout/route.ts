@@ -92,6 +92,12 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`[Stripe] Creating checkout for ${tierConfig.name} ($${tierConfig.price / 100})`);
+    console.log(`[Stripe] Parameters:`, {
+      tier,
+      userEmail,
+      baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
+      price: tierConfig.price,
+    });
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -128,6 +134,13 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('[Stripe] Checkout error:', error);
+    console.error('[Stripe] Error details:', {
+      message: error.message,
+      type: error.type,
+      code: error.code,
+      raw: error.raw,
+      statusCode: error.statusCode,
+    });
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -137,7 +150,12 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Error creating checkout session', message: error.message },
+      {
+        error: 'Error creating checkout session',
+        message: error.message,
+        type: error.type || 'unknown',
+        code: error.code || 'unknown'
+      },
       { status: 500 }
     );
   }
