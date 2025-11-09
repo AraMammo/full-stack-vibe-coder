@@ -188,7 +188,7 @@ async function handleCheckoutCompleted(
       // Don't throw - payment is already complete, execution can be retried manually
     }
 
-    // TODO: Send confirmation email via Postmark with project ID and next steps
+    // TODO: Send confirmation email via SendGrid with project ID and next steps
     // await sendPaymentConfirmationEmail({
     //   email: userEmail,
     //   tier,
