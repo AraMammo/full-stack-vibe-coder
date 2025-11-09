@@ -116,6 +116,7 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'payment',
+      allow_promotion_codes: true, // Enable promo code field in checkout
       customer_email: userEmail,
       metadata: {
         tier,
