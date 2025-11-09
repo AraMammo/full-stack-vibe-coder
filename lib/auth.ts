@@ -20,6 +20,7 @@ const hasGoogleProvider =
   !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET;
 
 console.log('[NextAuth] Configuration:');
+console.log(`  - NEXTAUTH_URL: ${process.env.NEXTAUTH_URL || '❌ Not set (will auto-detect)'}`);
 console.log(`  - NEXTAUTH_SECRET: ${process.env.NEXTAUTH_SECRET ? '✅ Set' : '❌ Missing'}`);
 console.log(`  - Email Provider: ${hasEmailProvider ? '✅ Enabled' : '⚠️  Disabled (SMTP not configured)'}`);
 console.log(`  - Google OAuth: ${hasGoogleProvider ? '✅ Enabled' : '⚠️  Disabled (OAuth not configured)'}`);
@@ -35,32 +36,31 @@ export const authOptions: NextAuthOptions = {
 
   secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
 
-  // Cookie settings for custom domain deployment
+  // Cookie settings for production deployment
+  // Keep sameSite: 'none' for Replit proxy compatibility
   cookies: {
     sessionToken: {
       name: `__Secure-next-auth.session-token`,
       options: {
         httpOnly: true,
-        sameSite: 'lax',  // Changed from 'none' for custom domain
+        sameSite: 'none',
         path: '/',
-        secure: true,
-        domain: process.env.NODE_ENV === 'production' ? '.fullstackvibecoder.com' : undefined
+        secure: true
       }
     },
     callbackUrl: {
       name: `__Secure-next-auth.callback-url`,
       options: {
-        sameSite: 'lax',  // Changed from 'none' for custom domain
+        sameSite: 'none',
         path: '/',
-        secure: true,
-        domain: process.env.NODE_ENV === 'production' ? '.fullstackvibecoder.com' : undefined
+        secure: true
       }
     },
     csrfToken: {
       name: `__Host-next-auth.csrf-token`,
       options: {
         httpOnly: true,
-        sameSite: 'lax',  // Changed from 'none' for custom domain
+        sameSite: 'none',
         path: '/',
         secure: true
       }
