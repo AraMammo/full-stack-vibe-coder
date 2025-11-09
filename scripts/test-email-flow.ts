@@ -13,7 +13,8 @@ async function testEmailFlow() {
   // Check environment variables
   console.log('\n📋 Environment Variables:');
   console.log(`  SENDGRID_API_KEY: ${process.env.SENDGRID_API_KEY ? '✅ Set' : '❌ Not set'}`);
-  console.log(`  SENDGRID_FROM_EMAIL: ${process.env.SENDGRID_FROM_EMAIL || '❌ Not set (will use default)'}`);
+  console.log(`  SENDGRID_FROM_EMAIL: ${process.env.SENDGRID_FROM_EMAIL || 'noreply@fullstackvibecoder.com (default)'}`);
+  console.log(`  SENDGRID_REPLY_TO_EMAIL: ${process.env.SENDGRID_REPLY_TO_EMAIL || 'ara@foundercorepro.com (default)'}`);
   console.log(`  NEXT_PUBLIC_APP_URL: ${process.env.NEXT_PUBLIC_APP_URL || '❌ Not set (will use default)'}`);
   console.log(`  DUMPLING_API: ${process.env.DUMPLING_API ? '✅ Set' : '❌ Not set'}`);
   console.log(`  V0_API_KEY: ${process.env.V0_API_KEY ? '✅ Set' : '❌ Not set'}`);

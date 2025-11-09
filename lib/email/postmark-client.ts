@@ -52,6 +52,7 @@ export async function sendProjectStartedEmail(
 ): Promise<EmailResult> {
   const apiKey = process.env.SENDGRID_API_KEY;
   const fromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@fullstackvibecoder.com';
+  const replyToEmail = process.env.SENDGRID_REPLY_TO_EMAIL || 'ara@foundercorepro.com';
 
   if (!apiKey) {
     console.error('[SendGrid] API key not configured');
@@ -78,6 +79,7 @@ export async function sendProjectStartedEmail(
     const msg = {
       to: user.email,
       from: fromEmail,
+      replyTo: replyToEmail,
       subject: subject,
       text: textBody,
       html: htmlBody,
@@ -120,6 +122,7 @@ export async function sendProjectCompleteEmail(
 ): Promise<EmailResult> {
   const apiKey = process.env.SENDGRID_API_KEY;
   const fromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@fullstackvibecoder.com';
+  const replyToEmail = process.env.SENDGRID_REPLY_TO_EMAIL || 'ara@foundercorepro.com';
 
   if (!apiKey) {
     console.error('[SendGrid] API key not configured');
@@ -145,6 +148,7 @@ export async function sendProjectCompleteEmail(
     const msg = {
       to: user.email,
       from: fromEmail,
+      replyTo: replyToEmail,
       subject: subject,
       text: textBody,
       html: htmlBody,

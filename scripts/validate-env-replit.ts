@@ -98,6 +98,11 @@ const ENV_CHECKS: EnvCheck[] = [
     required: false,
     description: 'SendGrid from email (defaults to noreply@fullstackvibecoder.com)',
   },
+  {
+    name: 'SENDGRID_REPLY_TO_EMAIL',
+    required: false,
+    description: 'Reply-to email for customer responses (defaults to ara@foundercorepro.com)',
+  },
 
   // Optional
   {
