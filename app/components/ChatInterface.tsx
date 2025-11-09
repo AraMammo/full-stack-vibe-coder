@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface Message {
   role: "user" | "assistant";
@@ -28,6 +28,12 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, businessSample]);
 
   const startRecording = async () => {
     try {
@@ -145,7 +151,7 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
   };
 
   const handleGetFullPackage = () => {
-    window.location.href = "/pricing";
+    window.location.href = "/get-started";
   };
 
   return (
@@ -193,6 +199,9 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
             </button>
           </div>
         )}
+
+        {/* Scroll anchor for auto-scroll */}
+        <div ref={messagesEndRef} />
       </div>
 
       <div className="chat-input-container">
@@ -241,9 +250,10 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
 
         .chat-messages {
           min-height: 80px;
-          max-height: 150px;
+          max-height: 400px;
           overflow-y: auto;
           margin-bottom: 12px;
+          scroll-behavior: smooth;
         }
 
         .message {

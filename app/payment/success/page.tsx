@@ -100,7 +100,7 @@ export default function PaymentSuccessPage() {
           <h1 className="text-2xl font-bold text-red-500 mb-2">Payment Verification Failed</h1>
           <p className="text-gray-400 mb-6">{error}</p>
           <Link
-            href="/pricing"
+            href="/get-started"
             className="inline-block px-6 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors"
           >
             Back to Pricing

@@ -259,7 +259,7 @@ export default function ToolsPage() {
               </p>
               <button
                 className="coming-soon-cta"
-                onClick={() => router.push('/pricing')}
+                onClick={() => router.push('/get-started')}
               >
                 Explore Business in a Box →
               </button>

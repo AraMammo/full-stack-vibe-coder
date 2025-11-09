@@ -318,7 +318,7 @@ export default function VibeCodingBlogPost() {
           <div className="blog-cta-box">
             <h3>Experience Vibe Coding</h3>
             <p>Record your project idea. Get a proposal in 6 hours. See how fast we can build your software.</p>
-            <a href="/pricing" className="blog-cta-button">Start a Project</a>
+            <a href="/get-started" className="blog-cta-button">Start a Project</a>
           </div>
           
           <div className="blog-post-back">

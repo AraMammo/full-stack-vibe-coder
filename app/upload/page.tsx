@@ -297,7 +297,7 @@ export default function UploadPage() {
             </div>
             <div className="mt-6 flex gap-3">
               <button
-                onClick={() => router.push('/pricing')}
+                onClick={() => router.push('/get-started')}
                 className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
                 View Full Pricing

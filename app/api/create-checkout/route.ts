@@ -9,9 +9,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { z } from 'zod';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-});
+// Initialize Stripe with error handling
+let stripe: Stripe | null = null;
+try {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('[Stripe] STRIPE_SECRET_KEY not configured');
+  } else {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-09-30.clover',
+    });
+  }
+} catch (error) {
+  console.error('[Stripe] Failed to initialize:', error);
+}
 
 // ============================================
 // TIER CONFIGURATION
@@ -56,6 +66,18 @@ const CheckoutSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Stripe is initialized
+    if (!stripe) {
+      console.error('[Stripe] Cannot create checkout - Stripe not initialized');
+      return NextResponse.json(
+        {
+          error: 'Payment system not configured',
+          message: 'STRIPE_SECRET_KEY is not set. Please configure Stripe in environment variables.'
+        },
+        { status: 500 }
+      );
+    }
+
     // Parse and validate request
     const body = await request.json();
     const { tier, userEmail } = CheckoutSchema.parse(body);
@@ -94,7 +116,7 @@ export async function POST(request: NextRequest) {
         // Will be populated by webhook after payment
       },
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/pricing`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/get-started`,
     });
 
     console.log(`[Stripe] ✓ Checkout session created: ${session.id}`);
