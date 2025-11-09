@@ -161,6 +161,33 @@ async function handleCheckoutCompleted(
 
     console.log(`[Stripe Webhook] ✓ Payment created: ${payment.id} ($${amount / 100} ${tier})`);
 
+    // Trigger BIAB execution
+    console.log(`[Stripe Webhook] 🚀 Triggering BIAB execution for project: ${project.id}`);
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+      const executionResponse = await fetch(`${baseUrl}/api/business-in-a-box/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: project.id,
+          businessConcept: `Business concept for ${tier.replace('_', ' ')}`,
+          userId: user.id,
+          tier: tier,
+        }),
+      });
+
+      if (!executionResponse.ok) {
+        const errorData = await executionResponse.json();
+        console.error('[Stripe Webhook] ⚠️  Failed to trigger BIAB execution:', errorData);
+        // Don't throw - payment is already complete, execution can be retried manually
+      } else {
+        console.log(`[Stripe Webhook] ✓ BIAB execution triggered successfully`);
+      }
+    } catch (execError: any) {
+      console.error('[Stripe Webhook] ⚠️  Error triggering BIAB execution:', execError.message);
+      // Don't throw - payment is already complete, execution can be retried manually
+    }
+
     // TODO: Send confirmation email via Postmark with project ID and next steps
     // await sendPaymentConfirmationEmail({
     //   email: userEmail,
