@@ -23,6 +23,7 @@
     "@neondatabase/serverless": "^1.0.2",
     "@octokit/rest": "^22.0.0",
     "@prisma/client": "^6.17.1",
+    "@sendgrid/mail": "^8.1.6",
     "@stripe/stripe-js": "^8.0.0",
     "@supabase/supabase-js": "^2.76.0",
     "@tailwindcss/postcss": "^4.1.16",

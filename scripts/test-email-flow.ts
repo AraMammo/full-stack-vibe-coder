@@ -12,8 +12,8 @@ async function testEmailFlow() {
 
   // Check environment variables
   console.log('\n📋 Environment Variables:');
-  console.log(`  POSTMARK_API_KEY: ${process.env.POSTMARK_API_KEY ? '✅ Set' : '❌ Not set'}`);
-  console.log(`  POSTMARK_FROM_EMAIL: ${process.env.POSTMARK_FROM_EMAIL || '❌ Not set (will use default)'}`);
+  console.log(`  SENDGRID_API_KEY: ${process.env.SENDGRID_API_KEY ? '✅ Set' : '❌ Not set'}`);
+  console.log(`  SENDGRID_FROM_EMAIL: ${process.env.SENDGRID_FROM_EMAIL || '❌ Not set (will use default)'}`);
   console.log(`  NEXT_PUBLIC_APP_URL: ${process.env.NEXT_PUBLIC_APP_URL || '❌ Not set (will use default)'}`);
   console.log(`  DUMPLING_API: ${process.env.DUMPLING_API ? '✅ Set' : '❌ Not set'}`);
   console.log(`  V0_API_KEY: ${process.env.V0_API_KEY ? '✅ Set' : '❌ Not set'}`);
@@ -33,7 +33,7 @@ async function testEmailFlow() {
   console.log('   Content:');
   console.log('     - Estimated time: 45-60 minutes');
   console.log('     - Dashboard link for progress tracking');
-  console.log('   Status: Would be sent via Postmark ✉️');
+  console.log('   Status: Would be sent via SendGrid ✉️');
 
   // Step 3: BIAB orchestrator executes
   console.log('\n3️⃣  BIAB Orchestrator executes');
@@ -68,7 +68,7 @@ async function testEmailFlow() {
   console.log('     - Dashboard link');
   console.log('     - v0 preview URL (if available)');
   console.log('     - File size: ~20 MB');
-  console.log('   Status: Would be sent via Postmark ✉️');
+  console.log('   Status: Would be sent via SendGrid ✉️');
 
   // Summary
   console.log('\n' + '='.repeat(60));

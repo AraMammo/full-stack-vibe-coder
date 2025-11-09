@@ -1,10 +1,11 @@
 /**
- * Postmark Email Client
+ * SendGrid Email Client
  *
- * Sends transactional emails using Postmark API.
+ * Sends transactional emails using SendGrid API.
  * Used for project notifications (started, completed).
  */
 
+import sgMail from '@sendgrid/mail';
 import { BIABTier } from '@/app/generated/prisma';
 
 // ============================================
@@ -49,18 +50,21 @@ export async function sendProjectStartedEmail(
   user: EmailUser,
   projectData: ProjectEmailData
 ): Promise<EmailResult> {
-  const apiKey = process.env.POSTMARK_API_KEY;
-  const fromEmail = process.env.POSTMARK_FROM_EMAIL || 'noreply@fullstackvibecoder.com';
+  const apiKey = process.env.SENDGRID_API_KEY;
+  const fromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@fullstackvibecoder.com';
 
   if (!apiKey) {
-    console.error('[Postmark] API key not configured');
+    console.error('[SendGrid] API key not configured');
     return {
       success: false,
-      error: 'POSTMARK_API_KEY environment variable not set',
+      error: 'SENDGRID_API_KEY environment variable not set',
     };
   }
 
   try {
+    // Set SendGrid API key
+    sgMail.setApiKey(apiKey);
+
     const { tier, projectName, dashboardUrl } = projectData;
     const tierName = getTierDisplayName(tier);
     const estimatedTime = getEstimatedCompletionTime(tier);
@@ -69,47 +73,36 @@ export async function sendProjectStartedEmail(
     const htmlBody = generateProjectStartedHTML(user, tierName, projectName, estimatedTime, dashboardUrl);
     const textBody = generateProjectStartedText(user, tierName, projectName, estimatedTime, dashboardUrl);
 
-    console.log(`[Postmark] Sending project started email to ${user.email}`);
+    console.log(`[SendGrid] Sending project started email to ${user.email}`);
 
-    const response = await fetch('https://api.postmarkapp.com/email', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-Postmark-Server-Token': apiKey,
-      },
-      body: JSON.stringify({
-        From: fromEmail,
-        To: user.email,
-        Subject: subject,
-        HtmlBody: htmlBody,
-        TextBody: textBody,
-        MessageStream: 'outbound',
-      }),
-    });
+    const msg = {
+      to: user.email,
+      from: fromEmail,
+      subject: subject,
+      text: textBody,
+      html: htmlBody,
+    };
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      console.error('[Postmark] Send error:', response.status, error);
-      return {
-        success: false,
-        error: `Postmark API error: ${response.status}`,
-      };
-    }
+    const [response] = await sgMail.send(msg);
 
-    const data = await response.json();
-    console.log(`[Postmark] ✓ Email sent, Message ID: ${data.MessageId}`);
+    console.log(`[SendGrid] ✓ Email sent, Message ID: ${response.headers['x-message-id']}`);
 
     return {
       success: true,
-      messageId: data.MessageId,
+      messageId: response.headers['x-message-id'] as string,
     };
 
-  } catch (error) {
-    console.error('[Postmark] Email send failed:', error);
+  } catch (error: any) {
+    console.error('[SendGrid] Email send failed:', error);
+
+    // SendGrid errors have detailed info
+    if (error.response) {
+      console.error('[SendGrid] Error response:', error.response.body);
+    }
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error.message || 'Unknown error',
     };
   }
 }
@@ -125,18 +118,21 @@ export async function sendProjectCompleteEmail(
   user: EmailUser,
   completionData: CompletionEmailData
 ): Promise<EmailResult> {
-  const apiKey = process.env.POSTMARK_API_KEY;
-  const fromEmail = process.env.POSTMARK_FROM_EMAIL || 'noreply@fullstackvibecoder.com';
+  const apiKey = process.env.SENDGRID_API_KEY;
+  const fromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@fullstackvibecoder.com';
 
   if (!apiKey) {
-    console.error('[Postmark] API key not configured');
+    console.error('[SendGrid] API key not configured');
     return {
       success: false,
-      error: 'POSTMARK_API_KEY environment variable not set',
+      error: 'SENDGRID_API_KEY environment variable not set',
     };
   }
 
   try {
+    // Set SendGrid API key
+    sgMail.setApiKey(apiKey);
+
     const { tier, projectName, downloadUrl, dashboardUrl, fileType } = completionData;
     const tierName = getTierDisplayName(tier);
 
@@ -144,47 +140,36 @@ export async function sendProjectCompleteEmail(
     const htmlBody = generateProjectCompleteHTML(user, tierName, projectName, downloadUrl, dashboardUrl, fileType);
     const textBody = generateProjectCompleteText(user, tierName, projectName, downloadUrl, dashboardUrl, fileType);
 
-    console.log(`[Postmark] Sending project complete email to ${user.email}`);
+    console.log(`[SendGrid] Sending project complete email to ${user.email}`);
 
-    const response = await fetch('https://api.postmarkapp.com/email', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-Postmark-Server-Token': apiKey,
-      },
-      body: JSON.stringify({
-        From: fromEmail,
-        To: user.email,
-        Subject: subject,
-        HtmlBody: htmlBody,
-        TextBody: textBody,
-        MessageStream: 'outbound',
-      }),
-    });
+    const msg = {
+      to: user.email,
+      from: fromEmail,
+      subject: subject,
+      text: textBody,
+      html: htmlBody,
+    };
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      console.error('[Postmark] Send error:', response.status, error);
-      return {
-        success: false,
-        error: `Postmark API error: ${response.status}`,
-      };
-    }
+    const [response] = await sgMail.send(msg);
 
-    const data = await response.json();
-    console.log(`[Postmark] ✓ Email sent, Message ID: ${data.MessageId}`);
+    console.log(`[SendGrid] ✓ Email sent, Message ID: ${response.headers['x-message-id']}`);
 
     return {
       success: true,
-      messageId: data.MessageId,
+      messageId: response.headers['x-message-id'] as string,
     };
 
-  } catch (error) {
-    console.error('[Postmark] Email send failed:', error);
+  } catch (error: any) {
+    console.error('[SendGrid] Email send failed:', error);
+
+    // SendGrid errors have detailed info
+    if (error.response) {
+      console.error('[SendGrid] Error response:', error.response.body);
+    }
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error.message || 'Unknown error',
     };
   }
 }
