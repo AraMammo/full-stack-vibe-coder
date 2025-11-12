@@ -8,13 +8,28 @@ interface Tool {
   name: string;
   description: string;
   features: string[];
-  monthlyPrice: number;
-  annualPrice: number;
-  lifetimePrice: number;
+  monthlyPrice?: number;
+  annualPrice?: number;
+  lifetimePrice?: number;
   slug: string;
+  isFree?: boolean;
 }
 
 const tools: Tool[] = [
+  {
+    id: 'whiteboard',
+    slug: 'whiteboard',
+    name: 'Free Whiteboard',
+    description: 'Professional whiteboard for brainstorming, diagramming, and visual collaboration. Sketch ideas, create flowcharts, and collaborate visually—completely free, no sign-up required. Powered by Excalidraw.',
+    features: [
+      'Unlimited canvas space for your ideas',
+      'Hand-drawn sketchy style diagrams',
+      'Export to PNG, SVG, or JSON',
+      'No sign-up required - start immediately',
+      '100% free forever'
+    ],
+    isFree: true
+  },
   {
     id: 'substack-engine',
     slug: 'substack-engine',
@@ -197,10 +212,51 @@ export default function ToolsPage() {
           Pre-built automation that saves you hours every week. Built by operators who understand the grind.
         </p>
 
-        {/* Tools Section with Coming Soon Overlay */}
+        {/* Free Whiteboard Tool - Always Available */}
+        <div className="tools-grid" style={{ marginBottom: '3rem' }}>
+          {tools.filter(tool => tool.isFree).map((tool) => (
+            <div key={tool.id} className="tool-card chaos-card" style={{ border: '2px solid #10b981' }}>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="tool-name">{tool.name}</h2>
+                <span className="px-3 py-1 text-xs font-bold rounded-full" style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)',
+                  color: 'white'
+                }}>
+                  FREE
+                </span>
+              </div>
+              <p className="tool-description">{tool.description}</p>
+
+              <div className="tool-features">
+                <h3>What you get:</h3>
+                <ul>
+                  {tool.features.map((feature, index) => (
+                    <li key={index}>
+                      <span className="feature-check">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <button
+                className="subscribe-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)',
+                  border: 'none'
+                }}
+                onClick={() => router.push(`/tools/${tool.slug}`)}
+              >
+                Launch Whiteboard →
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Premium Tools Section with Coming Soon Overlay */}
         <div className="tools-section-wrapper">
           <div className="tools-grid tools-grid-locked">
-            {tools.map((tool) => (
+            {tools.filter(tool => !tool.isFree).map((tool) => (
               <div key={tool.id} className="tool-card chaos-card">
                 <h2 className="tool-name">{tool.name}</h2>
                 <p className="tool-description">{tool.description}</p>
@@ -226,7 +282,7 @@ export default function ToolsPage() {
                     <div className="pricing-option">
                       <div className="price-label">Annual</div>
                       <div className="price-amount">${tool.annualPrice}/yr</div>
-                      <div className="savings-badge">Save ${(tool.monthlyPrice * 12) - tool.annualPrice}</div>
+                      <div className="savings-badge">Save ${(tool.monthlyPrice! * 12) - tool.annualPrice!}</div>
                     </div>
                     <div className="pricing-option highlight">
                       <div className="price-label">Lifetime</div>
