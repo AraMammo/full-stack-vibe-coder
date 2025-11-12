@@ -12,7 +12,15 @@ import '@excalidraw/excalidraw/index.css';
 
 export default function ExcalidrawWrapper() {
   return (
-    <div style={{ height: '100vh', width: '100%' }}>
+    <div style={{
+      height: 'calc(100vh - 72px)',
+      width: '100%',
+      position: 'fixed',
+      top: '72px',
+      left: 0,
+      right: 0,
+      bottom: 0
+    }}>
       <Excalidraw
         theme="dark"
       />
