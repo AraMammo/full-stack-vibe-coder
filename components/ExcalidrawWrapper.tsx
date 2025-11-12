@@ -15,14 +15,6 @@ export default function ExcalidrawWrapper() {
     <div style={{ height: '100vh', width: '100%' }}>
       <Excalidraw
         theme="dark"
-        UIOptions={{
-          canvasActions: {
-            saveToActiveFile: true,
-            loadScene: true,
-            export: true,
-            toggleTheme: true,
-          },
-        }}
       />
     </div>
   );
