@@ -10,6 +10,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { StatusBadge } from '@/components/StatusBadge';
 import { BIABProjectCard } from '@/components/BIABProjectCard';
+import { VideoJobCard } from '@/components/VideoJobCard';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
@@ -23,6 +24,22 @@ export default async function DashboardPage() {
   const biabProjects = await prisma.project.findMany({
     where: { userId: session.user.id },
     orderBy: { createdAt: 'desc' },
+  });
+
+  // Fetch user's faceless video jobs
+  const videoJobs = await prisma.facelessVideoJob.findMany({
+    where: { userId: session.user.id },
+    include: {
+      scenes: {
+        select: {
+          id: true,
+          sceneIndex: true,
+        },
+        orderBy: { sceneIndex: 'asc' },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 20,
   });
 
   // Workflow model not yet implemented - return empty data
@@ -82,12 +99,14 @@ export default async function DashboardPage() {
 
   // Calculate stats
   const stats = {
-    total: workflows.length + biabProjects.length,
+    total: workflows.length + biabProjects.length + videoJobs.length,
     processing: workflows.filter(w => w.status === 'in_progress' || w.status === 'pending').length +
-                biabProjects.filter(p => p.status === 'IN_PROGRESS' || p.status === 'PENDING').length,
+                biabProjects.filter(p => p.status === 'IN_PROGRESS' || p.status === 'PENDING').length +
+                videoJobs.filter(v => v.status === 'PROCESSING' || v.status === 'UPLOADING' || v.status === 'QUEUED').length,
     ready: workflows.filter(w => w.proposal?.status === 'pending_review').length,
     approved: workflows.filter(w => w.proposal?.status === 'approved').length +
-              biabProjects.filter(p => p.status === 'COMPLETED').length,
+              biabProjects.filter(p => p.status === 'COMPLETED').length +
+              videoJobs.filter(v => v.status === 'COMPLETED').length,
   };
 
   return (
@@ -154,6 +173,29 @@ export default async function DashboardPage() {
           </div>
         )}
 
+        {/* Faceless Video Jobs */}
+        {videoJobs.length > 0 && (
+          <div className="mb-8">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Faceless Video Generator</h2>
+                <p className="text-sm text-gray-600">AI-powered video generation with animated captions</p>
+              </div>
+              <Link
+                href="/tools/faceless-video-generator"
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-500 to-cyan-500 hover:from-green-600 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                + New Video
+              </Link>
+            </div>
+            <div className="bg-white shadow-sm rounded-lg border border-gray-200">
+              {videoJobs.map((job) => (
+                <VideoJobCard key={job.id} job={job} />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Workflows List */}
         {workflows.length > 0 && (
           <div className="bg-white shadow-sm rounded-lg border border-gray-200">
@@ -169,15 +211,21 @@ export default async function DashboardPage() {
         )}
 
         {/* Empty State */}
-        {workflows.length === 0 && biabProjects.length === 0 && (
+        {workflows.length === 0 && biabProjects.length === 0 && videoJobs.length === 0 && (
           <div className="bg-white shadow-sm rounded-lg border border-gray-200">
             <div className="px-6 py-12 text-center">
               <div className="text-4xl mb-4">🚀</div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
               <p className="text-gray-600 mb-6">
-                Ready to start your business? Choose a package and get started.
+                Ready to start? Create faceless videos or launch your business.
               </p>
-              <div className="flex gap-3 justify-center">
+              <div className="flex gap-3 justify-center flex-wrap">
+                <Link
+                  href="/tools/faceless-video-generator"
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-500 to-cyan-500 hover:from-green-600 hover:to-cyan-600"
+                >
+                  Create Faceless Video
+                </Link>
                 <Link
                   href="/get-started"
                   className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700"

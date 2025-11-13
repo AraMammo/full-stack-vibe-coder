@@ -31,6 +31,21 @@ const tools: Tool[] = [
     isFree: true
   },
   {
+    id: 'faceless-video-generator',
+    slug: 'faceless-video-generator',
+    name: 'Faceless Video Generator',
+    description: 'Transform image and audio pairs into professional faceless videos with Ken Burns effects, audio sync, and animated word-by-word captions. Perfect for content creators who want TikTok-style videos without showing their face.',
+    features: [
+      'Dynamic Ken Burns zoom effects on images',
+      'Perfect audio synchronization and trimming',
+      'Animated word-by-word captions (TikTok-style)',
+      'Combine up to 10 scenes into one video',
+      'Custom caption styling (fonts, colors, positions)',
+      'Fast processing: 2-5 minutes per scene'
+    ],
+    isFree: true
+  },
+  {
     id: 'substack-engine',
     slug: 'substack-engine',
     name: 'Substack Engine',

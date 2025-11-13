@@ -304,3 +304,72 @@ enum ProjectStatus {
   COMPLETED
   FAILED
 }
+
+// Faceless Video Generator Models
+model FacelessVideoJob {
+  id                String               @id @default(uuid())
+  userId            String
+  userEmail         String
+  status            VideoJobStatus       @default(QUEUED)
+  progress          Int                  @default(0)
+  errorMessage      String?
+
+  // Caption settings
+  fontFamily        String               @default("The Bold Font")
+  fontSize          Int                  @default(60)
+  lineColor         String               @default("#FFFFFF")
+  wordColor         String               @default("#66ff74")
+  maxWordsPerLine   Int                  @default(3)
+  position          String               @default("bottom_center")
+  captionStyle      String               @default("highlight")
+
+  // Output
+  outputVideoUrl    String?
+  outputVideoPath   String?
+  videoDuration     Float?
+  fileSize          Int?
+
+  // Metadata
+  n8nWebhookData    Json?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  startedAt         DateTime?
+  completedAt       DateTime?
+
+  scenes            VideoScene[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([userEmail])
+  @@map("faceless_video_jobs")
+}
+
+model VideoScene {
+  id                String               @id @default(uuid())
+  jobId             String
+  sceneIndex        Int
+
+  // Input files
+  imageUrl          String
+  imagePath         String
+  audioUrl          String
+  audioPath         String
+
+  // Metadata
+  audioDuration     Float?
+  uploadedAt        DateTime             @default(now())
+
+  job               FacelessVideoJob     @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([jobId, sceneIndex])
+  @@map("video_scenes")
+}
+
+enum VideoJobStatus {
+  QUEUED
+  UPLOADING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
