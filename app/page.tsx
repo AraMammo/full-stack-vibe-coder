@@ -263,25 +263,31 @@ export default function Home() {
               marginBottom: "1rem",
             }}
           >
-            Voice note to Market-Ready Business. 30 minutes. $497.
+            Get a Complete Business in 30 Minutes
           </h2>
           <p
             className="value-prop-subheadline"
             style={{ marginBottom: "1rem", fontSize: "1.3rem", fontWeight: "600" }}
           >
-            Complete website, logo variations, competitive analysis, brand guidelines.
+            Live website. Professional branding. Market research. Launch guide.
           </p>
           <p
             className="value-prop-subheadline"
             style={{ marginBottom: "1rem" }}
           >
-            Plus: Market research, business plan, technical documentation, marketing strategy, and step-by-step launch guide.
+            Record what you want to build. Get everything you need to compete online in under 30 minutes.
+          </p>
+          <p
+            className="value-prop-subheadline"
+            style={{ marginBottom: "1rem" }}
+          >
+            Starting from scratch or already in business—one voice note gets you what normally takes months and costs thousands.
           </p>
           <p
             className="value-prop-subheadline"
             style={{ marginBottom: "2rem", opacity: "0.9" }}
           >
-            Everything you need to go live. No consultants. No waiting.
+            $497. No consultants. No waiting.
           </p>
         </div>
 
