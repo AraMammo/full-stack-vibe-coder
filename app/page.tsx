@@ -17,6 +17,11 @@ export default function Home() {
   }, []);
 
   // Handle URL parameters for contact form
+  // Ensure page loads at top
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     try {
       const contact = searchParams.get("contact");
@@ -26,7 +31,7 @@ export default function Home() {
         openForm(decodeURIComponent(subject));
         // Clean up URL with a small delay to avoid race conditions
         setTimeout(() => {
-          router.replace("/", { scroll: false });
+          router.replace("/");
         }, 100);
       }
     } catch (error) {

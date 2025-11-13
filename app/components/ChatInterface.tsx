@@ -30,12 +30,17 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
   const audioChunksRef = useRef<Blob[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll to bottom when messages change (but not on initial load)
+  const [hasInteracted, setHasInteracted] = useState(false);
+  
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, businessSample]);
+    if (hasInteracted) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, businessSample, hasInteracted]);
 
   const startRecording = async () => {
+    setHasInteracted(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
@@ -99,6 +104,7 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
     if (!inputText.trim()) return;
 
     setIsSubmitting(true);
+    setHasInteracted(true);
 
     try {
       setMessages((prev) => [
