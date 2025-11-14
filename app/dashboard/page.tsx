@@ -24,6 +24,20 @@ export default async function DashboardPage() {
   const biabProjects = await prisma.project.findMany({
     where: { userId: session.user.id },
     orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      projectName: true,
+      biabTier: true,
+      status: true,
+      progress: true,
+      completedPrompts: true,
+      totalPrompts: true,
+      createdAt: true,
+      v0ChatId: true,
+      v0PreviewUrl: true,
+      v0DeployUrl: true,
+      v0GeneratedAt: true,
+    },
   });
 
   // Fetch user's faceless video jobs

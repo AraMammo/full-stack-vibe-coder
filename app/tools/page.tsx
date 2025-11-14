@@ -230,7 +230,10 @@ export default function ToolsPage() {
         {/* Free Whiteboard Tool - Always Available */}
         <div className="tools-grid" style={{ marginBottom: '3rem' }}>
           {tools.filter(tool => tool.isFree).map((tool) => (
-            <div key={tool.id} className="tool-card chaos-card" style={{ border: '2px solid #10b981' }}>
+            <div key={tool.id} className="tool-card chaos-card" style={{
+              border: '2px solid #10b981',
+              position: 'relative'
+            }}>
               <div className="flex items-center justify-between mb-3">
                 <h2 className="tool-name">{tool.name}</h2>
                 <span className="px-3 py-1 text-xs font-bold rounded-full" style={{
@@ -262,8 +265,65 @@ export default function ToolsPage() {
                 }}
                 onClick={() => router.push(`/tools/${tool.slug}`)}
               >
-                Launch Whiteboard →
+                {tool.id === 'whiteboard' ? 'Launch Whiteboard →' : 'View Details →'}
               </button>
+
+              {/* Coming Soon Overlay for Faceless Video */}
+              {tool.id === 'faceless-video-generator' && (
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'rgba(0, 0, 0, 0.85)',
+                  backdropFilter: 'blur(4px)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '1rem',
+                  padding: '2rem',
+                  zIndex: 10
+                }}>
+                  <div style={{
+                    background: 'linear-gradient(135deg, #ec4899, #f43f5e)',
+                    padding: '0.5rem 1.5rem',
+                    fontWeight: 'bold',
+                    fontSize: '0.9rem',
+                    letterSpacing: '2px',
+                    color: 'white',
+                    transform: 'rotate(-3deg)',
+                    boxShadow: '0 4px 12px rgba(236, 72, 153, 0.4)'
+                  }}>
+                    COMING SOON
+                  </div>
+                  <p style={{
+                    color: '#fff',
+                    textAlign: 'center',
+                    fontSize: '1rem',
+                    maxWidth: '300px',
+                    lineHeight: '1.5'
+                  }}>
+                    We're putting the final touches on this tool. Check out Business in a Box in the meantime!
+                  </p>
+                  <button
+                    className="subscribe-btn"
+                    style={{
+                      background: 'linear-gradient(135deg, #ec4899, #f43f5e)',
+                      border: 'none',
+                      padding: '0.8rem 1.5rem',
+                      fontSize: '0.9rem'
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push('/get-started');
+                    }}
+                  >
+                    Explore Business in a Box →
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>

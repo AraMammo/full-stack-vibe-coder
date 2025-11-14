@@ -19,6 +19,10 @@ interface BIABProject {
   completedPrompts: number;
   totalPrompts: number;
   createdAt: Date;
+  v0ChatId: string | null;
+  v0PreviewUrl: string | null;
+  v0DeployUrl: string | null;
+  v0GeneratedAt: Date | null;
 }
 
 interface ProgressData {
@@ -219,6 +223,66 @@ export function BIABProjectCard({ project }: { project: BIABProject }) {
               )}
             </ul>
           )}
+        </div>
+      )}
+
+      {/* v0 Deployment Banner (if available) */}
+      {isCompleted && (project.v0PreviewUrl || project.v0DeployUrl) && (
+        <div className="mb-4 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <svg
+                className="w-6 h-6 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h4 className="text-sm font-bold text-purple-900 mb-1">
+                🚀 Your Site is Live on v0!
+              </h4>
+              <p className="text-xs text-purple-700 mb-3">
+                Your Next.js application has been automatically generated and deployed. View it now or make refinements in v0.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {project.v0DeployUrl && (
+                  <a
+                    href={project.v0DeployUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold rounded-md hover:from-purple-700 hover:to-pink-700 transition-all shadow-md hover:shadow-lg"
+                  >
+                    <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    View Live Site
+                  </a>
+                )}
+                {project.v0PreviewUrl && (
+                  <a
+                    href={project.v0PreviewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-3 py-1.5 bg-white border-2 border-purple-300 text-purple-700 text-xs font-semibold rounded-md hover:bg-purple-50 transition-colors"
+                  >
+                    <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit in v0
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
