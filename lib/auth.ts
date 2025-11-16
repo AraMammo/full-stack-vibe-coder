@@ -36,33 +36,39 @@ export const authOptions: NextAuthOptions = {
 
   secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
 
-  // Cookie settings for production deployment
-  // Keep sameSite: 'none' for Replit proxy compatibility
+  // Cookie settings - use 'lax' for better compatibility
+  // Only use 'none' if you need cross-site authentication (e.g., embedded iframes)
   cookies: {
     sessionToken: {
-      name: `__Secure-next-auth.session-token`,
+      name: process.env.NODE_ENV === 'production'
+        ? `__Secure-next-auth.session-token`
+        : `next-auth.session-token`,
       options: {
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: 'lax', // Changed from 'none' for better browser compatibility
         path: '/',
-        secure: true
+        secure: process.env.NODE_ENV === 'production'
       }
     },
     callbackUrl: {
-      name: `__Secure-next-auth.callback-url`,
+      name: process.env.NODE_ENV === 'production'
+        ? `__Secure-next-auth.callback-url`
+        : `next-auth.callback-url`,
       options: {
-        sameSite: 'none',
+        sameSite: 'lax',
         path: '/',
-        secure: true
+        secure: process.env.NODE_ENV === 'production'
       }
     },
     csrfToken: {
-      name: `__Host-next-auth.csrf-token`,
+      name: process.env.NODE_ENV === 'production'
+        ? `__Host-next-auth.csrf-token`
+        : `next-auth.csrf-token`,
       options: {
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: 'lax',
         path: '/',
-        secure: true
+        secure: process.env.NODE_ENV === 'production'
       }
     },
   },
@@ -97,8 +103,9 @@ export const authOptions: NextAuthOptions = {
   ],
 
   session: {
-    strategy: 'jwt',
+    strategy: 'database', // Use database sessions with PrismaAdapter
     maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
   },
 
   pages: {
@@ -108,18 +115,38 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async session({ session, token }) {
-      if (session.user && token?.sub) {
-        (session.user as any).id = token.sub;
-      }
-      return session;
+    async signIn({ user, account, profile }) {
+      // Always allow sign-in for both new and returning users
+      console.log('[NextAuth] Sign-in attempt:', {
+        email: user?.email,
+        provider: account?.provider,
+        userId: user?.id,
+      });
+      return true;
     },
 
-    async jwt({ token, user }) {
-      if (user?.id) {
-        token.sub = user.id;
+    async redirect({ url, baseUrl }) {
+      // Handle callbackUrl redirects properly
+      console.log('[NextAuth] Redirect:', { url, baseUrl });
+
+      // If url is relative, prepend baseUrl
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
       }
-      return token;
+      // If url is from the same origin, allow it
+      else if (new URL(url).origin === baseUrl) {
+        return url;
+      }
+      // Default to dashboard
+      return `${baseUrl}/dashboard`;
+    },
+
+    async session({ session, user }) {
+      // Add user ID to session (database strategy provides user, not token)
+      if (session.user && user?.id) {
+        (session.user as any).id = user.id;
+      }
+      return session;
     },
   },
 
