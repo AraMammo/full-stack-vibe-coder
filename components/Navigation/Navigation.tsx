@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { NavLink } from './NavLink';
 import { MobileMenu } from './MobileMenu';
 
@@ -91,15 +92,25 @@ export function Navigation() {
             {/* Logo - Left Side */}
             <Link
               href="/"
-              className="block group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black rounded-lg"
-              style={{
-                background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
+              className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black rounded-lg"
             >
-              <span className="text-xl md:text-2xl font-bold tracking-tight uppercase transition-transform group-hover:scale-105">
+              <Image
+                src="/logo.svg"
+                alt="FullStack Vibe Coder Logo"
+                width={45}
+                height={45}
+                className="transition-transform group-hover:scale-110"
+                priority
+              />
+              <span 
+                className="hidden sm:block text-xl md:text-2xl font-bold tracking-tight uppercase transition-transform group-hover:scale-105"
+                style={{
+                  background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
                 Fullstack Vibe Coder
               </span>
             </Link>

@@ -52,6 +52,7 @@ export function Footer() {
             <ul className="footer-links">
               <li><Link href="/faq" className="footer-link-item">FAQ</Link></li>
               <li><Link href="/blog/what-is-vibe-coding" className="footer-link-item">Vibe Coding Guide</Link></li>
+              <li><Link href="/client-access" className="footer-link-item">Client Access Guide</Link></li>
               <li><Link href="/get-started" className="footer-link-item">Get Started</Link></li>
             </ul>
           </div>

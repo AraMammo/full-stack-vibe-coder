@@ -1,0 +1,208 @@
+# Client Access Setup Guide - FullStack Vibe Coder
+
+*Last Updated: November 2025*
+
+This guide helps our clients quickly provide the technical access needed to start their automation projects. We've made this as simple as possible - most setups take under 10 minutes.
+
+---
+
+## Quick Overview
+
+For most projects, we need access to:
+1. **Airtable** - Your database/workflow system
+2. **Google Drive** - Document storage
+3. **Other Tools** - Any specialized platforms you use
+
+We'll use a project-specific email (like `yourproject@fullstackvibecoder.com`) for all access. This keeps things secure and makes cleanup easy when the project ends.
+
+---
+
+## Airtable Access
+
+### Finding Your Base Information
+
+1. **Open your Airtable workspace**
+2. **Navigate to your specific base** (e.g., "Homework Submissions")
+3. **Click "Share and sync" button** (top right, looks like a person with a + sign)
+
+### Adding Our Project Email
+
+1. In the sharing dialog, click **"Invite by email"**
+2. Enter: `[project-name]@fullstackvibecoder.com`
+3. Set permission level to **"Creator"** (we need this for webhooks/automation)
+4. Click **"Send invite"**
+
+### Getting Your Base ID (if needed)
+
+1. While in your base, look at the URL in your browser
+2. It will look like: `airtable.com/appXXXXXXXXXXXXXX/tblYYYYYYYYYYYYYY`
+3. The part starting with `app` is your Base ID
+4. Share this with us via secure message
+
+### API Key (Advanced - only if requested)
+
+1. Click your **profile picture** (bottom left)
+2. Go to **"Developer hub"**
+3. Click **"Create token"** (blue button)
+4. Name it: `FullStackVibeCoder-[YourProject]`
+5. Under "Scopes", select:
+   - `data.records:read`
+   - `data.records:write`
+   - `webhook:manage`
+6. Under "Access", add your specific base
+7. Click **"Create token"**
+8. **Important**: Copy immediately - you can't see it again!
+
+---
+
+## Google Drive Access
+
+### Sharing a Folder
+
+1. **Open Google Drive** (drive.google.com)
+2. **Right-click on your project folder**
+3. Click **"Share"** → **"Share with others"**
+4. Enter: `[project-name]@fullstackvibecoder.com`
+5. Set to **"Viewer"** (we only need read access)
+6. Uncheck **"Notify people"** (we'll see it immediately)
+7. Click **"Share"**
+
+### Finding Folder ID (if needed)
+
+1. Open the folder in Google Drive
+2. Look at the URL: `drive.google.com/drive/folders/XXXXXXXXXXXXX`
+3. The string after `/folders/` is your Folder ID
+
+### For Google Workspace Admins
+
+If you need to grant broader access:
+1. Go to **admin.google.com**
+2. Navigate to **Apps** → **Google Workspace** → **Drive and Docs**
+3. Click **"Sharing settings"**
+4. Ensure external sharing is enabled for your domain
+
+---
+
+## Common AI/Automation Platforms
+
+### Pickaxe
+
+1. Log into your Pickaxe account
+2. Go to **Settings** → **API Keys**
+3. Click **"Create New Key"**
+4. Name it: `FullStackVibeCoder-Integration`
+5. Copy and share securely
+
+### Make (Integromat)
+
+1. Go to **Organization Settings**
+2. Click **"API Keys"** in left menu
+3. Generate new key for our project
+4. Set appropriate scopes
+
+### Zapier
+
+1. Navigate to **Settings & Members**
+2. Click **"Developer"** → **"API Key"**
+3. Generate project-specific key
+4. Share via secure channel
+
+### ChatGPT/OpenAI
+
+1. Visit **platform.openai.com**
+2. Go to **API Keys** section
+3. Click **"Create new secret key"**
+4. Name it descriptively
+5. Set usage limits for safety
+
+---
+
+## Security Best Practices
+
+### What We Do
+- ✅ Use project-specific emails
+- ✅ Store credentials in encrypted vaults
+- ✅ Enable 2FA where possible
+- ✅ Document all access
+- ✅ Revoke access post-project
+
+### What We Never Do
+- ❌ Ask for your personal passwords
+- ❌ Request unnecessary admin access
+- ❌ Share credentials between projects
+- ❌ Keep access after contract ends
+
+---
+
+## Sending Credentials Securely
+
+### Option 1: During Screen Share
+- Simplest for non-technical users
+- We'll guide you through each step
+- Takes 15-20 minutes total
+
+### Option 2: Encrypted Message
+We'll send you a secure link where you can paste credentials. The link:
+- Self-destructs after viewing
+- Is encrypted end-to-end
+- Leaves an audit trail
+
+### Option 3: Password Manager
+If your team uses 1Password, LastPass, etc:
+- Create a shared vault
+- Add credentials there
+- Share with project email
+- Revoke when complete
+
+---
+
+## Troubleshooting Common Issues
+
+### "I can't add external emails"
+Your IT team may have restrictions. Either:
+1. Ask IT to whitelist `@fullstackvibecoder.com`
+2. Create a service account within your system
+3. We'll work with your security requirements
+
+### "I don't see these options"
+You might not have admin access. You'll need to:
+1. Contact your workspace admin
+2. Or schedule a call where they can join
+3. We're happy to work with your team
+
+### "Our security team has questions"
+Perfect! We welcome security reviews. We can provide:
+- Security practices documentation
+- Insurance certificates
+- Data handling agreements
+- References from similar projects
+
+---
+
+## FAQ
+
+**Q: Why do you need Creator/Editor access in Airtable?**
+A: To set up webhooks and automations. We can work with less access but it limits functionality.
+
+**Q: Can we revoke access ourselves later?**
+A: Absolutely! We encourage it. We'll also remind you when the project ends.
+
+**Q: What if we use different tools?**
+A: This guide covers 80% of cases. We'll provide specific instructions for your unique tools.
+
+**Q: Is the project email monitored 24/7?**
+A: It forwards to our main system, so we'll see any notifications immediately during business hours.
+
+---
+
+## Ready to Start?
+
+1. **Gather the access points you can**
+2. **Use this guide to add our project email**
+3. **Book a quick call for anything unclear**
+
+Most clients complete setup in under 15 minutes. We're here to help if you need us!
+
+---
+
+*Questions? Email ara@fullstackvibecoder.com or check fullstackvibecoder.com/security*
