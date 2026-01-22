@@ -1,0 +1,617 @@
+{
+  "name": "NCA Toolkit - Faceless Video (Webhook)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "faceless-video",
+        "options": {
+          "noResponseBody": false
+        },
+        "responseMode": "lastNode"
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        112
+      ],
+      "id": "webhook-trigger-001",
+      "name": "Webhook Trigger",
+      "webhookId": "faceless-video-webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "base-url-001",
+              "name": "base_url",
+              "value": "={{ $json.body.base_url || 'http://ncat:8080' }}",
+              "type": "string"
+            },
+            {
+              "id": "job-id-001",
+              "name": "job_id",
+              "value": "={{ $json.body.job_id }}",
+              "type": "string"
+            },
+            {
+              "id": "user-id-001",
+              "name": "user_id",
+              "value": "={{ $json.body.user_id }}",
+              "type": "string"
+            },
+            {
+              "id": "callback-url-001",
+              "name": "webhook_callback",
+              "value": "={{ $json.body.webhook_callback }}",
+              "type": "string"
+            },
+            {
+              "id": "scenes-001",
+              "name": "scenes",
+              "value": "={{ $json.body.scenes }}",
+              "type": "array"
+            },
+            {
+              "id": "caption-settings-001",
+              "name": "caption_settings",
+              "value": "={{ $json.body.caption_settings }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        128,
+        112
+      ],
+      "id": "extract-payload-001",
+      "name": "Extract Webhook Payload"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "scenes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        80,
+        432
+      ],
+      "id": "split-scenes-001",
+      "name": "Split Scenes"
+    },
+    {
+      "parameters": {
+        "jsCode": "const buildArrayScenes = $('Build Scenes Array').first().json.scenes;\nconst doneBranchItems = $input.all();\n\nconst updatedScenes = buildArrayScenes.map(scene => {\n  const matchingVideoItem = doneBranchItems.find(item =>\n    item.json?.id === scene.sceneId &&\n    typeof item.json.response === 'string' && \n    item.json.response.startsWith('http')\n  );\n\n  if (matchingVideoItem) {\n    return {\n      ...scene,\n      video: matchingVideoItem.json.response,\n    };\n  }\n\n  return scene;\n});\n\nreturn [\n  {\n    json: {\n      scenes: updatedScenes,\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        432
+      ],
+      "id": "merge-videos-001",
+      "name": "Merge Video URLs"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "scenes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        720,
+        112
+      ],
+      "id": "split-for-trim-001",
+      "name": "Split for Trimming"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst videoUrls = items.map((item) => ({\n  video_url: item.json.response[0].file_url\n}));\n\nconst output = {\n  video_urls: videoUrls,\n  id: $('Extract Webhook Payload').first().json.job_id\n};\n\nreturn [\n  {\n    json: {\n      output: JSON.stringify(output)\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        112
+      ],
+      "id": "build-concat-array-001",
+      "name": "Build Concatenation Array"
+    },
+    {
+      "parameters": {
+        "content": "## Webhook Entry Point\n\nAccepts POST requests with:\n- job_id\n- user_id\n- webhook_callback\n- scenes (array)\n- caption_settings (object)",
+        "height": 300,
+        "width": 580,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "note-webhook-001",
+      "name": "Webhook Info"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Extract Webhook Payload').first().json.base_url }}/v1/image/convert/video",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "local-dev-key-123"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"image_url\":\"{{ $json.image }}\",\n    \"length\": 20,\n    \"frame_rate\": 25,\n    \"zoom_speed\": 6,\n    \"id\": \"{{ $('Split Scenes').item.json.sceneId }}\"\n} ",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        432
+      ],
+      "id": "generate-video-001",
+      "name": "Generate Video with Ken Burns"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Videos\n\nApply Ken Burns effect to each image",
+        "height": 300,
+        "width": 580,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "note-generate-001",
+      "name": "Generate Videos Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "const scenes = $('Extract Webhook Payload').first().json.scenes;\n\nconst formattedScenes = scenes.map((scene, index) => ({\n  audio: scene.audio,\n  image: scene.image,\n  video: null,\n  sceneId: `Scene ${index + 1}`,\n}));\n\nreturn [\n  {\n    json: {\n      scenes: formattedScenes,\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        112
+      ],
+      "id": "build-scenes-001",
+      "name": "Build Scenes Array"
+    },
+    {
+      "parameters": {
+        "content": "## Get Audio Metadata\n\nRetrieve duration for trimming",
+        "height": 300,
+        "width": 580,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        608,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "note-metadata-001",
+      "name": "Metadata Note"
+    },
+    {
+      "parameters": {
+        "content": "## Trim Audio + Video\n\nMatch video length to audio duration",
+        "height": 300,
+        "width": 580,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        608,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "note-trim-001",
+      "name": "Trim Note"
+    },
+    {
+      "parameters": {
+        "content": "## Concatenate Videos\n\nMerge all scenes into one video",
+        "height": 300,
+        "width": 540,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "note-concat-001",
+      "name": "Concatenate Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Extract Webhook Payload').first().json.base_url }}/v1/video/concatenate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "local-dev-key-123"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.output }}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1520,
+        112
+      ],
+      "id": "concatenate-videos-001",
+      "name": "Concatenate Videos"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Extract Webhook Payload').first().json.base_url }}/v1/video/trim",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "local-dev-key-123"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"video_url\": \"{{ $('Split for Trimming').item.json.video }}\",\n    \"start\": \"00:00:00\",\n    \"end\": \"{{ $json.response.duration_formatted }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        432
+      ],
+      "id": "trim-video-001",
+      "name": "Trim Video to Audio Length"
+    },
+    {
+      "parameters": {
+        "content": "## Add Captions\n\nApply word-by-word animated captions",
+        "height": 300,
+        "width": 540,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "note-caption-001",
+      "name": "Caption Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Extract Webhook Payload').first().json.base_url }}/v1/media/metadata ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "local-dev-key-123"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"media_url\":\"{{ $json.audio }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        112
+      ],
+      "id": "get-audio-metadata-001",
+      "name": "Get Audio Metadata"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Extract Webhook Payload').first().json.base_url }}/v1/video/caption",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "local-dev-key-123"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_url\": \"{{ $json.response }}\",\n  \"settings\": {\n    \"line_color\": \"{{ $('Extract Webhook Payload').first().json.caption_settings.line_color || '#FFFFFF' }}\",\n    \"word_color\": \"{{ $('Extract Webhook Payload').first().json.caption_settings.word_color || '#66ff74' }}\",\n    \"all_caps\": false,\n    \"max_words_per_line\": {{ $('Extract Webhook Payload').first().json.caption_settings.max_words_per_line || 3 }},\n    \"font_size\": {{ $('Extract Webhook Payload').first().json.caption_settings.font_size || 60 }},\n    \"bold\": false,\n    \"italic\": false,\n    \"underline\": false,\n    \"strikeout\": false,\n    \"outline_width\": 3,\n    \"shadow_offset\": 4,\n    \"style\": \"{{ $('Extract Webhook Payload').first().json.caption_settings.style || 'highlight' }}\",\n    \"font_family\": \"{{ $('Extract Webhook Payload').first().json.caption_settings.font_family || 'The Bold Font' }}\",\n    \"position\": \"{{ $('Extract Webhook Payload').first().json.caption_settings.position || 'bottom_center' }}\"\n  },\n  \"id\": \"{{ $('Extract Webhook Payload').first().json.job_id }}\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1408,
+        432
+      ],
+      "id": "caption-video-001",
+      "name": "Add Animated Captions"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Extract Webhook Payload').first().json.base_url }}/v1/ffmpeg/compose",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "local-dev-key-123"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"inputs\": [\n    {\n      \"file_url\": \"{{ $json.response }}\"\n    },\n    {\n      \"file_url\": \"{{ $('Split for Trimming').item.json.audio }}\"\n    }\n  ],\n  \"outputs\": [\n    {\n      \"options\": [\n        {\n          \"option\": \"-map\",\n          \"argument\": \"0:v:0\"\n        },\n        {\n          \"option\": \"-map\",\n          \"argument\": \"1:a:0\"\n        },\n        {\n          \"option\": \"-c:v\",\n          \"argument\": \"copy\"\n        },\n        {\n          \"option\": \"-c:a\",\n          \"argument\": \"aac\"\n        },\n        {\n          \"option\": \"-shortest\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        432
+      ],
+      "id": "combine-audio-video-001",
+      "name": "Combine Audio + Video"
+    },
+    {
+      "parameters": {
+        "content": "## Send Callback\n\nNotify Next.js API of completion",
+        "height": 280,
+        "width": 540,
+        "color": 1
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "note-callback-001",
+      "name": "Callback Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Extract Webhook Payload').first().json.webhook_callback }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"job_id\": \"{{ $('Extract Webhook Payload').first().json.job_id }}\",\n  \"status\": \"COMPLETED\",\n  \"output_video_url\": \"{{ $json.response[0].file_url }}\",\n  \"video_duration\": {{ $json.response[0].duration || 0 }},\n  \"file_size\": {{ $json.response[0].size || 0 }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1616,
+        432
+      ],
+      "id": "send-callback-001",
+      "name": "Send Success Callback"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Webhook Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Webhook Payload": {
+      "main": [
+        [
+          {
+            "node": "Build Scenes Array",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Scenes": {
+      "main": [
+        [
+          {
+            "node": "Generate Video with Ken Burns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Video URLs": {
+      "main": [
+        [
+          {
+            "node": "Split for Trimming",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split for Trimming": {
+      "main": [
+        [
+          {
+            "node": "Get Audio Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Concatenation Array": {
+      "main": [
+        [
+          {
+            "node": "Concatenate Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Video with Ken Burns": {
+      "main": [
+        [
+          {
+            "node": "Merge Video URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Scenes Array": {
+      "main": [
+        [
+          {
+            "node": "Split Scenes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Concatenate Videos": {
+      "main": [
+        [
+          {
+            "node": "Add Animated Captions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trim Video to Audio Length": {
+      "main": [
+        [
+          {
+            "node": "Combine Audio + Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Audio Metadata": {
+      "main": [
+        [
+          {
+            "node": "Trim Video to Audio Length",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Animated Captions": {
+      "main": [
+        [
+          {
+            "node": "Send Success Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Audio + Video": {
+      "main": [
+        [
+          {
+            "node": "Build Concatenation Array",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "webhook-version-001",
+  "meta": {
+    "instanceId": "faceless-video-webhook-instance"
+  },
+  "id": "FacelessVideoWebhook",
+  "tags": []
+}

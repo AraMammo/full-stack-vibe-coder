@@ -25,6 +25,7 @@ const navItems: NavItem[] = [
   { label: 'What is Vibe Coding?', href: '/about' },
   { label: 'Market-Ready Business', href: '/get-started' },
   { label: 'Tools', href: '/tools' },
+  { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact', isContact: true },
 ];
 
