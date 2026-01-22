@@ -7,7 +7,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { BIABOrchestratorAgent } from '@/lib/agents/biab-orchestrator-agent';
-import { BIABTier, PrismaClient } from '@/app/generated/prisma';
+import { BIABTier } from '@/app/generated/prisma';
+import { prisma } from '@/lib/db';
 import { z } from 'zod';
 import { sendProjectStartedEmail, sendProjectCompleteEmail } from '@/lib/email/postmark-client';
 import { packageBIABDeliverables } from '@/lib/delivery/package-biab-deliverables';
@@ -29,8 +30,6 @@ const ExecuteBIABSchema = z.object({
 // ============================================
 
 export async function POST(request: NextRequest) {
-  const prisma = new PrismaClient();
-
   try {
     // Parse and validate request body
     const body = await request.json();
@@ -248,8 +247,6 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

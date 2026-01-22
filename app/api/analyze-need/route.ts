@@ -2,19 +2,51 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { db } from '@/server/db';
 import { chatSubmissions } from '@/shared/schema';
+import { checkRateLimit, getClientIP, rateLimiters } from '@/lib/rate-limit';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Max text length to prevent abuse
+const MAX_TEXT_LENGTH = 5000;
+
 export async function POST(request: Request) {
   try {
+    // Rate limiting
+    const clientIP = getClientIP(request.headers);
+    const rateLimitResult = checkRateLimit(clientIP, rateLimiters.aiOperation);
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Rate limit exceeded. Please try again later.',
+          retryAfter: Math.ceil(rateLimitResult.resetIn / 1000),
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(Math.ceil(rateLimitResult.resetIn / 1000)),
+            'X-RateLimit-Remaining': '0',
+          },
+        }
+      );
+    }
+
     const body = await request.json();
     const { text, inputType = 'text' } = body;
 
     if (!text) {
       return NextResponse.json(
         { error: 'Text is required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate text length
+    if (text.length > MAX_TEXT_LENGTH) {
+      return NextResponse.json(
+        { error: `Text too long. Maximum ${MAX_TEXT_LENGTH} characters.` },
         { status: 400 }
       );
     }

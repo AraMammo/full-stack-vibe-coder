@@ -18,12 +18,20 @@ interface WebhookPayload {
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify webhook secret (optional but recommended)
+    // Verify webhook secret (REQUIRED in production)
     const webhookSecret = request.headers.get('x-webhook-secret');
-    const expectedSecret = process.env.N8N_WEBHOOK_SECRET || 'local-dev-secret-123';
+    const expectedSecret = process.env.N8N_WEBHOOK_SECRET;
 
-    if (webhookSecret !== expectedSecret) {
-      console.error('Invalid webhook secret');
+    // In production, webhook secret is required
+    if (!expectedSecret) {
+      // Allow in development mode only
+      if (process.env.NODE_ENV === 'production') {
+        console.error('[Webhook] N8N_WEBHOOK_SECRET not configured in production');
+        return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+      }
+      console.warn('[Webhook] N8N_WEBHOOK_SECRET not set - allowing request in development');
+    } else if (webhookSecret !== expectedSecret) {
+      console.error('[Webhook] Invalid webhook secret');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

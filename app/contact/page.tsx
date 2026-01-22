@@ -21,8 +21,8 @@ export default function ContactPage() {
     setIsSubmitting(true);
     
     try {
-      // Send to save-lead endpoint
-      const response = await fetch('/api/save-lead', {
+      // Send to contact endpoint
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,9 +30,7 @@ export default function ContactPage() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          company: 'Contact Form',
           message: formData.message,
-          source: 'contact-page'
         }),
       });
 

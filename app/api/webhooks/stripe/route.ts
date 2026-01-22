@@ -7,7 +7,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { PrismaClient } from '@/app/generated/prisma';
+import { prisma } from '@/lib/db';
+import { db } from '@/server/db';
+import { toolPurchases } from '@/shared/schema';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-09-30.clover',
@@ -20,8 +22,6 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 // ============================================
 
 export async function POST(request: NextRequest) {
-  const prisma = new PrismaClient();
-
   try {
     // Get raw body for signature verification
     const body = await request.text();
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     // Handle different event types
     switch (event.type) {
       case 'checkout.session.completed':
-        await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session, prisma);
+        await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
         break;
 
       case 'payment_intent.succeeded':
@@ -60,7 +60,15 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'payment_intent.payment_failed':
-        await handlePaymentFailed(event.data.object as Stripe.PaymentIntent, prisma);
+        await handlePaymentFailed(event.data.object as Stripe.PaymentIntent);
+        break;
+
+      case 'customer.subscription.deleted':
+        await handleSubscriptionCanceled(event.data.object as Stripe.Subscription);
+        break;
+
+      case 'invoice.payment_failed':
+        console.log('[Stripe Webhook] Subscription payment failed - will be handled by customer.subscription.deleted if cancelled');
         break;
 
       default:
@@ -75,8 +83,6 @@ export async function POST(request: NextRequest) {
       { error: 'Webhook handler failed', message: error.message },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -85,13 +91,22 @@ export async function POST(request: NextRequest) {
 // ============================================
 
 async function handleCheckoutCompleted(
-  session: Stripe.Checkout.Session,
-  prisma: PrismaClient
+  session: Stripe.Checkout.Session
 ) {
   console.log(`[Stripe Webhook] Processing checkout.session.completed: ${session.id}`);
 
   try {
-    // Extract metadata
+    // Check if this is a tool purchase or BIAB purchase
+    const toolId = session.metadata?.toolId;
+    const accessType = session.metadata?.accessType as 'monthly' | 'annual' | 'lifetime' | undefined;
+
+    if (toolId && accessType) {
+      // Handle tool purchase
+      await handleToolPurchase(session, toolId, accessType);
+      return;
+    }
+
+    // Handle BIAB purchase
     const tier = session.metadata?.tier as 'VALIDATION_PACK' | 'LAUNCH_BLUEPRINT' | 'TURNKEY_SYSTEM';
     const userEmail = session.customer_email || session.customer_details?.email;
     const amount = session.amount_total || 0;
@@ -204,8 +219,7 @@ async function handleCheckoutCompleted(
 }
 
 async function handlePaymentFailed(
-  paymentIntent: Stripe.PaymentIntent,
-  prisma: PrismaClient
+  paymentIntent: Stripe.PaymentIntent
 ) {
   console.log(`[Stripe Webhook] Processing payment_intent.payment_failed: ${paymentIntent.id}`);
 
@@ -236,6 +250,75 @@ async function handlePaymentFailed(
 
   } catch (error: any) {
     console.error('[Stripe Webhook] Failed to process payment_intent.payment_failed:', error);
+    throw error;
+  }
+}
+
+/**
+ * Handle tool purchase (Substack Engine, Reaction Video, etc.)
+ */
+async function handleToolPurchase(
+  session: Stripe.Checkout.Session,
+  toolId: string,
+  accessType: 'monthly' | 'annual' | 'lifetime'
+) {
+  const userEmail = session.metadata?.email || session.customer_email || session.customer_details?.email;
+
+  if (!userEmail) {
+    console.error('[Stripe Webhook] Missing email for tool purchase');
+    throw new Error('Missing email for tool purchase');
+  }
+
+  console.log(`[Stripe Webhook] Processing tool purchase: ${toolId} (${accessType}) for ${userEmail}`);
+
+  // Calculate expiration date
+  let expiresAt: Date | null = null;
+  if (accessType === 'monthly') {
+    expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + 1);
+  } else if (accessType === 'annual') {
+    expiresAt = new Date();
+    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+  }
+  // lifetime = null expiration (never expires)
+
+  // Get subscription ID if this is a subscription checkout
+  const subscriptionId = session.subscription as string | null;
+
+  // Create tool purchase record
+  await db.insert(toolPurchases).values({
+    email: userEmail.toLowerCase(),
+    toolName: toolId,
+    accessType: accessType,
+    stripeCustomerId: session.customer as string | null,
+    stripeSubscriptionId: subscriptionId,
+    stripePaymentIntentId: session.payment_intent as string | null,
+    status: 'active',
+    expiresAt: expiresAt,
+  });
+
+  console.log(`[Stripe Webhook] ✓ Tool purchase recorded: ${toolId} for ${userEmail}`);
+}
+
+/**
+ * Handle subscription cancellation
+ */
+async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
+  console.log(`[Stripe Webhook] Processing subscription cancellation: ${subscription.id}`);
+
+  try {
+    // Find and deactivate the tool purchase by subscription ID
+    const { toolPurchases: toolPurchasesTable } = await import('@/shared/schema');
+    const { eq } = await import('drizzle-orm');
+
+    await db
+      .update(toolPurchasesTable)
+      .set({ status: 'cancelled' })
+      .where(eq(toolPurchasesTable.stripeSubscriptionId, subscription.id));
+
+    console.log(`[Stripe Webhook] ✓ Subscription ${subscription.id} marked as cancelled`);
+  } catch (error: any) {
+    console.error('[Stripe Webhook] Failed to process subscription cancellation:', error);
     throw error;
   }
 }
