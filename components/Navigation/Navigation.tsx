@@ -1,8 +1,9 @@
 /**
  * Main Navigation Component
  *
- * Horizontal navigation bar with cyberpunk aesthetic.
- * Glass morphism effect with pink/cyan accents.
+ * Minimal top bar with hamburger menu that opens side navigation.
+ * Works on all screen sizes - unified experience.
+ * Part of UX overhaul for cleaner navigation and more screen real estate.
  */
 
 'use client';
@@ -12,8 +13,7 @@ import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { NavLink } from './NavLink';
-import { MobileMenu } from './MobileMenu';
+import { SideMenu } from './SideMenu';
 
 export interface NavItem {
   label: string;
@@ -21,18 +21,10 @@ export interface NavItem {
   isContact?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { label: 'What is Vibe Coding?', href: '/about' },
-  { label: 'Market-Ready Business', href: '/get-started' },
-  { label: 'Tools', href: '/tools' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'Contact', href: '/contact', isContact: true },
-];
-
 export function Navigation() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
   // Entrance animation on mount
@@ -40,14 +32,14 @@ export function Navigation() {
     setIsVisible(true);
   }, []);
 
-  // Close mobile menu on route change
+  // Close menu on route change
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    setIsMenuOpen(false);
   }, [pathname]);
 
-  // Prevent body scroll when mobile menu is open
+  // Prevent body scroll when menu is open
   useEffect(() => {
-    if (isMobileMenuOpen) {
+    if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -55,18 +47,18 @@ export function Navigation() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isMobileMenuOpen]);
+  }, [isMenuOpen]);
 
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isMobileMenuOpen) {
-        setIsMobileMenuOpen(false);
+      if (e.key === 'Escape' && isMenuOpen) {
+        setIsMenuOpen(false);
       }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isMobileMenuOpen]);
+  }, [isMenuOpen]);
 
   return (
     <>
@@ -81,30 +73,57 @@ export function Navigation() {
       <nav
         className={`
           fixed top-0 left-0 right-0 z-[999999]
-          bg-black/95 backdrop-blur-xl
-          border-b-2 border-pink-500/50
+          bg-black/90 backdrop-blur-xl
+          border-b border-pink-500/30
           transition-all duration-500
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}
         `}
         aria-label="Main navigation"
       >
-        <div className="max-w-[2560px] mx-auto px-6 py-4">
+        <div className="max-w-[2560px] mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between">
-            {/* Logo - Left Side */}
+            {/* Hamburger Menu - Left Side */}
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="relative w-11 h-11 flex flex-col items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-pink-500/50 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black group"
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMenuOpen}
+              aria-controls="side-menu"
+            >
+              {/* Animated Hamburger Icon */}
+              <span
+                className={`block h-0.5 w-5 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
+                  isMenuOpen ? 'rotate-45 translate-y-2' : ''
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-5 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
+                  isMenuOpen ? 'opacity-0' : ''
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-5 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
+                  isMenuOpen ? '-rotate-45 -translate-y-2' : ''
+                }`}
+              />
+            </button>
+
+            {/* Logo - Center */}
             <Link
               href="/"
-              className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black rounded-lg"
+              className="flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black rounded-lg absolute left-1/2 -translate-x-1/2"
             >
               <Image
                 src="/logo.svg"
                 alt="FullStack Vibe Coder Logo"
-                width={45}
-                height={45}
+                width={40}
+                height={40}
                 className="transition-transform group-hover:scale-110"
                 priority
               />
-              <span 
-                className="hidden sm:block text-xl md:text-2xl font-bold tracking-tight uppercase transition-transform group-hover:scale-105"
+              <span
+                className="hidden sm:block text-lg md:text-xl font-bold tracking-tight uppercase transition-transform group-hover:scale-105"
                 style={{
                   background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
                   WebkitBackgroundClip: 'text',
@@ -116,75 +135,28 @@ export function Navigation() {
               </span>
             </Link>
 
-            {/* Desktop Navigation - Right Side */}
-            <div className="hidden md:flex items-center gap-1">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.href}
-                  label={item.label}
-                  href={item.href}
-                  isActive={pathname === item.href}
-                  isContact={item.isContact || false}
-                />
-              ))}
-
-              {/* Auth-aware link */}
-              {status !== 'loading' && (
-                session ? (
-                  <NavLink
-                    label="Dashboard"
-                    href="/dashboard"
-                    isActive={pathname === '/dashboard'}
-                    isContact={false}
-                  />
-                ) : (
-                  <NavLink
-                    label="Sign In"
-                    href="/auth/signin"
-                    isActive={pathname === '/auth/signin'}
-                    isContact={false}
-                  />
-                )
-              )}
-            </div>
-
-            {/* Mobile: Hamburger Button */}
-            <div className="md:hidden">
-              <button
-                type="button"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="relative w-12 h-12 flex flex-col items-center justify-center gap-1.5 bg-black/85 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl transition-all duration-300 hover:border-pink-500/50 hover:shadow-pink-500/20 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black group"
-                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-                aria-expanded={isMobileMenuOpen}
-                aria-controls="mobile-menu"
+            {/* Sign In / Dashboard - Right Side */}
+            {status !== 'loading' && (
+              <Link
+                href={session ? '/dashboard' : '/auth/signin'}
+                className="px-4 py-2 text-sm font-medium rounded-lg border border-white/20 hover:border-pink-500/50 bg-white/5 hover:bg-white/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black"
+                style={{
+                  background: session ? 'linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(6, 182, 212, 0.1))' : undefined,
+                }}
               >
-                {/* Animated Hamburger Icon */}
-                <span
-                  className={`block h-0.5 w-6 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
-                    isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''
-                  }`}
-                />
-                <span
-                  className={`block h-0.5 w-6 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
-                    isMobileMenuOpen ? 'opacity-0' : ''
-                  }`}
-                />
-                <span
-                  className={`block h-0.5 w-6 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
-                    isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''
-                  }`}
-                />
-              </button>
-            </div>
+                <span className="text-white">
+                  {session ? 'Dashboard' : 'Sign In'}
+                </span>
+              </Link>
+            )}
           </div>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
-      <MobileMenu
-        isOpen={isMobileMenuOpen}
-        onClose={() => setIsMobileMenuOpen(false)}
-        navItems={navItems}
+      {/* Side Menu */}
+      <SideMenu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
         currentPath={pathname}
         isAuthenticated={!!session}
         authLoading={status === 'loading'}

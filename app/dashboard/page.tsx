@@ -1,24 +1,34 @@
 /**
- * Client Dashboard
+ * Dashboard Page - Redesigned
  *
- * Overview of all projects, workflows, and proposals for authenticated user
+ * Clean, tab-based dashboard with dark theme.
+ * Part of UX overhaul for better organization.
  */
 
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { StatusBadge } from '@/components/StatusBadge';
-import { BIABProjectCard } from '@/components/BIABProjectCard';
-import { VideoJobCard } from '@/components/VideoJobCard';
 import Link from 'next/link';
 
-export default async function DashboardPage() {
+// Tab types
+type TabType = 'projects' | 'videos' | 'tools';
+
+interface DashboardProps {
+  searchParams: { tab?: string };
+}
+
+export default async function DashboardPage({ searchParams }: DashboardProps) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     redirect('/auth/signin');
   }
+
+  // Determine active tab
+  const activeTab: TabType = (['projects', 'videos', 'tools'].includes(searchParams.tab || '')
+    ? searchParams.tab
+    : 'projects') as TabType;
 
   // Fetch user's BIAB projects
   const biabProjects = await prisma.project.findMany({
@@ -33,10 +43,8 @@ export default async function DashboardPage() {
       completedPrompts: true,
       totalPrompts: true,
       createdAt: true,
-      v0ChatId: true,
       v0PreviewUrl: true,
       v0DeployUrl: true,
-      v0GeneratedAt: true,
     },
   });
 
@@ -45,10 +53,7 @@ export default async function DashboardPage() {
     where: { userId: session.user.id },
     include: {
       scenes: {
-        select: {
-          id: true,
-          sceneIndex: true,
-        },
+        select: { id: true, sceneIndex: true },
         orderBy: { sceneIndex: 'asc' },
       },
     },
@@ -56,330 +61,385 @@ export default async function DashboardPage() {
     take: 20,
   });
 
-  // Workflow model not yet implemented - return empty data
-  // TODO: Uncomment when Workflow model is added to Prisma schema
-  /*
-  const workflows = await prisma.workflow.findMany({
-    where: { userId: session.user.id },
-    include: {
-      voiceNote: {
-        select: {
-          fileName: true,
-          createdAt: true,
-        },
-      },
-      proposal: {
-        select: {
-          id: true,
-          title: true,
-          status: true,
-          estimatedCost: true,
-          estimatedDays: true,
-        },
-      },
-      project: {
-        select: {
-          id: true,
-          status: true,
-          progress: true,
-        },
-      },
-      steps: {
-        select: {
-          agentName: true,
-          status: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-  */
-
-  const workflows: any[] = [];
-
-  // Calculate progress for each workflow
-  const workflowsWithProgress = workflows.map((workflow: any) => {
-    const totalSteps = 4; // intake, scope, estimator, proposal
-    const completedSteps = workflow.steps?.filter((s: any) => s.status === 'completed').length || 0;
-    const progress = Math.round((completedSteps / totalSteps) * 100);
-
-    return {
-      ...workflow,
-      progress,
-    };
-  });
-
-  // Calculate stats
-  const stats = {
-    total: workflows.length + biabProjects.length + videoJobs.length,
-    processing: workflows.filter(w => w.status === 'in_progress' || w.status === 'pending').length +
-                biabProjects.filter(p => p.status === 'IN_PROGRESS' || p.status === 'PENDING').length +
-                videoJobs.filter(v => v.status === 'PROCESSING' || v.status === 'UPLOADING' || v.status === 'QUEUED').length,
-    ready: workflows.filter(w => w.proposal?.status === 'pending_review').length,
-    approved: workflows.filter(w => w.proposal?.status === 'approved').length +
-              biabProjects.filter(p => p.status === 'COMPLETED').length +
-              videoJobs.filter(v => v.status === 'COMPLETED').length,
+  // Calculate counts for tabs
+  const counts = {
+    projects: biabProjects.length,
+    videos: videoJobs.length,
+    tools: 0, // Purchased tools count would go here
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <main id="main-content" className="min-h-screen pt-20 pb-16 bg-black">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <header className="border-b border-white/10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-              <p className="mt-1 text-sm text-gray-600">
-                Welcome back, {session.user.name || session.user.email}
+              <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+              <p className="mt-1 text-sm text-gray-400">
+                Welcome back, {session.user.name || session.user.email?.split('@')[0]}
               </p>
             </div>
             <Link
-              href="/upload"
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+              href="/get-started"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white text-sm font-medium hover:opacity-90 transition-opacity"
             >
-              + New Project
+              <span>+</span> New Project
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          <StatsCard
-            label="Total Projects"
-            value={stats.total}
-            icon="📊"
-          />
-          <StatsCard
-            label="Processing"
-            value={stats.processing}
-            icon="⚙️"
-            highlight={stats.processing > 0}
-          />
-          <StatsCard
-            label="Ready to Review"
-            value={stats.ready}
-            icon="📄"
-            highlight={stats.ready > 0}
-          />
-          <StatsCard
-            label="Approved"
-            value={stats.approved}
-            icon="✅"
-          />
+      {/* Tab Navigation */}
+      <div className="border-b border-white/10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <nav className="flex gap-1" aria-label="Dashboard tabs">
+            <TabButton
+              href="/dashboard?tab=projects"
+              isActive={activeTab === 'projects'}
+              label="BIAB Projects"
+              count={counts.projects}
+            />
+            <TabButton
+              href="/dashboard?tab=videos"
+              isActive={activeTab === 'videos'}
+              label="Video Jobs"
+              count={counts.videos}
+            />
+            <TabButton
+              href="/dashboard?tab=tools"
+              isActive={activeTab === 'tools'}
+              label="My Tools"
+              count={counts.tools}
+            />
+          </nav>
         </div>
+      </div>
 
-        {/* BIAB Projects */}
-        {biabProjects.length > 0 && (
-          <div className="mb-8">
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Business in a Box Projects</h2>
-              <p className="text-sm text-gray-600">AI-generated business packages with real-time progress tracking</p>
-            </div>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {biabProjects.map((project) => (
-                <BIABProjectCard key={project.id} project={project} />
-              ))}
-            </div>
-          </div>
+      {/* Tab Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        {activeTab === 'projects' && (
+          <ProjectsTab projects={biabProjects} />
         )}
-
-        {/* Faceless Video Jobs */}
-        {videoJobs.length > 0 && (
-          <div className="mb-8">
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">Faceless Video Generator</h2>
-                <p className="text-sm text-gray-600">AI-powered video generation with animated captions</p>
-              </div>
-              <Link
-                href="/tools/faceless-video-generator"
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-500 to-cyan-500 hover:from-green-600 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
-                + New Video
-              </Link>
-            </div>
-            <div className="bg-white shadow-sm rounded-lg border border-gray-200">
-              {videoJobs.map((job) => (
-                <VideoJobCard key={job.id} job={job} />
-              ))}
-            </div>
-          </div>
+        {activeTab === 'videos' && (
+          <VideosTab jobs={videoJobs} />
         )}
-
-        {/* Workflows List */}
-        {workflows.length > 0 && (
-          <div className="bg-white shadow-sm rounded-lg border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Custom Projects</h2>
-            </div>
-            <div className="divide-y divide-gray-200">
-              {workflowsWithProgress.map((workflow) => (
-                <WorkflowCard key={workflow.id} workflow={workflow} />
-              ))}
-            </div>
-          </div>
+        {activeTab === 'tools' && (
+          <ToolsTab />
         )}
-
-        {/* Empty State */}
-        {workflows.length === 0 && biabProjects.length === 0 && videoJobs.length === 0 && (
-          <div className="bg-white shadow-sm rounded-lg border border-gray-200">
-            <div className="px-6 py-12 text-center">
-              <div className="text-4xl mb-4">🚀</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
-              <p className="text-gray-600 mb-6">
-                Ready to start? Create faceless videos or launch your business.
-              </p>
-              <div className="flex gap-3 justify-center flex-wrap">
-                <Link
-                  href="/tools/faceless-video-generator"
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-500 to-cyan-500 hover:from-green-600 hover:to-cyan-600"
-                >
-                  Create Faceless Video
-                </Link>
-                <Link
-                  href="/get-started"
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700"
-                >
-                  View Pricing
-                </Link>
-                <Link
-                  href="/upload"
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  Upload Voice Note
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
 
-// Stats Card Component
-function StatsCard({
+// Tab Button Component
+function TabButton({
+  href,
+  isActive,
   label,
-  value,
-  icon,
-  highlight = false,
+  count,
 }: {
+  href: string;
+  isActive: boolean;
   label: string;
-  value: number;
-  icon: string;
-  highlight?: boolean;
+  count: number;
 }) {
   return (
-    <div
-      className={`bg-white overflow-hidden shadow-sm rounded-lg border ${
-        highlight ? 'border-blue-300 bg-blue-50' : 'border-gray-200'
-      }`}
+    <Link
+      href={href}
+      className={`
+        relative px-4 py-3 text-sm font-medium transition-colors
+        ${isActive
+          ? 'text-white'
+          : 'text-gray-400 hover:text-white'
+        }
+      `}
+      aria-current={isActive ? 'page' : undefined}
     >
-      <div className="px-4 py-5 sm:p-6">
-        <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <span className="text-3xl">{icon}</span>
-          </div>
-          <div className="ml-5 w-0 flex-1">
-            <dl>
-              <dt className="text-sm font-medium text-gray-600 truncate">{label}</dt>
-              <dd className="flex items-baseline">
-                <div className="text-2xl font-semibold text-gray-900">{value}</div>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
+      <span className="flex items-center gap-2">
+        {label}
+        {count > 0 && (
+          <span className={`
+            px-2 py-0.5 rounded-full text-xs
+            ${isActive ? 'bg-pink-500/20 text-pink-400' : 'bg-white/10 text-gray-400'}
+          `}>
+            {count}
+          </span>
+        )}
+      </span>
+      {isActive && (
+        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-500 to-cyan-500" />
+      )}
+    </Link>
+  );
+}
+
+// Projects Tab Content
+function ProjectsTab({ projects }: { projects: any[] }) {
+  if (projects.length === 0) {
+    return (
+      <EmptyState
+        icon="&#128188;"
+        title="No projects yet"
+        description="Create your first Business in a Box project to get started."
+        actionLabel="Start a Project"
+        actionHref="/get-started"
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {projects.map((project) => (
+        <ProjectCard key={project.id} project={project} />
+      ))}
     </div>
   );
 }
 
-// Workflow Card Component
-function WorkflowCard({ workflow }: { workflow: any }) {
-  const hasProposal = !!workflow.proposal;
-  const isComplete = workflow.status === 'completed';
-  const isFailed = workflow.status === 'failed';
+// Project Card Component
+function ProjectCard({ project }: { project: any }) {
+  const tierNames: Record<string, string> = {
+    VALIDATION_PACK: 'Starter',
+    LAUNCH_BLUEPRINT: 'Complete',
+    TURNKEY_SYSTEM: 'Turnkey',
+  };
+
+  const tierColors: Record<string, string> = {
+    VALIDATION_PACK: 'bg-gray-500',
+    LAUNCH_BLUEPRINT: 'bg-purple-500',
+    TURNKEY_SYSTEM: 'bg-gradient-to-r from-pink-500 to-cyan-500',
+  };
+
+  const statusConfig: Record<string, { label: string; color: string }> = {
+    PENDING: { label: 'Pending', color: 'text-yellow-400 bg-yellow-400/10' },
+    IN_PROGRESS: { label: 'Processing', color: 'text-cyan-400 bg-cyan-400/10' },
+    COMPLETED: { label: 'Completed', color: 'text-green-400 bg-green-400/10' },
+    FAILED: { label: 'Failed', color: 'text-red-400 bg-red-400/10' },
+  };
+
+  const status = statusConfig[project.status] || statusConfig.PENDING;
+  const isInProgress = project.status === 'IN_PROGRESS' || project.status === 'PENDING';
+  const isCompleted = project.status === 'COMPLETED';
 
   return (
-    <div className="px-6 py-4 hover:bg-gray-50 transition-colors">
-      <div className="flex items-center justify-between">
+    <div className="p-5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Left side */}
         <div className="flex-1 min-w-0">
-          {/* Title */}
           <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-sm font-medium text-gray-900 truncate">
-              {workflow.proposal?.title || workflow.voiceNote.fileName || 'Untitled Project'}
-            </h3>
-            <StatusBadge status={workflow.status} type="workflow" />
-            {hasProposal && (
-              <StatusBadge status={workflow.proposal.status} type="proposal" />
-            )}
-          </div>
-
-          {/* Metadata */}
-          <div className="flex items-center gap-4 text-sm text-gray-600">
-            <span>
-              Created {new Date(workflow.voiceNote.createdAt).toLocaleDateString()}
+            <span className={`px-2.5 py-1 rounded text-xs font-bold text-white ${tierColors[project.biabTier]}`}>
+              {tierNames[project.biabTier]}
             </span>
-            {hasProposal && (
-              <>
-                <span>•</span>
-                <span>${(workflow.proposal.estimatedCost / 100).toFixed(0)}</span>
-                <span>•</span>
-                <span>{workflow.proposal.estimatedDays} days</span>
-              </>
-            )}
+            <span className={`px-2.5 py-1 rounded text-xs font-medium ${status.color}`}>
+              {status.label}
+            </span>
           </div>
-
-          {/* Progress Bar */}
-          {!isComplete && !isFailed && (
-            <div className="mt-3">
-              <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                <span>
-                  {workflow.status === 'in_progress' ? 'Generating proposal...' : 'Queued'}
-                </span>
-                <span>{workflow.progress}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${workflow.progress}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Error Message */}
-          {isFailed && workflow.errorMessage && (
-            <div className="mt-2 text-sm text-red-600 bg-red-50 px-3 py-2 rounded border border-red-200">
-              Error: {workflow.errorMessage}
-            </div>
-          )}
+          <h3 className="text-lg font-semibold text-white truncate">{project.projectName}</h3>
+          <p className="text-sm text-gray-400 mt-1">
+            Created {new Date(project.createdAt).toLocaleDateString()}
+          </p>
         </div>
 
-        {/* Actions */}
-        <div className="ml-6 flex-shrink-0">
-          {hasProposal && (
-            <Link
-              href={`/proposal/${workflow.proposal.id}`}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+        {/* Right side - Actions */}
+        <div className="flex items-center gap-3">
+          {isCompleted && project.v0DeployUrl && (
+            <a
+              href={project.v0DeployUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-lg bg-green-500/20 border border-green-500/50 text-green-400 text-sm font-medium hover:bg-green-500/30 transition-colors"
             >
-              View Proposal →
-            </Link>
+              View Live Site
+            </a>
           )}
-          {workflow.project && (
-            <Link
-              href={`/project/${workflow.project.id}`}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 ml-2"
+          <Link
+            href={`/dashboard/project/${project.id}`}
+            className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm font-medium hover:bg-white/20 transition-colors"
+          >
+            {isCompleted ? 'Download' : 'View Details'}
+          </Link>
+        </div>
+      </div>
+
+      {/* Progress Bar */}
+      {isInProgress && (
+        <div className="mt-4">
+          <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+            <span>{project.completedPrompts}/{project.totalPrompts} sections complete</span>
+            <span>{project.progress}%</span>
+          </div>
+          <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-pink-500 to-cyan-500 rounded-full transition-all duration-500"
+              style={{ width: `${project.progress}%` }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Videos Tab Content
+function VideosTab({ jobs }: { jobs: any[] }) {
+  if (jobs.length === 0) {
+    return (
+      <EmptyState
+        icon="&#127909;"
+        title="No video jobs yet"
+        description="Create faceless videos for your social media content."
+        actionLabel="Create Video"
+        actionHref="/tools/faceless-video-generator"
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {jobs.map((job) => (
+        <VideoCard key={job.id} job={job} />
+      ))}
+    </div>
+  );
+}
+
+// Video Card Component
+function VideoCard({ job }: { job: any }) {
+  const statusConfig: Record<string, { label: string; color: string }> = {
+    QUEUED: { label: 'Queued', color: 'text-gray-400 bg-gray-400/10' },
+    UPLOADING: { label: 'Uploading', color: 'text-blue-400 bg-blue-400/10' },
+    PROCESSING: { label: 'Processing', color: 'text-yellow-400 bg-yellow-400/10' },
+    COMPLETED: { label: 'Completed', color: 'text-green-400 bg-green-400/10' },
+    FAILED: { label: 'Failed', color: 'text-red-400 bg-red-400/10' },
+  };
+
+  const status = statusConfig[job.status] || statusConfig.QUEUED;
+  const isProcessing = job.status === 'PROCESSING' || job.status === 'UPLOADING';
+  const isCompleted = job.status === 'COMPLETED';
+  const isFailed = job.status === 'FAILED';
+
+  return (
+    <div className="p-5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Left side */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 mb-2">
+            <span className={`px-2.5 py-1 rounded text-xs font-medium ${status.color}`}>
+              {status.label}
+            </span>
+            <span className="text-xs text-gray-500">
+              {job.scenes?.length || 0} scene{job.scenes?.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <h3 className="text-lg font-semibold text-white">
+            Faceless Video
+          </h3>
+          <p className="text-sm text-gray-400 mt-1">
+            Created {new Date(job.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+
+        {/* Right side - Actions */}
+        <div className="flex items-center gap-3">
+          {isCompleted && job.outputVideoUrl && (
+            <a
+              href={job.outputVideoUrl}
+              download={`faceless-video-${job.id}.mp4`}
+              className="px-4 py-2 rounded-lg bg-green-500/20 border border-green-500/50 text-green-400 text-sm font-medium hover:bg-green-500/30 transition-colors"
             >
-              View Project →
+              Download
+            </a>
+          )}
+          {isFailed && (
+            <Link
+              href="/tools/faceless-video-generator"
+              className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm font-medium hover:bg-white/20 transition-colors"
+            >
+              Try Again
             </Link>
           )}
         </div>
       </div>
+
+      {/* Progress Bar */}
+      {isProcessing && (
+        <div className="mt-4">
+          <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+            <span>{job.status === 'UPLOADING' ? 'Uploading...' : 'Processing...'}</span>
+            <span>{job.progress}%</span>
+          </div>
+          <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-green-500 to-cyan-500 rounded-full transition-all duration-500"
+              style={{ width: `${job.progress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {isFailed && job.errorMessage && (
+        <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-sm text-red-400">
+          {job.errorMessage}
+        </div>
+      )}
+
+      {/* Video Preview */}
+      {isCompleted && job.outputVideoUrl && (
+        <div className="mt-4">
+          <video
+            controls
+            className="w-full max-w-lg rounded-lg border border-white/10"
+            src={job.outputVideoUrl}
+            style={{ maxHeight: '240px' }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Tools Tab Content
+function ToolsTab() {
+  // This would show purchased tools - for now show empty state with links
+  return (
+    <EmptyState
+      icon="&#128736;"
+      title="No purchased tools"
+      description="Get access to premium automation tools."
+      actionLabel="Browse Tools"
+      actionHref="/tools"
+    />
+  );
+}
+
+// Empty State Component
+function EmptyState({
+  icon,
+  title,
+  description,
+  actionLabel,
+  actionHref,
+}: {
+  icon: string;
+  title: string;
+  description: string;
+  actionLabel: string;
+  actionHref: string;
+}) {
+  return (
+    <div className="py-16 text-center">
+      <div className="text-5xl mb-4">{icon}</div>
+      <h3 className="text-lg font-medium text-white mb-2">{title}</h3>
+      <p className="text-gray-400 mb-6 max-w-sm mx-auto">{description}</p>
+      <Link
+        href={actionHref}
+        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-medium hover:opacity-90 transition-opacity"
+      >
+        {actionLabel}
+        <span>&#8594;</span>
+      </Link>
     </div>
   );
 }

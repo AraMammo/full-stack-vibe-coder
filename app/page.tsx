@@ -1,44 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import ChatInterface from "./components/ChatInterface";
+import Link from "next/link";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [formSubject, setFormSubject] = useState("");
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  const openForm = useCallback((subject: string) => {
-    setFormSubject(subject);
-    setShowForm(true);
-  }, []);
-
-  // Handle URL parameters for contact form
   // Ensure page loads at top
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
-    try {
-      const contact = searchParams.get("contact");
-      const subject = searchParams.get("subject");
-
-      if (contact === "true" && subject) {
-        openForm(decodeURIComponent(subject));
-        // Clean up URL with a small delay to avoid race conditions
-        setTimeout(() => {
-          router.replace("/");
-        }, 100);
-      }
-    } catch (error) {
-      console.error("Error handling URL parameters:", error);
-    }
-  }, [searchParams, router, openForm]);
-
+  // Simplified particle animation (reduced density)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -56,29 +32,7 @@ export default function Home() {
 
     window.addEventListener("resize", handleResize);
 
-    // Morphing text animation
-    const phrases = [
-      "products that matter",
-      "solutions for real problems",
-      "end-to-end systems",
-      "friction removed",
-      "tech that works for people",
-    ];
-
-    let currentPhrase = 0;
-    const morphingEl = document.getElementById("morphing");
-
-    const morphInterval = setInterval(() => {
-      if (!morphingEl) return;
-      morphingEl.style.opacity = "0";
-      setTimeout(() => {
-        currentPhrase = (currentPhrase + 1) % phrases.length;
-        morphingEl.textContent = phrases[currentPhrase];
-        morphingEl.style.opacity = "1";
-      }, 500);
-    }, 3000);
-
-    // Particle system
+    // Reduced particle count for cleaner look
     class Particle {
       x: number;
       y: number;
@@ -90,10 +44,10 @@ export default function Home() {
       constructor() {
         this.x = Math.random() * canvas!.width;
         this.y = Math.random() * canvas!.height;
-        this.size = Math.random() * 2 + 0.5;
-        this.speedX = Math.random() * 0.5 - 0.25;
-        this.speedY = Math.random() * 0.5 - 0.25;
-        this.opacity = Math.random() * 0.5 + 0.2;
+        this.size = Math.random() * 1.5 + 0.5;
+        this.speedX = Math.random() * 0.3 - 0.15;
+        this.speedY = Math.random() * 0.3 - 0.15;
+        this.opacity = Math.random() * 0.3 + 0.1;
       }
 
       update() {
@@ -108,7 +62,7 @@ export default function Home() {
 
       draw() {
         if (!ctx) return;
-        ctx.fillStyle = `rgba(102, 126, 234, ${this.opacity})`;
+        ctx.fillStyle = `rgba(236, 72, 153, ${this.opacity})`;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
@@ -116,19 +70,10 @@ export default function Home() {
     }
 
     const particles: Particle[] = [];
-    for (let i = 0; i < 100; i++) {
+    // Reduced from 100 to 40 particles
+    for (let i = 0; i < 40; i++) {
       particles.push(new Particle());
     }
-
-    let mouseX = 0;
-    let mouseY = 0;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-
-    canvas.addEventListener("mousemove", handleMouseMove);
 
     function connectParticles() {
       if (!ctx) return;
@@ -138,34 +83,21 @@ export default function Home() {
           const dy = particles[i].y - particles[j].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 120) {
-            ctx.strokeStyle = `rgba(102, 126, 234, ${0.2 * (1 - distance / 120)})`;
-            ctx.lineWidth = 1;
+          if (distance < 100) {
+            ctx.strokeStyle = `rgba(236, 72, 153, ${0.1 * (1 - distance / 100)})`;
+            ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
             ctx.stroke();
           }
         }
-
-        const dx = particles[i].x - mouseX;
-        const dy = particles[i].y - mouseY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance < 150) {
-          ctx.strokeStyle = `rgba(118, 75, 162, ${0.4 * (1 - distance / 150)})`;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(mouseX, mouseY);
-          ctx.stroke();
-        }
       }
     }
 
     function animate() {
       if (!ctx || !canvas) return;
-      ctx.fillStyle = "rgba(10, 10, 10, 0.05)";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle) => {
@@ -179,334 +111,285 @@ export default function Home() {
 
     animate();
 
-    // Card 3D tilt effect
-    const handleCardMouseMove = (e: MouseEvent) => {
-      const cards = document.querySelectorAll(".chaos-card");
-      cards.forEach((card) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
-          const rotateX = (y / rect.height - 0.5) * 10;
-          const rotateY = (x / rect.width - 0.5) * -10;
-          (card as HTMLElement).style.transform =
-            `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
-        }
-      });
-    };
-
-    document.addEventListener("mousemove", handleCardMouseMove);
-
-    // Add mouseleave listeners after a delay to ensure cards exist
-    setTimeout(() => {
-      document.querySelectorAll(".chaos-card").forEach((card) => {
-        card.addEventListener("mouseleave", () => {
-          (card as HTMLElement).style.transform = "";
-        });
-      });
-    }, 100);
-
-    // Random glitch effect - DISABLED (no .main-title elements in current layout)
-    // const glitchInterval = setInterval(() => {
-    //   const titles = document.querySelectorAll('.main-title');
-    //   if (titles.length > 0) {
-    //     const random = titles[Math.floor(Math.random() * titles.length)] as HTMLElement;
-    //     random.style.transform = `translateX(${Math.random() * 4 - 2}px)`;
-    //     setTimeout(() => {
-    //       random.style.transform = '';
-    //     }, 100);
-    //   }
-    // }, 3000);
-
-    // Listen for contact form events from navigation
-    const handleContactFormEvent = (event: any) => {
-      try {
-        openForm(event.detail?.subject || "General Inquiry");
-      } catch (error) {
-        console.error("Error handling contact form event:", error);
-      }
-    };
-
-    window.addEventListener("openContactForm", handleContactFormEvent);
-
     return () => {
       window.removeEventListener("resize", handleResize);
-      canvas.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mousemove", handleCardMouseMove);
-      window.removeEventListener("openContactForm", handleContactFormEvent);
-      clearInterval(morphInterval);
-      // clearInterval(glitchInterval); // Disabled with glitch effect
     };
-  }, [openForm]);
+  }, []);
 
   return (
     <>
-      <div className="noise"></div>
-      <div className="grid-overlay"></div>
+      {/* Subtle background effects */}
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black -z-20" />
+      <canvas ref={canvasRef} className="fixed inset-0 -z-10 opacity-50" />
 
-      <div className="layer">
-        <div className="floating-text ft-1">BUILD</div>
-        <div className="floating-text ft-2">SHIP</div>
-        <div className="floating-text ft-3">SOLVE</div>
-        <div className="floating-text ft-4">FAST</div>
-      </div>
+      <main id="main-content" className="min-h-screen pt-20 pb-16">
+        {/* Hero Section - Chat Front and Center */}
+        <section className="px-4 sm:px-6 py-8 sm:py-12">
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Main Headline */}
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight"
+              style={{
+                background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Turn Your Business Idea Into Reality
+            </h1>
 
-      <canvas ref={canvasRef} id="canvas"></canvas>
-
-      <div className="main-content" style={{ paddingTop: "120px" }}>
-        {/* Value Proposition */}
-        <div className="value-prop-container" style={{ marginBottom: "2rem" }}>
-          <h2
-            className="value-prop-headline"
-            style={{
-              background:
-                "linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              marginBottom: "1rem",
-            }}
-          >
-            Get a Complete Business in 30 Minutes
-          </h2>
-          <p
-            className="value-prop-subheadline"
-            style={{ marginBottom: "1rem", fontSize: "1.3rem", fontWeight: "600" }}
-          >
-            Live website. Brand identity. Market research. Launch guide.
-          </p>
-          <p
-            className="value-prop-subheadline"
-            style={{ marginBottom: "1rem" }}
-          >
-            One voice note gets you what normally takes months and costs thousands.
-          </p>
-          <p
-            className="value-prop-subheadline"
-            style={{ marginBottom: "2rem", opacity: "0.9", fontSize: "1.2rem", fontWeight: "600", color: "#ec4899" }}
-          >
-            $497. 30 minutes. Done.
-          </p>
-        </div>
-
-        <div style={{ width: "100%", maxWidth: "900px", margin: "0 auto" }}>
-          <ChatInterface />
-        </div>
-
-        <a
-          href="/what-is-vibe-coding"
-          className="inline-link"
-          style={{ marginTop: "2rem", marginBottom: "3rem", display: "block" }}
-        >
-          What's Vibe Coding? Learn more →
-        </a>
-
-        <div className="chaos-grid">
-          <div className="chaos-card clickable-card" 
-            onClick={() => router.push("/tools")}
-            style={{ position: 'relative', overflow: 'hidden', cursor: 'pointer' }}
-          >
-            <h3 className="card-title">
-              <span className="badge-new" style={{ marginRight: "0.5rem" }}>
-                NEW
-              </span>
-              Pre-Built Tools
-            </h3>
-            <p className="card-desc">
-              Ready-to-deploy SaaS products. Substack newsletter automation,
-              video reaction tools, and more. Each tool is complete and
-              production-ready.
+            {/* Subheadline */}
+            <p className="text-lg sm:text-xl text-gray-300 mb-2">
+              Live website. Brand identity. Market research. Launch guide.
             </p>
-            <a className="card-btn">
-              Explore Pre-Built Tools →
-            </a>
-            
-            {/* Coming Soon Overlay */}
-            <div className="card-coming-soon-overlay">
-              <div className="coming-soon-badge">
-                <span>COMING SOON</span>
+            <p className="text-base sm:text-lg text-gray-400 mb-6">
+              All from one voice note. Delivered in 30 minutes.
+            </p>
+
+            {/* Chat Interface - The Star of the Show */}
+            <div className="w-full max-w-3xl mx-auto">
+              <ChatInterface />
+            </div>
+
+            {/* Sub-CTA */}
+            <p className="mt-4 text-sm text-gray-500">
+              Describe your idea above to see what we can create for you
+            </p>
+          </div>
+        </section>
+
+        {/* How It Works Section */}
+        <section className="px-4 sm:px-6 py-16 border-t border-white/5">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-12">
+              How It Works
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Step 1 */}
+              <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-pink-500/30 transition-colors">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500 to-cyan-500 flex items-center justify-center text-2xl font-bold text-white">
+                  1
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Share Your Idea</h3>
+                <p className="text-gray-400 text-sm">
+                  Type or record a voice note describing your business concept. The more detail, the better the output.
+                </p>
+              </div>
+
+              {/* Step 2 */}
+              <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-pink-500/30 transition-colors">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500 to-cyan-500 flex items-center justify-center text-2xl font-bold text-white">
+                  2
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">AI Builds Everything</h3>
+                <p className="text-gray-400 text-sm">
+                  Our system generates your website, branding, market research, and business materials automatically.
+                </p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-pink-500/30 transition-colors">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500 to-cyan-500 flex items-center justify-center text-2xl font-bold text-white">
+                  3
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Launch Ready</h3>
+                <p className="text-gray-400 text-sm">
+                  Download everything and go live immediately. Your complete business package in under 30 minutes.
+                </p>
               </div>
             </div>
           </div>
+        </section>
 
-          <div className="chaos-card">
-            <h3 className="card-title">Who Are We?</h3>
-            <p className="card-desc">
-              Ara ran a real estate team in Toronto. Got frustrated waiting for
-              tech that never shipped. Learned to code. But here&apos;s the
-              weapon: full stack developer AND end-to-end marketer. Branding.
-              Meta ads. Google campaigns. The whole stack. This is what happens
-              when operators become builders.
+        {/* Pricing Preview Section */}
+        <section className="px-4 sm:px-6 py-16 border-t border-white/5">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-4">
+              Choose Your Package
+            </h2>
+            <p className="text-center text-gray-400 mb-12">
+              Everything you need to launch your business
             </p>
-            <a className="card-btn" onClick={() => openForm("Tell Me More")}>
-              The origin story →
-            </a>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Starter */}
+              <div className="relative p-6 rounded-xl bg-black/50 border border-white/10 hover:border-pink-500/30 transition-all">
+                <h3 className="text-lg font-semibold text-white mb-1">Starter</h3>
+                <div className="text-3xl font-bold text-white mb-4">
+                  $47
+                </div>
+                <ul className="space-y-2 mb-6 text-sm text-gray-300">
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>Market Research Report</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>Competitive Analysis</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>Business Name Ideas</span>
+                  </li>
+                </ul>
+                <Link
+                  href="/get-started"
+                  className="block w-full py-3 text-center rounded-lg border border-white/20 text-white hover:bg-white/5 transition-colors"
+                >
+                  Get Started
+                </Link>
+              </div>
+
+              {/* Complete - Highlighted */}
+              <div className="relative p-6 rounded-xl bg-gradient-to-b from-pink-500/10 to-cyan-500/10 border-2 border-pink-500/50 hover:border-pink-500 transition-all transform md:-translate-y-2">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-pink-500 to-cyan-500 rounded-full text-xs font-bold text-white">
+                  POPULAR
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">Complete</h3>
+                <div className="text-3xl font-bold text-white mb-4">
+                  $197
+                </div>
+                <ul className="space-y-2 mb-6 text-sm text-gray-300">
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>Everything in Starter</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>5 Logo Variations</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>Brand Guidelines</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>Pitch Deck</span>
+                  </li>
+                </ul>
+                <Link
+                  href="/get-started"
+                  className="block w-full py-3 text-center rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold hover:opacity-90 transition-opacity"
+                >
+                  Get Started
+                </Link>
+              </div>
+
+              {/* Turnkey */}
+              <div className="relative p-6 rounded-xl bg-black/50 border border-white/10 hover:border-cyan-500/30 transition-all">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-cyan-500 rounded-full text-xs font-bold text-white">
+                  BEST VALUE
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">Turnkey</h3>
+                <div className="text-3xl font-bold text-white mb-4">
+                  $497
+                </div>
+                <ul className="space-y-2 mb-6 text-sm text-gray-300">
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>Everything in Complete</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>Live Deployed Website</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>Custom Domain Setup</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>30-Day Support</span>
+                  </li>
+                </ul>
+                <Link
+                  href="/get-started"
+                  className="block w-full py-3 text-center rounded-lg border border-cyan-500/50 text-white hover:bg-cyan-500/10 transition-colors"
+                >
+                  Get Started
+                </Link>
+              </div>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="mt-10 flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+              <span className="flex items-center gap-2">
+                <span className="text-green-400">&#10003;</span>
+                30-day money back guarantee
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-green-400">&#10003;</span>
+                Delivered in under 30 minutes
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-green-400">&#10003;</span>
+                Own everything forever
+              </span>
+            </div>
           </div>
+        </section>
 
-          <div className="chaos-card">
-            <h3 className="card-title">Launch Your Market-Ready Business</h3>
-            <p className="card-desc">
-              Got an idea? Turn your voice note into a complete market-ready business in 30
-              minutes. Live website, logo variations, competitive analysis, brand guidelines,
-              business plan, marketing strategy. Everything you need to go live immediately.
+        {/* Tools Section Preview */}
+        <section className="px-4 sm:px-6 py-16 border-t border-white/5">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+              Automation Tools for Creators
+            </h2>
+            <p className="text-gray-400 mb-8">
+              Save hours every week with AI-powered tools
             </p>
-            <a className="card-btn" onClick={() => router.push("/get-started")}>
-              Get Your Market-Ready Business Now →
-            </a>
-          </div>
 
-          <div className="chaos-card">
-            <h3 className="card-title">How We Work</h3>
-            <p className="card-desc">
-              You describe the problem. We build the solution. End-to-end. No
-              endless meetings. No project managers. Just results.
-            </p>
-            <a
-              className="card-btn"
-              onClick={() => openForm("Let's Work Together")}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+              <div className="p-5 rounded-xl bg-white/5 border border-white/10 text-left">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl">&#128221;</span>
+                  <span className="font-semibold text-white">Whiteboard</span>
+                  <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full">FREE</span>
+                </div>
+                <p className="text-sm text-gray-400">Collaborative whiteboard for brainstorming and planning</p>
+              </div>
+
+              <div className="p-5 rounded-xl bg-white/5 border border-white/10 text-left">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl">&#127909;</span>
+                  <span className="font-semibold text-white">Faceless Video</span>
+                  <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-400 text-xs rounded-full">BETA</span>
+                </div>
+                <p className="text-sm text-gray-400">Generate faceless videos for social media content</p>
+              </div>
+            </div>
+
+            <Link
+              href="/tools"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-pink-500/50 text-pink-400 hover:bg-pink-500/10 transition-colors"
             >
-              Let&apos;s work together →
-            </a>
+              Explore All Tools
+              <span>&#8594;</span>
+            </Link>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <div className="rotating-badges">
-        <div className="badge">End to End</div>
-        <div className="badge">Ship Fast</div>
-        <div className="badge">No Fluff</div>
-      </div>
-
-      {showForm && (
-        <ContactForm subject={formSubject} onClose={() => setShowForm(false)} />
-      )}
+        {/* Final CTA */}
+        <section className="px-4 sm:px-6 py-16 border-t border-white/5">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+              Ready to Launch?
+            </h2>
+            <p className="text-gray-400 mb-8">
+              Start with your idea above and see what we can create for you
+            </p>
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold hover:opacity-90 transition-opacity"
+            >
+              <span>&#8593;</span>
+              Start With Your Idea
+            </button>
+          </div>
+        </section>
+      </main>
     </>
-  );
-}
-
-interface ContactFormProps {
-  subject: string;
-  onClose: () => void;
-}
-
-function ContactForm({ subject, onClose }: ContactFormProps) {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-  const [glitchText, setGlitchText] = useState("SEND MESSAGE");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    const glitchPhrases = [
-      "SEND MESSAGE",
-      "SHIP IT",
-      "DEPLOY",
-      "LAUNCH",
-      "BUILD",
-      "EXECUTE",
-    ];
-    let currentIndex = 0;
-
-    const interval = setInterval(() => {
-      currentIndex = (currentIndex + 1) % glitchPhrases.length;
-      setGlitchText(glitchPhrases[currentIndex]);
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    // Simulate submission with mailto fallback
-    const mailtoLink = `mailto:ara@fullstackvibecoder.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`,
-    )}`;
-
-    window.location.href = mailtoLink;
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      onClose();
-    }, 1000);
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  return (
-    <div className="form-overlay" onClick={onClose}>
-      <div className="form-container" onClick={(e) => e.stopPropagation()}>
-        <button className="form-close" onClick={onClose}>
-          ×
-        </button>
-
-        <div className="form-glitch-title" data-text={subject}>
-          {subject}
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">NAME</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="form-input"
-              placeholder="Your name"
-            />
-            <div className="input-glitch"></div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">EMAIL</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="form-input"
-              placeholder="your@email.com"
-            />
-            <div className="input-glitch"></div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">MESSAGE</label>
-            <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              required
-              className="form-textarea"
-              placeholder="Tell us what you need..."
-              rows={6}
-            />
-            <div className="input-glitch"></div>
-          </div>
-
-          <button type="submit" className="form-submit" disabled={isSubmitting}>
-            <span className="submit-glitch" data-text={glitchText}>
-              {glitchText}
-            </span>
-          </button>
-        </form>
-
-        <div className="form-noise"></div>
-      </div>
-    </div>
   );
 }

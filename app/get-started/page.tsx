@@ -1,7 +1,8 @@
 /**
- * Market-Ready Business - Get Started Page
+ * Pricing Page - Simplified
  *
- * Transform your voice note into a complete market-ready business in 30 minutes
+ * Clean, focused pricing page with 3 clear options.
+ * Part of UX overhaul for frictionless conversion.
  */
 
 "use client";
@@ -15,144 +16,78 @@ interface Tier {
   id: "VALIDATION_PACK" | "LAUNCH_BLUEPRINT" | "TURNKEY_SYSTEM";
   name: string;
   price: number;
-  badge?: string;
-  badgeColor?: string;
   description: string;
-  timeline: string;
-  delivery: string;
   features: string[];
+  highlight?: "popular" | "best";
   cta: string;
-  popular?: boolean;
 }
 
 const tiers: Tier[] = [
   {
     id: "VALIDATION_PACK",
-    name: "Validation Pack",
+    name: "Starter",
     price: 47,
-    description: "Test your idea before investing heavily",
-    timeline: "5 minutes",
-    delivery: "Comprehensive PDF Report",
+    description: "Test your idea with market research",
     features: [
-      "Business Model Analysis",
-      "Competitive Research",
+      "Market Research Report",
+      "Competitive Analysis",
       "Target Audience Definition",
-      "Pricing Strategy Recommendations",
-      "Go-to-Market Plan",
+      "Business Model Validation",
+      "Pricing Recommendations",
     ],
-    cta: "Start Validation",
+    cta: "Get Started",
   },
   {
     id: "LAUNCH_BLUEPRINT",
-    name: "Launch Blueprint",
+    name: "Complete",
     price: 197,
-    badge: "MOST POPULAR",
-    badgeColor: "bg-purple-500",
-    description: "Complete business plan with professional brand",
-    timeline: "15 minutes",
-    delivery: "Organized ZIP Package with Brand Assets",
+    description: "Full business plan with branding",
     features: [
-      "Everything in Validation Pack",
-      "+ 11 Additional Business Planning Sections",
-      "+ 5 Custom AI-Generated Logo Designs",
-      "+ Professional Investor Pitch Deck",
-      "Comprehensive Market & Competitor Analysis",
-      "Financial Projections & Budget Planning",
+      "Everything in Starter",
+      "5 Custom Logo Designs",
+      "Brand Guidelines",
+      "Investor Pitch Deck",
+      "Marketing Strategy",
+      "Financial Projections",
     ],
-    cta: "Get Your Business Blueprint",
-    popular: true,
+    highlight: "popular",
+    cta: "Get Started",
   },
   {
     id: "TURNKEY_SYSTEM",
-    name: "Market-Ready Business",
+    name: "Turnkey",
     price: 497,
-    badge: "COMPLETE SOLUTION",
-    badgeColor: "bg-gradient-to-r from-yellow-400 to-orange-500",
-    description: "Live website + everything you need to launch today",
-    timeline: "30 minutes",
-    delivery: "Working Website + Complete Launch Guide",
+    description: "Complete business ready to launch",
     features: [
-      "🌐 Live Website (deployed & working)",
-      "🎨 5 Custom Logo Variations",
-      "📊 Competitive Analysis Report",
-      "📈 Complete Business Plan",
-      "🎯 Marketing Strategy",
-      "💳 Payment System Ready",
-      "📧 Email System Configured",
-      "🚀 Step-by-Step Launch Guide",
+      "Everything in Complete",
+      "Live Deployed Website",
+      "Custom Domain Setup Guide",
+      "Payment System Ready",
+      "Email System Configured",
+      "30-Day Support",
     ],
-    cta: "Get Market-Ready Now",
+    highlight: "best",
+    cta: "Get Started",
   },
 ];
 
-interface FAQ {
-  question: string;
-  answer: string;
-}
-
-const faqs: FAQ[] = [
+const faqs = [
   {
-    question: "What makes this different from other business services?",
+    question: "How does 30-minute delivery work?",
     answer:
-      "You record a voice note about your idea, and our AI builds everything custom for you in 30 minutes. No templates, no consultants, no waiting weeks. You get a live, working website plus all the business materials you need to start selling immediately.",
+      "After payment, you record a voice note describing your business. Our AI immediately builds your complete package. You'll see progress updates and receive everything within 30 minutes.",
   },
   {
-    question: "How does the 30-minute delivery work?",
+    question: "Can I customize the website?",
     answer:
-      "After payment, you record a voice note describing your business idea. Our AI agents immediately start building your complete business package. You'll see real-time progress updates and receive everything within 30 minutes - guaranteed.",
-  },
-  {
-    question: "What if I already have a business?",
-    answer:
-      "Perfect! The Market-Ready Business package will give you a professional website, brand identity, and all the digital assets you need to compete online. Many existing businesses use this to finally get their online presence sorted.",
-  },
-  {
-    question: "Can I customize the website after delivery?",
-    answer:
-      "Yes! You get full access to the code repository on GitHub. The launch guide includes instructions for making changes. If you need help with customization, we offer additional support packages.",
+      "Yes! You get full access to the code on GitHub. The Turnkey package includes a step-by-step guide for making changes and connecting your own domain.",
   },
   {
     question: "What's your refund policy?",
     answer:
-      "Due to the instant, AI-generated nature of deliverables, all sales are final. However, if there's a technical issue preventing delivery, we'll work with you to resolve it or issue a full refund.",
+      "We offer a 30-day money back guarantee. If you're not satisfied with your deliverables, contact us for a full refund.",
   },
 ];
-
-function FAQItem({ faq }: { faq: FAQ }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="border-b border-gray-200 last:border-b-0">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors px-6 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-900 rounded"
-        aria-expanded={isOpen}
-      >
-        <span className="text-base font-medium text-gray-900">
-          {faq.question}
-        </span>
-        <svg
-          className={`w-5 h-5 text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
-      {isOpen && (
-        <div className="px-6 pb-4">
-          <p className="text-gray-700">{faq.answer}</p>
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function PricingPage() {
   const router = useRouter();
@@ -163,44 +98,32 @@ export default function PricingPage() {
 
   // Auto-trigger checkout if user returns from sign-in with tier parameter
   useEffect(() => {
-    const tier = searchParams.get('tier');
-    if (tier && session && status === 'authenticated' && !loading) {
-      console.log('[Pricing] 🔄 Auto-triggering checkout for tier:', tier);
+    const tier = searchParams.get("tier");
+    if (tier && session && status === "authenticated" && !loading) {
       handleSelectTier(tier);
-      // Clear the tier parameter from URL
-      router.replace('/get-started');
+      router.replace("/get-started");
     }
   }, [session, status, searchParams]);
 
   const handleSelectTier = async (tierId: string) => {
-    console.log("[Pricing] 🎯 User clicked tier:", tierId);
-
-    // Check authentication status
-    if (status === "loading") {
-      console.log("[Pricing] ⏳ Checking authentication status...");
-      return;
-    }
+    if (status === "loading") return;
 
     if (!session) {
-      console.log("[Pricing] 🔒 User not authenticated, redirecting to sign-in...");
-      // Redirect to sign-in with callback URL
       const callbackUrl = encodeURIComponent(`/get-started?tier=${tierId}`);
       router.push(`/auth/signin?callbackUrl=${callbackUrl}`);
       return;
     }
 
-    console.log("[Pricing] ✓ User authenticated:", session.user?.email);
     setLoading(tierId);
     setError(null);
 
     try {
-      // Call create-checkout API with user email
       const response = await fetch("/api/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tier: tierId,
-          userEmail: session.user?.email
+          userEmail: session.user?.email,
         }),
       });
 
@@ -210,723 +133,278 @@ export default function PricingPage() {
         throw new Error(data.error || "Failed to create checkout session");
       }
 
-      console.log("[Pricing] ✓ Checkout session created:", data.sessionId);
-      console.log("[Pricing] 🚀 Redirecting to Stripe checkout...");
-
-      // Redirect to Stripe checkout
       if (data.url) {
         window.location.href = data.url;
       } else {
         throw new Error("No checkout URL returned");
       }
     } catch (err: any) {
-      console.error("[Pricing] ✗ Checkout error:", err.message);
       setError(err.message || "Something went wrong. Please try again.");
       setLoading(null);
     }
   };
 
   return (
-    <div className="pricing-page">
+    <main id="main-content" className="min-h-screen pt-24 pb-16">
       {/* Hero Section */}
-      <section className="pricing-page-header">
-        <h1 className="pricing-page-title">Voice Note → Market-Ready Business</h1>
-        <p className="pricing-page-subtitle" style={{ fontSize: "1.3rem", fontWeight: "600" }}>
-          30 minutes. $497. Everything you need to launch.
-        </p>
-        <p className="pricing-page-subtitle" style={{ marginTop: "1rem" }}>
-          Record a voice note about your idea. Get a live website, logos, business plan,<br/>
-          competitive analysis, and complete launch guide. No templates. 100% custom.
-        </p>
-      </section>
-
-      {/* What You Get Section - Visual showcase */}
-      <section className="deliverables-showcase">
-        <h2 className="deliverables-title">What You Actually Get</h2>
-        <p className="deliverables-subtitle">
-          Real deliverables. Working website. Ready to sell immediately.
-        </p>
-
-        <div className="deliverables-grid">
-          <div className="deliverable-item">
-            <div className="deliverable-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h3>Business Analysis</h3>
-            <p>Complete market research, competitor analysis, and business model validation</p>
-          </div>
-
-          <div className="deliverable-item">
-            <div className="deliverable-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-              </svg>
-            </div>
-            <h3>5 Custom Logos</h3>
-            <p>AI-generated logo designs tailored to your brand strategy and target market</p>
-          </div>
-
-          <div className="deliverable-item">
-            <div className="deliverable-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-            <h3>Brand Strategy</h3>
-            <p>Complete visual identity, messaging framework, and positioning strategy</p>
-          </div>
-
-          <div className="deliverable-item">
-            <div className="deliverable-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-              </svg>
-            </div>
-            <h3>Live Working Website</h3>
-            <p>A live website deployed to a development link you can click through and test immediately</p>
-          </div>
-
-          <div className="deliverable-item">
-            <div className="deliverable-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-              </svg>
-            </div>
-            <h3>Publishing Guide</h3>
-            <p>Step-by-step guide to connect your own domain and publish your site—everything from our delivery to your live site</p>
-          </div>
-
-          <div className="deliverable-item">
-            <div className="deliverable-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3>30-Minute Delivery</h3>
-            <p>Complete business package delivered in under 30 minutes, not 30 days</p>
-          </div>
-        </div>
-
-        {/* Timeline Visualization */}
-        <div className="delivery-timeline">
-          <h3 className="timeline-title">How It Works</h3>
-          <div className="timeline-steps">
-            <div className="timeline-step">
-              <div className="step-number">1</div>
-              <div className="step-content">
-                <h4>Record Voice Note</h4>
-                <p>2 minutes</p>
-              </div>
-            </div>
-            <div className="timeline-arrow">→</div>
-            <div className="timeline-step">
-              <div className="step-number">2</div>
-              <div className="step-content">
-                <h4>AI Generates Everything</h4>
-                <p>Under 30 minutes</p>
-              </div>
-            </div>
-            <div className="timeline-arrow">→</div>
-            <div className="timeline-step">
-              <div className="step-number">3</div>
-              <div className="step-content">
-                <h4>Review & Publish</h4>
-                <p>Follow the guide</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 10-Minute Showcase Section */}
-      <section style={{ 
-        margin: "4rem auto", 
-        maxWidth: "1200px",
-        padding: "0 20px",
-      }}>
-        <div style={{
-          textAlign: "center",
-          marginBottom: "3rem"
-        }}>
-          <h3 style={{
-            fontSize: "2.5rem",
-            fontWeight: "800",
-            marginBottom: "1rem",
-            background: "linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #ec4899 100%)",
+      <section className="px-4 sm:px-6 py-8 text-center">
+        <h1
+          className="text-3xl sm:text-4xl md:text-5xl font-black mb-4"
+          style={{
+            background:
+              "linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
-          }}>
-            Built in Under 10 Minutes
-          </h3>
-          <p style={{
-            fontSize: "1.2rem",
-            color: "#d0d0d0",
-            marginBottom: "0.5rem"
-          }}>
-            From voice note to this complete meal prep business website
-          </p>
-          <p style={{
-            fontSize: "0.9rem",
-            color: "#ec4899",
-            fontWeight: "600"
-          }}>
-            "Macro & Mortar" - Professional meal delivery service
-          </p>
-        </div>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-          gap: "2rem",
-          marginBottom: "3rem"
-        }}>
-          {/* Feature Cards */}
-          <div className="showcase-card" style={{
-            background: "rgba(236, 72, 153, 0.1)",
-            border: "2px solid #ec4899",
-            borderRadius: "12px",
-            padding: "1.5rem",
-            position: "relative",
-            overflow: "hidden"
-          }}>
-            <div style={{
-              position: "absolute",
-              top: "-50px",
-              right: "-50px",
-              width: "150px",
-              height: "150px",
-              background: "radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%)",
-              filter: "blur(40px)"
-            }}></div>
-            <h4 style={{ color: "#ec4899", marginBottom: "0.5rem", fontSize: "1.3rem" }}>✨ Brand Identity</h4>
-            <ul style={{ color: "#d0d0d0", fontSize: "0.95rem", listStyle: "none", padding: 0 }}>
-              <li>• Professional logo design</li>
-              <li>• Consistent color palette</li>
-              <li>• Typography system</li>
-              <li>• Visual guidelines</li>
-            </ul>
-          </div>
-
-          <div className="showcase-card" style={{
-            background: "rgba(6, 182, 212, 0.1)",
-            border: "2px solid #06b6d4",
-            borderRadius: "12px",
-            padding: "1.5rem",
-            position: "relative",
-            overflow: "hidden"
-          }}>
-            <div style={{
-              position: "absolute",
-              top: "-50px",
-              right: "-50px",
-              width: "150px",
-              height: "150px",
-              background: "radial-gradient(circle, rgba(6, 182, 212, 0.3) 0%, transparent 70%)",
-              filter: "blur(40px)"
-            }}></div>
-            <h4 style={{ color: "#06b6d4", marginBottom: "0.5rem", fontSize: "1.3rem" }}>🚀 Complete Website</h4>
-            <ul style={{ color: "#d0d0d0", fontSize: "0.95rem", listStyle: "none", padding: 0 }}>
-              <li>• Hero with CTAs</li>
-              <li>• Menu showcase</li>
-              <li>• Customer testimonials</li>
-              <li>• Pricing comparison</li>
-            </ul>
-          </div>
-
-          <div className="showcase-card" style={{
-            background: "rgba(16, 185, 129, 0.1)",
-            border: "2px solid #10b981",
-            borderRadius: "12px",
-            padding: "1.5rem",
-            position: "relative",
-            overflow: "hidden"
-          }}>
-            <div style={{
-              position: "absolute",
-              top: "-50px",
-              right: "-50px",
-              width: "150px",
-              height: "150px",
-              background: "radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%)",
-              filter: "blur(40px)"
-            }}></div>
-            <h4 style={{ color: "#10b981", marginBottom: "0.5rem", fontSize: "1.3rem" }}>📊 Business Assets</h4>
-            <ul style={{ color: "#d0d0d0", fontSize: "0.95rem", listStyle: "none", padding: 0 }}>
-              <li>• Market research</li>
-              <li>• Competitor analysis</li>
-              <li>• Marketing strategy</li>
-              <li>• Launch roadmap</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Sample Output Preview */}
-        <div style={{
-          background: "linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%)",
-          border: "2px solid transparent",
-          backgroundImage: `
-            linear-gradient(black, black),
-            linear-gradient(135deg, #ec4899, #06b6d4)
-          `,
-          backgroundOrigin: "border-box",
-          backgroundClip: "padding-box, border-box",
-          borderRadius: "16px",
-          padding: "2rem",
-          textAlign: "center"
-        }}>
-          <p style={{
-            fontSize: "1.1rem",
-            color: "#fff",
-            marginBottom: "1rem"
-          }}>
-            <span style={{ color: "#ec4899", fontWeight: "600" }}>10 minutes.</span> Voice note → Complete business.
-          </p>
-          <p style={{
-            fontSize: "0.95rem",
-            color: "#d0d0d0"
-          }}>
-            Professional website with menu system, customer reviews, pricing tables, CTA buttons, and more.
-            <br />All created automatically from a single voice description.
-          </p>
-        </div>
+          }}
+        >
+          Choose Your Package
+        </h1>
+        <p className="text-lg text-gray-300 mb-2">
+          Voice note to complete business in 30 minutes
+        </p>
+        <p className="text-gray-400">
+          Everything you need to launch, no templates
+        </p>
       </section>
 
       {/* Pricing Cards */}
-      <div className="pricing-cards-grid">
-        {tiers.map((tier) => (
-          <div
-            key={tier.id}
-            className={`pricing-tier-card ${tier.popular ? "popular-tier" : ""}`}
-          >
-            {/* Badge */}
-            {tier.badge && tier.popular && (
-              <span className="popular-badge">{tier.badge}</span>
-            )}
-
-            {/* Header */}
-            <h2 className="tier-name">{tier.name}</h2>
-            <div className="tier-price">
-              ${tier.price}
-              <span className="price-unit"> / one-time</span>
-            </div>
-            <p className="tier-description">{tier.description}</p>
-
-            {/* Timeline & Delivery */}
-            <div style={{ marginBottom: "1.5rem" }}>
+      <section className="px-4 sm:px-6 py-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {tiers.map((tier) => (
               <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "0.5rem",
-                  color: "rgba(255, 255, 255, 0.7)",
-                }}
+                key={tier.id}
+                className={`
+                  relative p-6 rounded-2xl transition-all
+                  ${
+                    tier.highlight === "popular"
+                      ? "bg-gradient-to-b from-pink-500/10 to-cyan-500/10 border-2 border-pink-500/50 md:-translate-y-4"
+                      : tier.highlight === "best"
+                      ? "bg-gradient-to-b from-cyan-500/10 to-green-500/10 border-2 border-cyan-500/50"
+                      : "bg-black/50 border border-white/10"
+                  }
+                `}
               >
-                <svg
-                  style={{
-                    width: "20px",
-                    height: "20px",
-                    marginRight: "8px",
-                    fill: "none",
-                    stroke: "currentColor",
-                  }}
-                  viewBox="0 0 24 24"
+                {/* Badge */}
+                {tier.highlight && (
+                  <div
+                    className={`
+                      absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white
+                      ${
+                        tier.highlight === "popular"
+                          ? "bg-gradient-to-r from-pink-500 to-purple-500"
+                          : "bg-gradient-to-r from-cyan-500 to-green-500"
+                      }
+                    `}
+                  >
+                    {tier.highlight === "popular" ? "MOST POPULAR" : "BEST VALUE"}
+                  </div>
+                )}
+
+                {/* Header */}
+                <h2 className="text-xl font-bold text-white mb-1">{tier.name}</h2>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className="text-4xl font-black text-white">${tier.price}</span>
+                  <span className="text-gray-400 text-sm">one-time</span>
+                </div>
+                <p className="text-gray-400 text-sm mb-6">{tier.description}</p>
+
+                {/* Features */}
+                <ul className="space-y-3 mb-8">
+                  {tier.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm">
+                      <span className="text-cyan-400 mt-0.5 flex-shrink-0">
+                        &#10003;
+                      </span>
+                      <span className="text-gray-300">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA Button */}
+                <button
+                  onClick={() => handleSelectTier(tier.id)}
+                  disabled={loading !== null}
+                  className={`
+                    w-full py-3 px-4 rounded-lg font-semibold transition-all
+                    ${
+                      tier.highlight
+                        ? "bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:opacity-90"
+                        : "bg-white/10 text-white border border-white/20 hover:bg-white/20"
+                    }
+                    ${loading === tier.id ? "opacity-70 cursor-wait" : ""}
+                    ${loading !== null && loading !== tier.id ? "opacity-50" : ""}
+                  `}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>Timeline: {tier.timeline}</span>
+                  {loading === tier.id ? "Processing..." : tier.cta}
+                </button>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  color: "rgba(255, 255, 255, 0.7)",
-                }}
-              >
-                <svg
-                  style={{
-                    width: "20px",
-                    height: "20px",
-                    marginRight: "8px",
-                    fill: "none",
-                    stroke: "currentColor",
-                  }}
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                <span>Delivery: {tier.delivery}</span>
-              </div>
-            </div>
-
-            {/* Features */}
-            <ul className="tier-features">
-              {tier.features.map((feature, idx) => (
-                <li key={idx}>{feature}</li>
-              ))}
-            </ul>
-
-            {/* CTA Button */}
-            <button
-              onClick={() => handleSelectTier(tier.id)}
-              className="pricing-cta-button"
-              disabled={loading !== null}
-              style={{
-                opacity: loading !== null && loading !== tier.id ? 0.5 : 1,
-                cursor: loading !== null ? "wait" : "pointer",
-              }}
-            >
-              {loading === tier.id ? "Loading..." : tier.cta}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Error Message */}
-      {error && (
-        <div
-          style={{
-            maxWidth: "600px",
-            margin: "2rem auto",
-            padding: "1rem",
-            background: "rgba(239, 68, 68, 0.1)",
-            border: "1px solid rgba(239, 68, 68, 0.3)",
-            borderRadius: "8px",
-            color: "#ef4444",
-            textAlign: "center",
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      {/* Launch Guide Preview */}
-      <section style={{ padding: "4rem 2rem", background: "rgba(0, 255, 0, 0.02)" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <h2 style={{
-            fontSize: "2.5rem",
-            textAlign: "center",
-            marginBottom: "1rem",
-            backgroundImage: "linear-gradient(135deg, #00ff00, #00ffff)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}>
-            🚀 Your Website Launch Guide (Included with Market-Ready)
-          </h2>
-          <p style={{
-            textAlign: "center",
-            color: "#a0a0a0",
-            marginBottom: "3rem",
-            fontSize: "1.2rem",
-          }}>
-            We don't just build it. We show you exactly how to launch it.
-          </p>
-          
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: "30px",
-            marginBottom: "3rem",
-          }}>
-            {/* Step 1 */}
-            <div style={{
-              background: "rgba(0, 255, 0, 0.05)",
-              border: "1px solid rgba(0, 255, 0, 0.2)",
-              borderRadius: "15px",
-              padding: "30px",
-              position: "relative",
-            }}>
-              <div style={{
-                position: "absolute",
-                top: "-15px",
-                left: "30px",
-                background: "#00ff00",
-                color: "#000",
-                width: "30px",
-                height: "30px",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: "bold",
-              }}>1</div>
-              <h3 style={{ marginTop: "10px", marginBottom: "10px", color: "#00ff00" }}>
-                Choose Your Domain
-              </h3>
-              <p style={{ color: "#e0e0e0", marginBottom: "1rem" }}>
-                Step-by-step guide to selecting and purchasing the perfect domain name for your business.
-              </p>
-              <ul style={{ listStyle: "none", padding: 0 }}>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Domain registrar recommendations</li>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Name selection best practices</li>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Cost breakdown ($10-15/year)</li>
-              </ul>
-            </div>
-
-            {/* Step 2 */}
-            <div style={{
-              background: "rgba(0, 255, 0, 0.05)",
-              border: "1px solid rgba(0, 255, 0, 0.2)",
-              borderRadius: "15px",
-              padding: "30px",
-              position: "relative",
-            }}>
-              <div style={{
-                position: "absolute",
-                top: "-15px",
-                left: "30px",
-                background: "#00ff00",
-                color: "#000",
-                width: "30px",
-                height: "30px",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: "bold",
-              }}>2</div>
-              <h3 style={{ marginTop: "10px", marginBottom: "10px", color: "#00ff00" }}>
-                Connect to Vercel
-              </h3>
-              <p style={{ color: "#e0e0e0", marginBottom: "1rem" }}>
-                Your site is already deployed on Vercel. We'll show you how to connect your custom domain.
-              </p>
-              <ul style={{ listStyle: "none", padding: 0 }}>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Access your Vercel dashboard</li>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Add custom domain (with screenshots)</li>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Automatic SSL certificate setup</li>
-              </ul>
-            </div>
-
-            {/* Step 3 */}
-            <div style={{
-              background: "rgba(0, 255, 0, 0.05)",
-              border: "1px solid rgba(0, 255, 0, 0.2)",
-              borderRadius: "15px",
-              padding: "30px",
-              position: "relative",
-            }}>
-              <div style={{
-                position: "absolute",
-                top: "-15px",
-                left: "30px",
-                background: "#00ff00",
-                color: "#000",
-                width: "30px",
-                height: "30px",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: "bold",
-              }}>3</div>
-              <h3 style={{ marginTop: "10px", marginBottom: "10px", color: "#00ff00" }}>
-                Configure DNS
-              </h3>
-              <p style={{ color: "#e0e0e0", marginBottom: "1rem" }}>
-                Simple copy-paste instructions for your domain provider (GoDaddy, Namecheap, etc.)
-              </p>
-              <ul style={{ listStyle: "none", padding: 0 }}>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Provider-specific guides</li>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ A-record and CNAME setup</li>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Propagation timeline (5-30 min)</li>
-              </ul>
-            </div>
-
-            {/* Step 4 */}
-            <div style={{
-              background: "rgba(0, 255, 0, 0.05)",
-              border: "1px solid rgba(0, 255, 0, 0.2)",
-              borderRadius: "15px",
-              padding: "30px",
-              position: "relative",
-            }}>
-              <div style={{
-                position: "absolute",
-                top: "-15px",
-                left: "30px",
-                background: "#00ff00",
-                color: "#000",
-                width: "30px",
-                height: "30px",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: "bold",
-              }}>4</div>
-              <h3 style={{ marginTop: "10px", marginBottom: "10px", color: "#00ff00" }}>
-                Go Live!
-              </h3>
-              <p style={{ color: "#e0e0e0", marginBottom: "1rem" }}>
-                Final checks and your official launch checklist.
-              </p>
-              <ul style={{ listStyle: "none", padding: 0 }}>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Test all forms and features</li>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Submit to Google Search Console</li>
-                <li style={{ color: "#a0a0a0", padding: "5px 0" }}>→ Launch announcement templates</li>
-              </ul>
-            </div>
+            ))}
           </div>
 
-          <div style={{
-            background: "linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1))",
-            border: "1px solid rgba(139, 92, 246, 0.3)",
-            borderRadius: "15px",
-            padding: "30px",
-            textAlign: "center",
-          }}>
-            <h3 style={{ color: "#ff00ff", marginBottom: "1rem" }}>
-              🎁 Bonus: Post-Launch Support
-            </h3>
-            <p style={{ color: "#e0e0e0" }}>
-              Every Market-Ready Business includes 30 days of email support for technical questions.
-              We'll help you with domain issues, minor updates, and launching your marketing campaigns.
-            </p>
+          {/* Error Message */}
+          {error && (
+            <div className="mt-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-center max-w-md mx-auto">
+              {error}
+            </div>
+          )}
+
+          {/* Trust Badges */}
+          <div className="mt-12 flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+            <span className="flex items-center gap-2">
+              <span className="text-green-400">&#10003;</span>
+              30-day money back guarantee
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="text-green-400">&#10003;</span>
+              Delivered in under 30 minutes
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="text-green-400">&#10003;</span>
+              Own everything forever
+            </span>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section
-        style={{ maxWidth: "800px", margin: "0 auto", padding: "3rem 2rem" }}
-      >
-        <div
-          style={{
-            background: "rgba(255, 255, 255, 0.05)",
-            borderRadius: "12px",
-            padding: "2rem",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-          }}
-        >
-          <h2
-            style={{
-              fontSize: "2rem",
-              fontWeight: "bold",
-              marginBottom: "2rem",
-              color: "#00ffff",
-            }}
-          >
-            Frequently Asked Questions
+      {/* How It Works - Condensed */}
+      <section className="px-4 sm:px-6 py-16 border-t border-white/5">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-center text-white mb-10">
+            How It Works
           </h2>
-          <div>
-            {faqs.map((faq, idx) => (
+
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
+            {/* Step 1 */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-pink-500/20 border border-pink-500/50 flex items-center justify-center text-pink-400 font-bold">
+                1
+              </div>
+              <div>
+                <p className="font-medium text-white">Record Voice Note</p>
+                <p className="text-xs text-gray-400">Describe your idea</p>
+              </div>
+            </div>
+
+            <div className="hidden md:block text-gray-600">&#8594;</div>
+
+            {/* Step 2 */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold">
+                2
+              </div>
+              <div>
+                <p className="font-medium text-white">AI Builds Everything</p>
+                <p className="text-xs text-gray-400">Under 30 minutes</p>
+              </div>
+            </div>
+
+            <div className="hidden md:block text-gray-600">&#8594;</div>
+
+            {/* Step 3 */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-500/20 border border-green-500/50 flex items-center justify-center text-green-400 font-bold">
+                3
+              </div>
+              <div>
+                <p className="font-medium text-white">Launch & Sell</p>
+                <p className="text-xs text-gray-400">Go live immediately</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* What's Included - Turnkey Highlight */}
+      <section className="px-4 sm:px-6 py-16 border-t border-white/5">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-center text-white mb-2">
+            What You Get with Turnkey
+          </h2>
+          <p className="text-center text-gray-400 mb-10">
+            The complete package for serious entrepreneurs
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { icon: "&#127760;", title: "Live Website", desc: "Deployed and working" },
+              { icon: "&#127912;", title: "5 Logo Designs", desc: "Professional variations" },
+              { icon: "&#128200;", title: "Market Research", desc: "Competitive analysis" },
+              { icon: "&#128196;", title: "Business Plan", desc: "Complete strategy" },
+              { icon: "&#127919;", title: "Marketing Plan", desc: "Go-to-market guide" },
+              { icon: "&#128640;", title: "Launch Guide", desc: "Step-by-step setup" },
+            ].map((item, idx) => (
               <div
                 key={idx}
-                style={{
-                  borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-                  paddingBottom: "1rem",
-                  marginBottom: "1rem",
-                }}
+                className="p-4 rounded-lg bg-white/5 border border-white/10 flex items-start gap-3"
               >
-                <h3
-                  style={{
-                    color: "#ff00ff",
-                    marginBottom: "0.5rem",
-                    fontSize: "1.1rem",
-                  }}
-                >
-                  {faq.question}
-                </h3>
-                <p
-                  style={{
-                    color: "rgba(255, 255, 255, 0.8)",
-                    lineHeight: "1.6",
-                  }}
-                >
-                  {faq.answer}
-                </p>
+                <span className="text-2xl">{item.icon}</span>
+                <div>
+                  <p className="font-medium text-white">{item.title}</p>
+                  <p className="text-xs text-gray-400">{item.desc}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA Section */}
-      <section
-        style={{
-          background: "radial-gradient(circle at center, rgba(139, 92, 246, 0.2) 0%, transparent 70%)",
-          padding: "5rem 2rem",
-          textAlign: "center",
-        }}
-      >
-        <h2
-          style={{
-            fontSize: "3rem",
-            fontWeight: "bold",
-            marginBottom: "1rem",
-            backgroundImage: "linear-gradient(135deg, #00ff00, #00ffff)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          Ready to Launch Your Business?
-        </h2>
-        <p
-          style={{
-            fontSize: "1.5rem",
-            color: "#fff",
-            marginBottom: "1rem",
-            maxWidth: "600px",
-            margin: "0 auto 1rem",
-          }}
-        >
-          30 minutes from now, you could be live and selling.
-        </p>
-        <p
-          style={{
-            fontSize: "1.1rem",
-            color: "rgba(255, 255, 255, 0.7)",
-            marginBottom: "2rem",
-            maxWidth: "700px",
-            margin: "0 auto 2rem",
-          }}
-        >
-          Record a voice note about your idea. Get a complete business with live website,
-          logos, competitive analysis, and everything you need to start making money today.
-        </p>
-        <button
-          onClick={() => handleSelectTier("TURNKEY_SYSTEM")}
-          disabled={loading !== null}
-          style={{
-            padding: "20px 40px",
-            fontSize: "1.3rem",
-            background: "linear-gradient(135deg, #00ff00, #00ffff)",
-            color: "#000",
-            border: "none",
-            borderRadius: "10px",
-            fontWeight: "bold",
-            cursor: loading !== null ? "wait" : "pointer",
-            transition: "all 0.3s",
-            opacity: loading !== null ? 0.7 : 1,
-          }}
-        >
-          {loading === "TURNKEY_SYSTEM" ? "Processing..." : "Get Your Market-Ready Business Now →"}
-        </button>
-        <p
-          style={{
-            marginTop: "2rem",
-            color: "#00ff00",
-            fontWeight: "600",
-          }}
-        >
-          100% custom. No templates. Delivered in 30 minutes or your money back.
-        </p>
+      {/* FAQ - Condensed */}
+      <section className="px-4 sm:px-6 py-16 border-t border-white/5">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-2xl font-bold text-center text-white mb-10">
+            Questions?
+          </h2>
+
+          <div className="space-y-6">
+            {faqs.map((faq, idx) => (
+              <div key={idx} className="border-b border-white/10 pb-6">
+                <h3 className="font-medium text-white mb-2">{faq.question}</h3>
+                <p className="text-sm text-gray-400">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 text-center">
+            <Link
+              href="/faq"
+              className="text-sm text-pink-400 hover:text-pink-300 transition-colors"
+            >
+              View all FAQs &#8594;
+            </Link>
+          </div>
+        </div>
       </section>
-    </div>
+
+      {/* Final CTA */}
+      <section className="px-4 sm:px-6 py-16 border-t border-white/5">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            Ready to Launch?
+          </h2>
+          <p className="text-gray-400 mb-8">
+            30 minutes from now, you could have a complete business ready to sell.
+          </p>
+          <button
+            onClick={() => handleSelectTier("TURNKEY_SYSTEM")}
+            disabled={loading !== null}
+            className={`
+              inline-flex items-center gap-2 px-8 py-4 rounded-lg
+              bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold
+              hover:opacity-90 transition-opacity
+              ${loading === "TURNKEY_SYSTEM" ? "opacity-70 cursor-wait" : ""}
+            `}
+          >
+            {loading === "TURNKEY_SYSTEM"
+              ? "Processing..."
+              : "Get Your Market-Ready Business - $497"}
+          </button>
+          <p className="mt-4 text-sm text-gray-500">
+            One-time payment. No subscriptions. Own everything.
+          </p>
+        </div>
+      </section>
+    </main>
   );
 }

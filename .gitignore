@@ -150,3 +150,11 @@ drizzle/
 
 # v0-sdk (separate git repo, installed via npm)
 v0-sdk/
+.env*.local
+
+# Data files
+dataset_*.json
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/

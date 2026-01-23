@@ -1,0 +1,29 @@
+{
+  "name": "ffmpeg-worker",
+  "version": "1.0.0",
+  "description": "FFMPEG video processing service for Faceless Video Generator",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "fluent-ffmpeg": "^2.1.2",
+    "multer": "^1.4.5-lts.1",
+    "uuid": "^9.0.0",
+    "cors": "^2.8.5",
+    "@aws-sdk/client-s3": "^3.400.0",
+    "@aws-sdk/s3-request-presigner": "^3.400.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/fluent-ffmpeg": "^2.1.21",
+    "@types/multer": "^1.4.7",
+    "@types/uuid": "^9.0.2",
+    "@types/cors": "^2.8.13",
+    "typescript": "^5.0.0",
+    "tsx": "^4.7.0"
+  }
+}
