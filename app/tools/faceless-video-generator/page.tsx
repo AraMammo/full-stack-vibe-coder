@@ -82,25 +82,55 @@ export default function FacelessVideoGeneratorPage() {
     }
   }, [status]);
 
-  // Poll for progress updates
+  // Poll for progress updates and trigger incremental processing
   const pollProgress = useCallback(async (storyId: string) => {
     try {
-      const res = await fetch(`/api/v2/faceless-video/stories/${storyId}`);
-      const data = await res.json();
+      // First, get current status
+      const statusRes = await fetch(`/api/v2/faceless-video/stories/${storyId}`);
+      const statusData = await statusRes.json();
 
-      if (data.success && data.story) {
-        setProgress(data.story);
+      if (statusData.success && statusData.story) {
+        setProgress(statusData.story);
 
         // Check if complete or failed
-        if (data.story.status === 'completed' || data.story.status === 'failed') {
-          if (data.story.finalVideoUrl || data.story.finalVideoCaptionedUrl) {
+        if (statusData.story.status === 'completed' || statusData.story.status === 'failed') {
+          if (statusData.story.finalVideoUrl || statusData.story.finalVideoCaptionedUrl) {
             setView('complete');
           }
           return; // Stop polling
         }
 
-        // Continue polling
-        setTimeout(() => pollProgress(storyId), 3000);
+        // If generating media or building video, trigger processing
+        if (['generating_media', 'building_video', 'adding_captions'].includes(statusData.story.status)) {
+          try {
+            // Call POST to process one shot or finalize
+            const processRes = await fetch(`/api/v2/faceless-video/stories/${storyId}`, {
+              method: 'POST',
+            });
+            const processData = await processRes.json();
+
+            if (processData.success) {
+              console.log(`[Processing] ${processData.message}`);
+
+              // If done, update view
+              if (processData.done && processData.finalVideoUrl) {
+                // Fetch final status
+                const finalRes = await fetch(`/api/v2/faceless-video/stories/${storyId}`);
+                const finalData = await finalRes.json();
+                if (finalData.success && finalData.story) {
+                  setProgress(finalData.story);
+                  setView('complete');
+                }
+                return;
+              }
+            }
+          } catch (processErr) {
+            console.error('Processing step failed:', processErr);
+          }
+        }
+
+        // Continue polling (shorter interval during active processing)
+        setTimeout(() => pollProgress(storyId), 2000);
       }
     } catch (err) {
       console.error('Failed to fetch progress:', err);
