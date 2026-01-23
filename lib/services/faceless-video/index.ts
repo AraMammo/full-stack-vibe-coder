@@ -4,4 +4,4 @@
 
 export * from './types';
 export { db, FacelessVideoDB } from './supabase-client';
-export { processStory } from './workflow';
+export { processStory, processOneShot, finalizeScenesAndStory } from './workflow';

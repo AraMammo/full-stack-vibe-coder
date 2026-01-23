@@ -520,5 +520,111 @@ export async function processStory(storyId: string): Promise<void> {
   }
 }
 
+// ==================== Incremental Processing Functions ====================
+
+/**
+ * Process a single shot incrementally (one step at a time)
+ * Returns the step that was completed
+ */
+export async function processOneShot(
+  shot: Shot,
+  storyType: StoryType
+): Promise<{ message: string }> {
+  // Step 1: Generate image if not done
+  if (shot.image_status !== 'completed') {
+    log(shot.story_id, `Generating image for shot: ${shot.name}`);
+    await generateImage(shot, storyType);
+    return { message: 'Image generated' };
+  }
+
+  // Refresh shot data
+  const updatedShot = await db.getShot(shot.id);
+  if (!updatedShot) throw new Error('Shot not found');
+
+  // Step 2: Generate audio if not done
+  if (updatedShot.audio_status !== 'completed') {
+    log(shot.story_id, `Generating audio for shot: ${shot.name}`);
+    await generateVoiceover(updatedShot, storyType);
+    return { message: 'Audio generated' };
+  }
+
+  // Refresh again
+  const shotWithAudio = await db.getShot(shot.id);
+  if (!shotWithAudio) throw new Error('Shot not found');
+
+  // Step 3: Generate video if not done
+  if (shotWithAudio.video_status !== 'completed') {
+    log(shot.story_id, `Generating video for shot: ${shot.name}`);
+    await generateVideo(shotWithAudio, storyType);
+    return { message: 'Video generated' };
+  }
+
+  // Refresh again
+  const shotWithVideo = await db.getShot(shot.id);
+  if (!shotWithVideo) throw new Error('Shot not found');
+
+  // Step 4: Mix audio/video if not done
+  if (shotWithVideo.final_status !== 'completed') {
+    log(shot.story_id, `Mixing audio/video for shot: ${shot.name}`);
+    await mixAudioVideo(shotWithVideo);
+    return { message: 'Audio/video mixed' };
+  }
+
+  return { message: 'Shot already complete' };
+}
+
+/**
+ * Finalize scenes and combine into final video
+ */
+export async function finalizeScenesAndStory(
+  storyId: string
+): Promise<{ message: string; finalVideoUrl?: string; done: boolean }> {
+  const story = await db.getStory(storyId);
+  if (!story) throw new Error('Story not found');
+
+  const scenes = await db.getScenesByStory(storyId);
+
+  // Check if all scenes are combined
+  const incompletScene = scenes.find(s => s.status !== 'completed');
+
+  if (incompletScene) {
+    // Combine shots for this scene
+    log(storyId, `Combining shots for scene: ${incompletScene.name}`);
+    await db.updateStoryStatus(storyId, 'building_video', 85);
+    await combineShots(incompletScene);
+    return { message: `Scene "${incompletScene.name}" combined`, done: false };
+  }
+
+  // All scenes combined - check if final video exists
+  if (!story.final_video_url) {
+    log(storyId, 'Combining all scenes into final video');
+    await combineScenes(story);
+
+    const updated = await db.getStory(storyId);
+    return { message: 'Scenes combined into final video', finalVideoUrl: updated?.final_video_url, done: false };
+  }
+
+  // Add captions if enabled and not done
+  if (!story.final_video_captioned_url && story.story_type?.captions_enabled) {
+    log(storyId, 'Adding captions');
+    await db.updateStoryStatus(storyId, 'adding_captions', 95);
+    await addCaptions(story, story.story_type);
+
+    const updated = await db.getStory(storyId);
+    return { message: 'Captions added', finalVideoUrl: updated?.final_video_captioned_url || updated?.final_video_url, done: false };
+  }
+
+  // Mark as complete
+  await db.updateStoryStatus(storyId, 'completed', 100);
+  log(storyId, 'Story completed!');
+
+  const final = await db.getStory(storyId);
+  return {
+    message: 'Story completed',
+    finalVideoUrl: final?.final_video_captioned_url || final?.final_video_url,
+    done: true,
+  };
+}
+
 // Export for use in API routes
 export { db };

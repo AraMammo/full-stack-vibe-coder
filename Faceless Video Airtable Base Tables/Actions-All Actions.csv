@@ -1,0 +1,22 @@
+﻿Action ID,Action,Type,Max Pixels,Group,Webhook URL,Sort,Active
+1—Manual,Manual,,,,,0,checked
+17—Generate Image (openai),Generate Image,Image Generation,,openai,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,5,checked
+6—Generate Images (mj),Generate Images,Image Generation,,mj,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,10,checked
+2—Upscale Image (mj),Upscale Image,Image Generation,,mj,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,20,checked
+7—Generate Image (flux),Generate Image,Image Generation,1024,flux,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,30,checked
+20—Generate Image (leonrdo),Generate Image,Image Generation,,leonrdo,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,50,checked
+4—Generate Voiceover (11labs),Generate Voiceover,Audio Generation,,11labs,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,10,checked
+24—Generate Video (nca-toolkit),Generate Video,Video Generation,,nca-toolkit,https://hook.us1.make.com/xmpgh26nv7kyaeq4dq4qat6wr7obfeb5,5,checked
+14—Generate Video (luma api),Generate Video,Video Generation,,luma api,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,10,checked
+3—Generate Video (luma goapi),Generate Video,Video Generation,,luma goapi,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,20,checked
+8—Generate Video (kling goapi),Generate Video,Video Generation,,kling goapi,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,30,checked
+22—Generate Video (leonrdo),Generate Video,Video Generation,,leonrdo,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,40,checked
+10—Combine Shots (nca-toolkit),Combine Shots,No-Code Toolkit,,nca-toolkit,https://hook.us1.make.com/xmpgh26nv7kyaeq4dq4qat6wr7obfeb5,10,checked
+9—Shots (mix audio+video) (nca-toolkit),Shots (mix audio+video),No-Code Toolkit,,nca-toolkit,https://hook.us1.make.com/xmpgh26nv7kyaeq4dq4qat6wr7obfeb5,20,checked
+11—Combine Scenes (nca-toolkit),Combine Scenes,No-Code Toolkit,,nca-toolkit,https://hook.us1.make.com/xmpgh26nv7kyaeq4dq4qat6wr7obfeb5,30,checked
+12—Scene (mix audio+video) (nca-toolkit),Scene (mix audio+video),No-Code Toolkit,,nca-toolkit,https://hook.us1.make.com/xmpgh26nv7kyaeq4dq4qat6wr7obfeb5,40,checked
+13—Story (mix audio+video) (nca-toolkit),Story (mix audio+video),No-Code Toolkit,,nca-toolkit,https://hook.us1.make.com/xmpgh26nv7kyaeq4dq4qat6wr7obfeb5,50,checked
+23—Get Transcription (nca-toolkit),Get Transcription,No-Code Toolkit,,nca-toolkit,https://hook.us1.make.com/xmpgh26nv7kyaeq4dq4qat6wr7obfeb5,60,checked
+19—Add Captions To Story (nca-toolkit),Add Captions To Story,No-Code Toolkit,,nca-toolkit,https://hook.us1.make.com/xmpgh26nv7kyaeq4dq4qat6wr7obfeb5,70,checked
+16—Add Scenes/Shots (system),Add Scenes/Shots,Story Generation,,system,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,10,checked
+18—Generate Story (system),Generate Story,Story Generation,,system,https://hook.us1.make.com/dndy4kkao8p29dt5dv6dqtse53qy9p7s,20,checked

@@ -1,0 +1,21 @@
+﻿Name,Value,Group,Sort
+MJ Create Images (webhook),,AI Generation,10
+MJ Upscale Image (webhook),,AI Generation,20
+Flux Create Image (webhook),,AI Generation,30
+Build Final Shot Mix (webhook),https://hooks.airtable.com/workflows/v1/genericWebhook/appr1TSJXvZsGk77W/wflPM1c10fn8DeOD4/wtrhp6JFYPq4sdSIf,NCA Toolkit,10
+Combine Shots (webhook),https://hooks.airtable.com/workflows/v1/genericWebhook/appr1TSJXvZsGk77W/wflKowlCFLczFvkzb/wtrc1BSgDlfvuuoEm,NCA Toolkit,20
+Build Final Scene Mix (webhook),https://hooks.airtable.com/workflows/v1/genericWebhook/appr1TSJXvZsGk77W/wfl5IxHtC0IneEeH6/wtrxlCe7AALj3DiMh,NCA Toolkit,30
+Combine Scenes (webhook),https://hooks.airtable.com/workflows/v1/genericWebhook/appr1TSJXvZsGk77W/wflve43cqSp2bImvx/wtrXR9AQossY0HqAI,NCA Toolkit,40
+Build Final Story Mix (webhook),https://hooks.airtable.com/workflows/v1/genericWebhook/appr1TSJXvZsGk77W/wflivHgbChtqs3iER/wtrK8MNPARwmh2mJ2,NCA Toolkit,50
+Get Transcription (webhook),https://hooks.airtable.com/workflows/v1/genericWebhook/appr1TSJXvZsGk77W/wflniJX4Fx144GAmr/wtrPVOuID740TFErC,NCA Toolkit,60
+Add Caption To Story (webhook),https://hooks.airtable.com/workflows/v1/genericWebhook/appr1TSJXvZsGk77W/wflxPwoYUREQ1QtzX/wtrZsBVCSrHMQPxE8,NCA Toolkit,70
+IMG To Video (webhook),https://hooks.airtable.com/workflows/v1/genericWebhook/appr1TSJXvZsGk77W/wflTd7rTot34wF7lx/wtrZiuiyuRufoG1xu,NCA Toolkit,80
+IMG To Video (length),5,NCA Toolkit,90
+IMG To Video (frame_rate),25,NCA Toolkit,90
+IMG To Video (zoom_speed),3,NCA Toolkit,90
+Break (number of attempts),20,Make.com Vars,10
+Break (interval between attempts),1,Make.com Vars,20
+GCP Project ID,,Make.com Vars,30
+GCP Bucket,,Make.com Vars,40
+GOAPI API Key,,API Keys,10
+LumaLabs API key,,API Keys,20

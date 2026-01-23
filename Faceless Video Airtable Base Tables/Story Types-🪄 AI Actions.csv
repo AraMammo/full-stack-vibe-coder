@@ -1,0 +1,5 @@
+﻿Story Type,Image Action,Auto Run Image Action,Auto Upscale Image Action,Audio Action,Auto Run Audio Action,Video Action,Auto Run Video Action,Captions
+Classic Dramatic Movie,17—Generate Image (openai),,,4—Generate Voiceover (11labs),,24—Generate Video (nca-toolkit),,
+Comic Book News,17—Generate Image (openai),,,4—Generate Voiceover (11labs),,24—Generate Video (nca-toolkit),,
+Faceless YouTube Video,,,,,,,,
+INSTALL HELPER (story type),17—Generate Image (openai),,,4—Generate Voiceover (11labs),,24—Generate Video (nca-toolkit),,checked

@@ -210,6 +210,17 @@ export class FacelessVideoDB {
     return data || [];
   }
 
+  async getShot(id: string): Promise<Shot | null> {
+    const { data, error } = await supabase
+      .from('shots')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+    return data;
+  }
+
   async getShotsByScene(sceneId: string): Promise<Shot[]> {
     const { data, error } = await supabase
       .from('shots')
