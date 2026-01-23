@@ -197,8 +197,22 @@ async function generateImage(shot: Shot, storyType: StoryType): Promise<string> 
     quality: 'hd',
   });
 
-  const imageUrl = imageResponse.data?.[0]?.url;
-  if (!imageUrl) throw new Error('No image URL returned');
+  const dalleUrl = imageResponse.data?.[0]?.url;
+  if (!dalleUrl) throw new Error('No image URL returned');
+
+  // Download and upload to Supabase storage (DALL-E URLs are temporary)
+  const imageData = await fetch(dalleUrl);
+  const imageBuffer = await imageData.arrayBuffer();
+  const base64Image = Buffer.from(imageBuffer).toString('base64');
+
+  // Upload via FFMPEG worker (which has storage configured)
+  const uploadResult = await callFFMPEGWorker('upload-image', {
+    imageBase64: base64Image,
+    filename: `shot-${shot.id}.png`,
+    contentType: 'image/png',
+  });
+
+  const imageUrl = uploadResult.imageUrl || dalleUrl;
 
   await db.updateShotMediaStatus(shot.id, 'image', 'completed', imageUrl);
   return imageUrl;

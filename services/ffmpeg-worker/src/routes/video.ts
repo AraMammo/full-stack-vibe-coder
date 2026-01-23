@@ -259,6 +259,57 @@ router.post('/generate-srt', async (req: Request, res: Response) => {
 });
 
 /**
+ * POST /api/video/upload-image
+ * Upload image data to storage and return a public URL
+ * Used for DALL-E images that need persistent storage
+ *
+ * Body: {
+ *   imageBase64: string,  // Base64 encoded image data
+ *   filename?: string,    // Optional filename (default: random UUID)
+ *   contentType?: string  // MIME type (default: image/png)
+ * }
+ */
+router.post('/upload-image', async (req: Request, res: Response) => {
+  const jobId = uuidv4();
+
+  try {
+    const { imageBase64, filename, contentType = 'image/png' } = req.body;
+
+    if (!imageBase64) {
+      return res.status(400).json({ error: 'imageBase64 is required' });
+    }
+
+    console.log(`[${jobId}] Upload Image: Starting`);
+
+    // Decode base64 to buffer
+    const imageBuffer = Buffer.from(imageBase64, 'base64');
+
+    // Determine file extension from content type
+    const ext = contentType === 'image/jpeg' ? 'jpg' : 'png';
+    const imageFilename = filename || `${jobId}.${ext}`;
+
+    // Write to temp file
+    const tempPath = path.join(TEMP_DIR, imageFilename);
+    fs.writeFileSync(tempPath, imageBuffer);
+
+    // Upload to storage
+    const imageUrl = await uploadToStorage(tempPath, `images/${imageFilename}`);
+
+    console.log(`[${jobId}] Upload Image: Complete - ${imageUrl}`);
+
+    // Cleanup temp file
+    await cleanupFiles([tempPath]);
+
+    res.json({ success: true, imageUrl });
+  } catch (error) {
+    console.error(`[${jobId}] Upload Image Error:`, error);
+    res.status(500).json({
+      error: error instanceof Error ? error.message : 'Failed to upload image'
+    });
+  }
+});
+
+/**
  * POST /api/video/upload-audio
  * Upload audio data to storage and return a public URL
  * Used for ElevenLabs voiceover audio that needs to be stored
