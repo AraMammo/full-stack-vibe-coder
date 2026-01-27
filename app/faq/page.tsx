@@ -106,10 +106,10 @@ export default function FAQPage() {
       answer: (
         <div className="faq-answer-content">
           <p>
-            <strong>Business In A Box:</strong> Starting at $47
+            <strong>Business In A Box:</strong> Start free, upgrade anytime
           </p>
           <p>
-            Three tiers available: Validation Pack ($47), Launch Blueprint ($197), and Turnkey System ($497).
+            Three tiers available: Starter (Free), Complete ($197), and Turnkey ($497).
             Each includes market research, brand identity, and everything you need to launch.
             Delivered in under 30 minutes. You own everything.
           </p>

@@ -13,9 +13,9 @@ import Link from 'next/link';
 
 const tierConfig = {
   VALIDATION_PACK: {
-    name: 'Validation Pack',
-    price: 47,
-    description: '5 business sections + PDF Report',
+    name: 'Starter Pack',
+    price: 0,
+    description: 'Market research + competitive analysis + business validation',
     timeline: '15-20 minutes',
   },
   LAUNCH_BLUEPRINT: {
@@ -48,21 +48,28 @@ export default function UploadPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
 
-  // Read selected tier from sessionStorage on mount
+  // Read selected tier from URL params or sessionStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // First check URL params (for free tier direct redirect)
+      const tierFromUrl = searchParams.get('tier');
       const storedTier = sessionStorage.getItem('selectedTier');
-      console.log('[Upload] 🔍 Checking sessionStorage for tier:', storedTier);
 
-      if (storedTier && (storedTier === 'VALIDATION_PACK' || storedTier === 'LAUNCH_BLUEPRINT' || storedTier === 'TURNKEY_SYSTEM')) {
+      const validTiers = ['VALIDATION_PACK', 'LAUNCH_BLUEPRINT', 'TURNKEY_SYSTEM'];
+
+      if (tierFromUrl && validTiers.includes(tierFromUrl)) {
+        console.log('[Upload] ✅ Valid tier found in URL params:', tierFromUrl);
+        setSelectedTier(tierFromUrl);
+        sessionStorage.setItem('selectedTier', tierFromUrl);
+      } else if (storedTier && validTiers.includes(storedTier)) {
         console.log('[Upload] ✅ Valid tier found in sessionStorage:', storedTier);
         setSelectedTier(storedTier);
       } else {
-        console.log('[Upload] ⚠️ No valid tier in sessionStorage, showing selection UI');
+        console.log('[Upload] ⚠️ No valid tier found, showing selection UI');
         setShowTierSelection(true);
       }
     }
-  }, []);
+  }, [searchParams]);
 
   // Redirect to sign in if not authenticated
   useEffect(() => {
@@ -249,8 +256,11 @@ export default function UploadPage() {
                 <h2 className="text-lg font-semibold text-purple-900 mb-2">Selected Package</h2>
                 <div className="space-y-1">
                   <p className="text-purple-800">
-                    <strong>{tierConfig[selectedTier as keyof typeof tierConfig].name}</strong> - $
-                    {tierConfig[selectedTier as keyof typeof tierConfig].price}
+                    <strong>{tierConfig[selectedTier as keyof typeof tierConfig].name}</strong> - {
+                      tierConfig[selectedTier as keyof typeof tierConfig].price === 0
+                        ? 'Free'
+                        : `$${tierConfig[selectedTier as keyof typeof tierConfig].price}`
+                    }
                   </p>
                   <p className="text-sm text-purple-700">
                     {tierConfig[selectedTier as keyof typeof tierConfig].description}
@@ -288,7 +298,9 @@ export default function UploadPage() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-lg font-semibold text-gray-900">{tier.name}</h3>
-                    <span className="text-2xl font-bold text-purple-600">${tier.price}</span>
+                    <span className={`text-2xl font-bold ${tier.price === 0 ? 'text-green-600' : 'text-purple-600'}`}>
+                      {tier.price === 0 ? 'Free' : `$${tier.price}`}
+                    </span>
                   </div>
                   <p className="text-sm text-gray-700 mb-1">{tier.description}</p>
                   <p className="text-xs text-gray-600">Delivery: {tier.timeline}</p>

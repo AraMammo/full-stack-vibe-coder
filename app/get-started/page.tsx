@@ -26,7 +26,7 @@ const tiers: Tier[] = [
   {
     id: "VALIDATION_PACK",
     name: "Starter",
-    price: 47,
+    price: 0,
     description: "Test your idea with market research",
     features: [
       "Market Research Report",
@@ -35,7 +35,7 @@ const tiers: Tier[] = [
       "Business Model Validation",
       "Pricing Recommendations",
     ],
-    cta: "Get Started",
+    cta: "Start Free",
   },
   {
     id: "LAUNCH_BLUEPRINT",
@@ -96,14 +96,13 @@ export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Auto-trigger checkout if user returns from sign-in with tier parameter
+  // Auto-trigger checkout when tier parameter is present
   useEffect(() => {
     const tier = searchParams.get("tier");
-    if (tier && session && status === "authenticated" && !loading) {
+    if (tier && status !== "loading" && !loading) {
       handleSelectTier(tier);
-      router.replace("/get-started");
     }
-  }, [session, status, searchParams]);
+  }, [status, searchParams]);
 
   const handleSelectTier = async (tierId: string) => {
     if (status === "loading") return;
@@ -131,6 +130,13 @@ export default function PricingPage() {
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to create checkout session");
+      }
+
+      // Handle free tier - redirect directly to upload
+      if (data.free) {
+        sessionStorage.setItem('selectedTier', data.tier);
+        window.location.href = data.redirectUrl;
+        return;
       }
 
       if (data.url) {
@@ -205,8 +211,14 @@ export default function PricingPage() {
                 {/* Header */}
                 <h2 className="text-xl font-bold text-white mb-1">{tier.name}</h2>
                 <div className="flex items-baseline gap-1 mb-2">
-                  <span className="text-4xl font-black text-white">${tier.price}</span>
-                  <span className="text-gray-400 text-sm">one-time</span>
+                  {tier.price === 0 ? (
+                    <span className="text-4xl font-black text-green-400">Free</span>
+                  ) : (
+                    <>
+                      <span className="text-4xl font-black text-white">${tier.price}</span>
+                      <span className="text-gray-400 text-sm">one-time</span>
+                    </>
+                  )}
                 </div>
                 <p className="text-gray-400 text-sm mb-6">{tier.description}</p>
 

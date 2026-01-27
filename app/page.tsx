@@ -214,11 +214,11 @@ export default function Home() {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Starter */}
-              <div className="relative p-6 rounded-xl bg-black/50 border border-white/10 hover:border-pink-500/30 transition-all">
+              {/* Starter - Free */}
+              <div className="relative p-6 rounded-xl bg-black/50 border border-white/10 hover:border-green-500/30 transition-all">
                 <h3 className="text-lg font-semibold text-white mb-1">Starter</h3>
-                <div className="text-3xl font-bold text-white mb-4">
-                  $47
+                <div className="text-3xl font-bold text-green-400 mb-4">
+                  Free
                 </div>
                 <ul className="space-y-2 mb-6 text-sm text-gray-300">
                   <li className="flex items-start gap-2">
@@ -235,10 +235,10 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link
-                  href="/get-started"
-                  className="block w-full py-3 text-center rounded-lg border border-white/20 text-white hover:bg-white/5 transition-colors"
+                  href="/get-started?tier=VALIDATION_PACK"
+                  className="block w-full py-3 text-center rounded-lg border border-green-500/50 text-green-400 hover:bg-green-500/10 transition-colors font-semibold"
                 >
-                  Get Started
+                  Start Free
                 </Link>
               </div>
 
@@ -270,7 +270,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link
-                  href="/get-started"
+                  href="/get-started?tier=LAUNCH_BLUEPRINT"
                   className="block w-full py-3 text-center rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold hover:opacity-90 transition-opacity"
                 >
                   Get Started
@@ -305,7 +305,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link
-                  href="/get-started"
+                  href="/get-started?tier=TURNKEY_SYSTEM"
                   className="block w-full py-3 text-center rounded-lg border border-cyan-500/50 text-white hover:bg-cyan-500/10 transition-colors"
                 >
                   Get Started

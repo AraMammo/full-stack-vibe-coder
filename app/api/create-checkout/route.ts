@@ -16,7 +16,7 @@ try {
     console.error('[Stripe] STRIPE_SECRET_KEY not configured');
   } else {
     stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2025-09-30.clover',
+      apiVersion: '2024-06-20',
     });
   }
 } catch (error) {
@@ -35,9 +35,9 @@ interface TierConfig {
 
 const TIER_CONFIG: Record<string, TierConfig> = {
   VALIDATION_PACK: {
-    name: 'Validation Pack',
-    description: 'Validate your business idea with 5 core analysis sections',
-    price: 4700, // $47.00
+    name: 'Starter Pack',
+    description: 'Validate your business idea with market research and competitive analysis',
+    price: 0, // Free tier
   },
   LAUNCH_BLUEPRINT: {
     name: 'Launch Blueprint',
@@ -89,6 +89,16 @@ export async function POST(request: NextRequest) {
         { error: 'Invalid tier selected' },
         { status: 400 }
       );
+    }
+
+    // Handle free tier - skip Stripe checkout entirely
+    if (tierConfig.price === 0) {
+      console.log(`[Checkout] Free tier selected: ${tierConfig.name}`);
+      return NextResponse.json({
+        free: true,
+        tier,
+        redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/upload?tier=${tier}`,
+      });
     }
 
     console.log(`[Stripe] Creating checkout for ${tierConfig.name} ($${tierConfig.price / 100})`);
