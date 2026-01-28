@@ -1,5 +1,5 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import * as schema from "../shared/schema";
 
 if (!process.env.DATABASE_URL) {
@@ -8,5 +8,9 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle({ client: pool, schema });
+// Use postgres-js for Supabase connection pooler
+const client = postgres(process.env.DATABASE_URL, {
+  prepare: false, // Required for Supabase session pooler
+});
+
+export const db = drizzle(client, { schema });
