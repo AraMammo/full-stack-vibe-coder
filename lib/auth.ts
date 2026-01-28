@@ -4,11 +4,25 @@
  * Handles user authentication using email magic links and Google OAuth.
  */
 
-import { type NextAuthOptions } from 'next-auth';
+import { type NextAuthOptions, getServerSession } from 'next-auth';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import EmailProvider from 'next-auth/providers/email';
 import GoogleProvider from 'next-auth/providers/google';
 import { prisma } from './db';
+
+// ============================================
+// TYPE AUGMENTATION
+// ============================================
+
+/**
+ * Extend NextAuth types to include user ID in session
+ * This allows TypeScript to recognize session.user.id
+ */
+declare module 'next-auth' {
+  interface User {
+    id: string;
+  }
+}
 
 // Log authentication configuration on startup
 const hasEmailProvider =
@@ -144,7 +158,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, user }) {
       // Add user ID to session (database strategy provides user, not token)
       if (session.user && user?.id) {
-        (session.user as any).id = user.id;
+        session.user.id = user.id;
       }
       return session;
     },
@@ -171,6 +185,18 @@ export const authOptions: NextAuthOptions = {
 
   debug: process.env.NODE_ENV === 'development',
 };
+
+// ============================================
+// AUTH HELPER FUNCTION
+// ============================================
+
+/**
+ * Helper function to get server session with proper typing
+ * Use this instead of getServerSession(authOptions) for cleaner code
+ */
+export async function auth() {
+  return await getServerSession(authOptions);
+}
 
 /**
  * Helper function to get user from database with full details

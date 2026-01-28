@@ -118,9 +118,15 @@ export async function GET(
           }
         } catch (error) {
           console.error('Error sending SSE update:', error);
-          // Send error event
+          // Send error event and close stream to prevent infinite error loops
           const errorData = `event: error\ndata: ${JSON.stringify({ error: 'Failed to fetch progress' })}\n\n`;
           controller.enqueue(encoder.encode(errorData));
+          isActive = false;
+          try {
+            controller.close();
+          } catch (e) {
+            // Stream already closed
+          }
         }
       };
 

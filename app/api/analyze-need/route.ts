@@ -90,15 +90,41 @@ Respond in this EXACT JSON format:
       response_format: { type: 'json_object' }
     });
 
-    const response = JSON.parse(completion.choices[0].message.content || '{}');
+    // Safely access OpenAI response with null checks
+    const messageContent = completion.choices?.[0]?.message?.content;
+    if (!messageContent) {
+      console.error('OpenAI returned empty response');
+      return NextResponse.json(
+        { error: 'Failed to generate analysis - empty response from AI' },
+        { status: 500 }
+      );
+    }
+
+    let response: Record<string, unknown>;
+    try {
+      response = JSON.parse(messageContent);
+    } catch (parseError) {
+      console.error('Failed to parse OpenAI response:', parseError);
+      return NextResponse.json(
+        { error: 'Failed to parse AI response' },
+        { status: 500 }
+      );
+    }
+
+    // Validate required fields exist
+    const businessName = typeof response.businessName === 'string' ? response.businessName : 'Your Business';
+    const valueProposition = typeof response.valueProposition === 'string' ? response.valueProposition : '';
+    const targetAudience = typeof response.targetAudience === 'string' ? response.targetAudience : '';
+    const keyFeatures = Array.isArray(response.keyFeatures) ? response.keyFeatures : [];
+    const message = typeof response.message === 'string' ? response.message : 'Check out what we created for you!';
 
     return NextResponse.json({
-      recommendation: response.message,
+      recommendation: message,
       recommendedProduct: "biab",
-      businessName: response.businessName,
-      valueProposition: response.valueProposition,
-      targetAudience: response.targetAudience,
-      keyFeatures: response.keyFeatures,
+      businessName,
+      valueProposition,
+      targetAudience,
+      keyFeatures,
     });
 
   } catch (error) {

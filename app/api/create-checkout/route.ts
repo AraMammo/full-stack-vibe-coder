@@ -6,22 +6,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
 import { z } from 'zod';
-
-// Initialize Stripe with error handling
-let stripe: Stripe | null = null;
-try {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    console.error('[Stripe] STRIPE_SECRET_KEY not configured');
-  } else {
-    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-06-20',
-    });
-  }
-} catch (error) {
-  console.error('[Stripe] Failed to initialize:', error);
-}
+import { stripe } from '@/lib/stripe';
 
 // ============================================
 // TIER CONFIGURATION
@@ -66,18 +52,6 @@ const CheckoutSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if Stripe is initialized
-    if (!stripe) {
-      console.error('[Stripe] Cannot create checkout - Stripe not initialized');
-      return NextResponse.json(
-        {
-          error: 'Payment system not configured',
-          message: 'STRIPE_SECRET_KEY is not set. Please configure Stripe in environment variables.'
-        },
-        { status: 500 }
-      );
-    }
-
     // Parse and validate request
     const body = await request.json();
     const { tier, userEmail } = CheckoutSchema.parse(body);

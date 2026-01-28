@@ -3,6 +3,10 @@
  *
  * POST /api/webhooks/stripe
  * Handles Stripe webhook events (checkout.session.completed, etc.)
+ *
+ * CRITICAL: This is the ONLY place where payment/project records are created.
+ * The /api/payment/verify endpoint only reads - it does not create.
+ * This prevents race conditions between webhook and verify endpoints.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -10,12 +14,8 @@ import Stripe from 'stripe';
 import { prisma } from '@/lib/db';
 import { db } from '@/server/db';
 import { toolPurchases } from '@/shared/schema';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-});
-
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+import { eq } from 'drizzle-orm';
+import { stripe, webhookSecret } from '@/lib/stripe';
 
 // ============================================
 // WEBHOOK HANDLER
@@ -96,18 +96,37 @@ async function handleCheckoutCompleted(
   console.log(`[Stripe Webhook] Processing checkout.session.completed: ${session.id}`);
 
   try {
-    // Check if this is a tool purchase or BIAB purchase
-    const toolId = session.metadata?.toolId;
-    const accessType = session.metadata?.accessType as 'monthly' | 'annual' | 'lifetime' | undefined;
+    // Validate session has metadata object
+    if (!session.metadata || typeof session.metadata !== 'object') {
+      console.error('[Stripe Webhook] Session missing metadata object');
+      throw new Error('Session missing metadata');
+    }
 
+    // Check if this is a tool purchase or BIAB purchase
+    const toolId = session.metadata.toolId;
+    const accessType = session.metadata.accessType;
+
+    // Validate accessType if present
+    const validAccessTypes = ['monthly', 'annual', 'lifetime'] as const;
     if (toolId && accessType) {
+      if (!validAccessTypes.includes(accessType as typeof validAccessTypes[number])) {
+        console.error('[Stripe Webhook] Invalid accessType:', accessType);
+        throw new Error(`Invalid accessType: ${accessType}`);
+      }
       // Handle tool purchase
-      await handleToolPurchase(session, toolId, accessType);
+      await handleToolPurchase(session, toolId, accessType as 'monthly' | 'annual' | 'lifetime');
       return;
     }
 
     // Handle BIAB purchase
-    const tier = session.metadata?.tier as 'VALIDATION_PACK' | 'LAUNCH_BLUEPRINT' | 'TURNKEY_SYSTEM';
+    const tier = session.metadata.tier;
+    const validTiers = ['VALIDATION_PACK', 'LAUNCH_BLUEPRINT', 'TURNKEY_SYSTEM'] as const;
+
+    if (tier && !validTiers.includes(tier as typeof validTiers[number])) {
+      console.error('[Stripe Webhook] Invalid tier:', tier);
+      throw new Error(`Invalid tier: ${tier}`);
+    }
+
     const userEmail = session.customer_email || session.customer_details?.email;
     const amount = session.amount_total || 0;
 
@@ -116,68 +135,90 @@ async function handleCheckoutCompleted(
       throw new Error('Missing tier or userEmail in session metadata');
     }
 
-    // Look up user by email
-    let user = await prisma.user.findUnique({
-      where: { email: userEmail },
-    });
+    const validatedTier = tier as 'VALIDATION_PACK' | 'LAUNCH_BLUEPRINT' | 'TURNKEY_SYSTEM';
 
-    // If user doesn't exist, create one (fallback, though they should already exist from sign-in)
-    if (!user) {
-      console.log(`[Stripe Webhook] User not found, creating new user: ${userEmail}`);
-      user = await prisma.user.create({
+    // Use transaction to ensure atomic creation of user, project, and payment
+    // This prevents race conditions and ensures data consistency
+    const result = await prisma.$transaction(async (tx) => {
+      // Check if payment already exists (idempotency check)
+      const existingPayment = await tx.payment.findUnique({
+        where: { stripeSessionId: session.id },
+      });
+
+      if (existingPayment) {
+        console.log(`[Stripe Webhook] Payment already exists: ${existingPayment.id} (idempotent)`);
+        // Return existing data for idempotent response
+        const existingProject = existingPayment.projectId
+          ? await tx.project.findUnique({ where: { id: existingPayment.projectId } })
+          : null;
+        return { payment: existingPayment, project: existingProject, isNew: false };
+      }
+
+      // Find or create user (upsert pattern to handle race conditions)
+      let user = await tx.user.findUnique({
+        where: { email: userEmail },
+      });
+
+      if (!user) {
+        console.log(`[Stripe Webhook] Creating new user: ${userEmail}`);
+        user = await tx.user.create({
+          data: {
+            email: userEmail,
+            name: session.customer_details?.name || null,
+          },
+        });
+        console.log(`[Stripe Webhook] ✓ User created: ${user.id}`);
+      }
+
+      // Create project record
+      const project = await tx.project.create({
         data: {
-          email: userEmail,
-          name: session.customer_details?.name || null,
+          userId: user.id,
+          projectName: `Business in a Box - ${validatedTier.replace(/_/g, ' ')}`,
+          biabTier: validatedTier,
+          businessConcept: '', // Will be populated when execution starts
+          status: 'PENDING',
         },
       });
-      console.log(`[Stripe Webhook] ✓ User created: ${user.id}`);
-    }
 
-    // Check if payment already exists (idempotency)
-    const existingPayment = await prisma.payment.findUnique({
-      where: { stripeSessionId: session.id },
+      console.log(`[Stripe Webhook] ✓ Project created: ${project.id}`);
+
+      // Create payment record (linked to project)
+      const payment = await tx.payment.create({
+        data: {
+          userId: user.id,
+          userEmail,
+          tier: validatedTier,
+          amount,
+          currency: session.currency || 'usd',
+          status: session.payment_status === 'paid' ? 'COMPLETED' : 'PROCESSING',
+          stripeSessionId: session.id,
+          stripePaymentIntentId: typeof session.payment_intent === 'string' ? session.payment_intent : null,
+          stripeCustomerId: typeof session.customer === 'string' ? session.customer : null,
+          projectId: project.id,
+          metadata: session.metadata || {},
+          completedAt: session.payment_status === 'paid' ? new Date() : null,
+        },
+      });
+
+      console.log(`[Stripe Webhook] ✓ Payment created: ${payment.id} ($${amount / 100} ${validatedTier})`);
+
+      return { user, project, payment, isNew: true };
     });
 
-    if (existingPayment) {
-      console.log(`[Stripe Webhook] Payment already exists: ${existingPayment.id}`);
+    // If this was a duplicate webhook (idempotent), skip execution
+    if (!result.isNew) {
+      console.log(`[Stripe Webhook] Skipping BIAB execution (duplicate webhook)`);
       return;
     }
 
-    // Create project record
-    const project = await prisma.project.create({
-      data: {
-        userId: user.id,
-        projectName: `Business in a Box - ${tier.replace('_', ' ')}`,
-        biabTier: tier,
-        businessConcept: '', // Will be populated when execution starts
-        status: 'PENDING',
-      },
-    });
-
-    console.log(`[Stripe Webhook] ✓ Project created: ${project.id}`);
-
-    // Create payment record
-    const payment = await prisma.payment.create({
-      data: {
-        userId: user.id,
-        userEmail,
-        tier,
-        amount,
-        currency: session.currency || 'usd',
-        status: session.payment_status === 'paid' ? 'COMPLETED' : 'PROCESSING',
-        stripeSessionId: session.id,
-        stripePaymentIntentId: session.payment_intent as string | null,
-        stripeCustomerId: session.customer as string | null,
-        projectId: project.id,
-        metadata: session.metadata || {},
-        completedAt: session.payment_status === 'paid' ? new Date() : null,
-      },
-    });
-
-    console.log(`[Stripe Webhook] ✓ Payment created: ${payment.id} ($${amount / 100} ${tier})`);
+    const { user, project, payment } = result as { user: { id: string; email: string | null }; project: { id: string }; payment: { id: string }; isNew: true };
 
     // Trigger BIAB execution
+    // NOTE: We await this but don't fail the webhook if execution fails.
+    // The payment is already recorded, and execution can be retried.
     console.log(`[Stripe Webhook] 🚀 Triggering BIAB execution for project: ${project.id}`);
+
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
       const executionResponse = await fetch(`${baseUrl}/api/business-in-a-box/execute`, {
@@ -185,36 +226,45 @@ async function handleCheckoutCompleted(
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectId: project.id,
-          businessConcept: `Business concept for ${tier.replace('_', ' ')}`,
+          businessConcept: `Business concept for ${validatedTier.replace(/_/g, ' ')}`,
           userId: user.id,
-          tier: tier,
+          tier: validatedTier,
         }),
       });
 
       if (!executionResponse.ok) {
-        const errorData = await executionResponse.json();
-        console.error('[Stripe Webhook] ⚠️  Failed to trigger BIAB execution:', errorData);
-        // Don't throw - payment is already complete, execution can be retried manually
+        const errorText = await executionResponse.text().catch(() => 'Unknown error');
+        console.error(`[Stripe Webhook] ⚠️ BIAB execution failed (${executionResponse.status}):`, errorText);
+
+        // Update project status to indicate execution needs retry
+        await prisma.project.update({
+          where: { id: project.id },
+          data: {
+            status: 'PENDING', // Keep pending so it can be retried
+            // Store error info for debugging
+          },
+        });
       } else {
         console.log(`[Stripe Webhook] ✓ BIAB execution triggered successfully`);
       }
     } catch (execError: any) {
-      console.error('[Stripe Webhook] ⚠️  Error triggering BIAB execution:', execError.message);
-      // Don't throw - payment is already complete, execution can be retried manually
-    }
+      console.error('[Stripe Webhook] ⚠️ Error triggering BIAB execution:', execError.message);
 
-    // TODO: Send confirmation email via SendGrid with project ID and next steps
-    // await sendPaymentConfirmationEmail({
-    //   email: userEmail,
-    //   tier,
-    //   amount,
-    //   paymentId: payment.id,
-    //   projectId: project.id,
-    // });
+      // Update project status to indicate execution needs retry
+      await prisma.project.update({
+        where: { id: project.id },
+        data: {
+          status: 'PENDING', // Keep pending so it can be retried
+        },
+      });
+
+      // Don't throw - payment is already complete, execution can be retried
+      // The /api/payment/verify endpoint will show the project exists but is pending
+    }
 
   } catch (error: any) {
     console.error('[Stripe Webhook] Failed to process checkout.session.completed:', error);
-    throw error;
+    throw error; // Re-throw to return 500 and trigger Stripe retry
   }
 }
 
@@ -234,17 +284,30 @@ async function handlePaymentFailed(
       return;
     }
 
+    // Safely merge existing metadata with failure reason
+    const existingMetadata = (payment.metadata && typeof payment.metadata === 'object' && !Array.isArray(payment.metadata))
+      ? payment.metadata as Record<string, unknown>
+      : {};
+
     // Update payment status to FAILED
     await prisma.payment.update({
       where: { id: payment.id },
       data: {
         status: 'FAILED',
         metadata: {
-          ...(payment.metadata as any),
+          ...existingMetadata,
           failureReason: paymentIntent.last_payment_error?.message || 'Unknown',
         },
       },
     });
+
+    // Also update associated project if exists
+    if (payment.projectId) {
+      await prisma.project.update({
+        where: { id: payment.projectId },
+        data: { status: 'FAILED' },
+      });
+    }
 
     console.log(`[Stripe Webhook] ✓ Payment marked as failed: ${payment.id}`);
 
@@ -271,6 +334,17 @@ async function handleToolPurchase(
 
   console.log(`[Stripe Webhook] Processing tool purchase: ${toolId} (${accessType}) for ${userEmail}`);
 
+  // Check for existing purchase (idempotency)
+  const existingPurchase = await db.select()
+    .from(toolPurchases)
+    .where(eq(toolPurchases.stripePaymentIntentId, session.payment_intent as string))
+    .limit(1);
+
+  if (existingPurchase.length > 0) {
+    console.log(`[Stripe Webhook] Tool purchase already exists (idempotent)`);
+    return;
+  }
+
   // Calculate expiration date
   let expiresAt: Date | null = null;
   if (accessType === 'monthly') {
@@ -290,9 +364,9 @@ async function handleToolPurchase(
     email: userEmail.toLowerCase(),
     toolName: toolId,
     accessType: accessType,
-    stripeCustomerId: session.customer as string | null,
+    stripeCustomerId: typeof session.customer === 'string' ? session.customer : null,
     stripeSubscriptionId: subscriptionId,
-    stripePaymentIntentId: session.payment_intent as string | null,
+    stripePaymentIntentId: typeof session.payment_intent === 'string' ? session.payment_intent : null,
     status: 'active',
     expiresAt: expiresAt,
   });
@@ -308,13 +382,10 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
 
   try {
     // Find and deactivate the tool purchase by subscription ID
-    const { toolPurchases: toolPurchasesTable } = await import('@/shared/schema');
-    const { eq } = await import('drizzle-orm');
-
     await db
-      .update(toolPurchasesTable)
+      .update(toolPurchases)
       .set({ status: 'cancelled' })
-      .where(eq(toolPurchasesTable.stripeSubscriptionId, subscription.id));
+      .where(eq(toolPurchases.stripeSubscriptionId, subscription.id));
 
     console.log(`[Stripe Webhook] ✓ Subscription ${subscription.id} marked as cancelled`);
   } catch (error: any) {

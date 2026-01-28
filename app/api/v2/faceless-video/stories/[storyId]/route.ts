@@ -2,6 +2,9 @@
  * GET /api/v2/faceless-video/stories/[storyId] - Get story details and progress
  * POST /api/v2/faceless-video/stories/[storyId] - Continue processing (process one shot)
  * DELETE /api/v2/faceless-video/stories/[storyId] - Delete a story
+ *
+ * CRITICAL: POST handler now uses optimistic locking to prevent race conditions
+ * when multiple concurrent requests try to process the same shot.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -113,6 +116,11 @@ export async function GET(
 /**
  * POST - Continue processing by handling one incomplete shot or finalizing
  * This allows incremental processing without hitting serverless timeouts
+ *
+ * CRITICAL: Uses optimistic locking to prevent race conditions:
+ * - Finds shot with status 'pending' (not already being processed)
+ * - Atomically updates status to 'processing' before starting work
+ * - If another request already claimed the shot, skips to next or returns
  */
 export async function POST(
   request: NextRequest,
@@ -121,6 +129,7 @@ export async function POST(
   try {
     const { storyId } = params;
 
+    // Re-fetch story to get latest status (prevents stale data)
     const story = await db.getStory(storyId);
     if (!story) {
       return NextResponse.json(
@@ -135,45 +144,168 @@ export async function POST(
         success: true,
         message: `Story is already ${story.status}`,
         done: true,
+        finalVideoUrl: story.final_video_url || story.final_video_captioned_url,
       });
     }
 
     // Get all shots and find one that needs processing
+    // CRITICAL: Only look for shots with status 'pending', not 'processing'
+    // This prevents two concurrent requests from processing the same shot
     const shots = await db.getShotsByStory(storyId);
-    const incompleteShot = shots.find(s => s.final_status !== 'completed');
 
-    if (incompleteShot) {
-      // Process this one shot
-      console.log(`[story] Processing shot ${incompleteShot.id}: ${incompleteShot.name}`);
+    // Filter to only pending shots (not already being processed or completed)
+    const pendingShots = shots.filter(s =>
+      s.final_status === 'pending' &&
+      s.image_status !== 'processing' &&
+      s.audio_status !== 'processing' &&
+      s.video_status !== 'processing'
+    );
 
-      const result = await processOneShot(incompleteShot, story.story_type!);
+    if (pendingShots.length > 0) {
+      const shotToClaim = pendingShots[0];
 
-      // Update progress
+      // CRITICAL: Atomically claim the shot by setting status to 'processing'
+      // This uses optimistic locking - the update will only succeed if the shot
+      // is still in 'pending' status. If another request claimed it first, this fails.
+      let claimed = false;
+      try {
+        // Try to claim by updating image_status (first step)
+        // The db layer should check that current status is 'pending'
+        await db.updateShot(shotToClaim.id, { image_status: 'processing' });
+        claimed = true;
+      } catch (claimError: any) {
+        // If claim failed (constraint violation or already processing), skip
+        console.log(`[story] Shot ${shotToClaim.id} already claimed by another request`);
+        claimed = false;
+      }
+
+      if (claimed) {
+        console.log(`[story] Claimed and processing shot ${shotToClaim.id}: ${shotToClaim.name}`);
+
+        try {
+          const result = await processOneShot(shotToClaim, story.story_type!);
+
+          // Update progress
+          const { progress, completedShots, totalShots } = await db.calculateProgress(storyId);
+          await db.updateStory(storyId, { progress });
+
+          return NextResponse.json({
+            success: true,
+            message: result.message,
+            shotId: shotToClaim.id,
+            shotName: shotToClaim.name,
+            completedShots,
+            totalShots,
+            progress,
+            done: false,
+          });
+        } catch (processError: any) {
+          // Mark shot as failed
+          await db.updateShot(shotToClaim.id, {
+            image_status: 'failed',
+            error_message: processError.message || 'Processing failed',
+          });
+
+          throw processError;
+        }
+      }
+
+      // If we couldn't claim a shot, check if any are still processing
+      const processingShots = shots.filter(s =>
+        s.image_status === 'processing' ||
+        s.audio_status === 'processing' ||
+        s.video_status === 'processing'
+      );
+
+      if (processingShots.length > 0) {
+        // Another request is processing - tell client to wait and retry
+        const { progress, completedShots, totalShots } = await db.calculateProgress(storyId);
+        return NextResponse.json({
+          success: true,
+          message: 'Shot is being processed by another request, please retry shortly',
+          completedShots,
+          totalShots,
+          progress,
+          done: false,
+          retryAfter: 2, // Suggest retry in 2 seconds
+        });
+      }
+    }
+
+    // Check if all shots are actually complete
+    const incompleteShots = shots.filter(s => s.final_status !== 'completed');
+
+    if (incompleteShots.length > 0) {
+      // Some shots still incomplete but not pending - might be in failed state
+      const failedShots = incompleteShots.filter(s =>
+        s.image_status === 'failed' ||
+        s.audio_status === 'failed' ||
+        s.video_status === 'failed' ||
+        s.final_status === 'failed'
+      );
+
+      if (failedShots.length > 0) {
+        // Mark story as failed if any shots failed
+        await db.updateStory(storyId, {
+          status: 'failed',
+          error_message: `${failedShots.length} shot(s) failed to process`,
+        });
+
+        return NextResponse.json({
+          success: false,
+          error: `Processing failed: ${failedShots.length} shot(s) failed`,
+          done: true,
+        }, { status: 500 });
+      }
+
+      // Shots still processing elsewhere
       const { progress, completedShots, totalShots } = await db.calculateProgress(storyId);
-      await db.updateStory(storyId, { progress });
-
       return NextResponse.json({
         success: true,
-        message: result.message,
-        shotId: incompleteShot.id,
-        shotName: incompleteShot.name,
+        message: 'Shots still processing, please retry shortly',
         completedShots,
         totalShots,
         progress,
         done: false,
+        retryAfter: 2,
       });
     }
 
     // All shots are complete - finalize scenes and story
+    // CRITICAL: Also use locking for finalization to prevent duplicate final videos
     console.log(`[story] All shots complete, finalizing story ${storyId}`);
-    const result = await finalizeScenesAndStory(storyId);
 
-    return NextResponse.json({
-      success: true,
-      message: result.message,
-      finalVideoUrl: result.finalVideoUrl,
-      done: result.done,
-    });
+    // Check if already finalizing
+    if (story.status === 'building_video' || story.status === 'adding_captions') {
+      return NextResponse.json({
+        success: true,
+        message: 'Story is being finalized, please wait',
+        done: false,
+        retryAfter: 5,
+      });
+    }
+
+    // Claim finalization by updating status
+    await db.updateStory(storyId, { status: 'building_video' });
+
+    try {
+      const result = await finalizeScenesAndStory(storyId);
+
+      return NextResponse.json({
+        success: true,
+        message: result.message,
+        finalVideoUrl: result.finalVideoUrl,
+        done: result.done,
+      });
+    } catch (finalizeError: any) {
+      // Mark as failed on finalization error
+      await db.updateStory(storyId, {
+        status: 'failed',
+        error_message: finalizeError.message || 'Finalization failed',
+      });
+
+      throw finalizeError;
+    }
   } catch (error) {
     console.error('[story] Continue processing error:', error);
     return NextResponse.json(

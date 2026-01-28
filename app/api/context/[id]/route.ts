@@ -19,14 +19,14 @@ export async function DELETE(
   try {
     // Authentication
     const session = await auth();
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const userId = session.user.email;
+    const userId = session.user.id;
     const contextId = params.id;
 
     // Delete the context

@@ -98,12 +98,24 @@ export function BIABProjectCard({ project }: { project: BIABProject }) {
       }
     };
 
-    eventSource.onerror = (error) => {
-      console.error('[BIABProjectCard] ❌ SSE error:', error);
-      console.log('[BIABProjectCard] Connection readyState:', eventSource.readyState);
+    // Listen for custom error events sent by the server (event: error)
+    eventSource.addEventListener('error', (event: Event) => {
+      // Check if this is a MessageEvent (custom error from server)
+      if (event instanceof MessageEvent) {
+        try {
+          const errorData = JSON.parse(event.data);
+          console.error('[BIABProjectCard] ❌ Server error event:', errorData);
+        } catch (e) {
+          console.error('[BIABProjectCard] ❌ Server error (unparseable):', event.data);
+        }
+      } else {
+        // Connection-level error
+        console.error('[BIABProjectCard] ❌ SSE connection error:', event);
+        console.log('[BIABProjectCard] Connection readyState:', eventSource.readyState);
+      }
       // 0 = CONNECTING, 1 = OPEN, 2 = CLOSED
       eventSource.close();
-    };
+    });
 
     return () => {
       console.log('[BIABProjectCard] Closing SSE connection');

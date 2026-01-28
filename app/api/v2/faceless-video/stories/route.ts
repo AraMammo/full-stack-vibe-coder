@@ -1,6 +1,8 @@
 /**
  * POST /api/v2/faceless-video/stories - Create a new story and start processing
  * GET /api/v2/faceless-video/stories - List user's stories
+ *
+ * CRITICAL: Background processing now properly updates status on failure.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -37,8 +39,20 @@ export async function POST(request: NextRequest) {
     console.log(`[stories] Created story ${story.id}: ${name}`);
 
     // Start processing in background (don't await)
-    processStory(story.id).catch(error => {
+    // CRITICAL: Update status on failure so user knows something went wrong
+    processStory(story.id).catch(async (error) => {
       console.error(`[stories] Background processing failed for ${story.id}:`, error);
+
+      // Update story status to failed so the user is informed
+      try {
+        await db.updateStory(story.id, {
+          status: 'failed',
+          error_message: error instanceof Error ? error.message : 'Background processing failed unexpectedly',
+        });
+        console.log(`[stories] Marked story ${story.id} as failed due to background error`);
+      } catch (updateError) {
+        console.error(`[stories] Failed to update story status after error:`, updateError);
+      }
     });
 
     return NextResponse.json({

@@ -18,10 +18,10 @@ interface VideoJob {
   errorMessage?: string | null;
   videoDuration?: number | null;
   fileSize?: number | null;
-  scenes: Array<{
+  scenes?: Array<{
     id: string;
     sceneIndex: number;
-  }>;
+  }> | null;
 }
 
 export function VideoJobCard({ job }: { job: VideoJob }) {
@@ -108,7 +108,7 @@ export function VideoJobCard({ job }: { job: VideoJob }) {
           {/* Title */}
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-sm font-medium text-gray-900">
-              Faceless Video - {job.scenes.length} Scene{job.scenes.length !== 1 ? 's' : ''}
+              Faceless Video{job.scenes?.length ? ` - ${job.scenes.length} Scene${job.scenes.length !== 1 ? 's' : ''}` : ''}
             </h3>
             <span
               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bgColor} ${config.color} ${config.borderColor} border`}

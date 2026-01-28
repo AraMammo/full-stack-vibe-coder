@@ -88,6 +88,11 @@ export async function uploadVoiceNote(
       .from(STORAGE_BUCKETS.VOICE_NOTES)
       .getPublicUrl(data.path);
 
+    if (!urlData?.publicUrl) {
+      console.error('Failed to get public URL for voice note');
+      return { error: 'Failed to generate public URL' };
+    }
+
     return {
       url: urlData.publicUrl,
       path: data.path,
@@ -150,6 +155,11 @@ export async function uploadProposalPDF(
       .from(STORAGE_BUCKETS.PROPOSALS)
       .getPublicUrl(data.path);
 
+    if (!urlData?.publicUrl) {
+      console.error('Failed to get public URL for proposal PDF');
+      return { error: 'Failed to generate public URL' };
+    }
+
     return {
       url: urlData.publicUrl,
       path: data.path,
@@ -189,6 +199,11 @@ export async function uploadDeliverable(
     const { data: urlData } = supabaseAdmin.storage
       .from(STORAGE_BUCKETS.BIAB_DELIVERABLES)
       .getPublicUrl(data.path);
+
+    if (!urlData?.publicUrl) {
+      console.error('Failed to get public URL for deliverable');
+      return { error: 'Failed to generate public URL' };
+    }
 
     return {
       url: urlData.publicUrl,

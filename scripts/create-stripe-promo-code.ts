@@ -7,9 +7,14 @@
 
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
+// Use test key if available, otherwise fall back to live key
+const stripeSecretKey = process.env.STRIPE_SECRET_TEST_KEY || process.env.STRIPE_SECRET_KEY!;
+const stripe = new Stripe(stripeSecretKey, {
+  apiVersion: '2025-10-29.clover',
 });
+
+const mode = stripeSecretKey?.startsWith('sk_live_') ? 'LIVE' : 'TEST';
+console.log(`[Stripe] Running in ${mode} mode`);
 
 async function createPromoCode() {
   console.log('\n🎟️  Creating Stripe Promo Code for Testing\n');

@@ -23,7 +23,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const transformationActions = JSON.parse(transformationActionsStr);
+    let transformationActions: string[];
+    try {
+      const parsed = JSON.parse(transformationActionsStr);
+      if (!Array.isArray(parsed)) {
+        return NextResponse.json(
+          { error: 'transformationActions must be an array' },
+          { status: 400 }
+        );
+      }
+      transformationActions = parsed;
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid transformationActions JSON format' },
+        { status: 400 }
+      );
+    }
 
     if (!Array.isArray(transformationActions) || transformationActions.length === 0) {
       return NextResponse.json(
@@ -108,6 +123,16 @@ export async function POST(request: NextRequest) {
     }
 
     const airtableData = await airtableResponse.json();
+
+    // Validate Airtable response has expected structure
+    if (!airtableData || typeof airtableData.id !== 'string') {
+      console.error('Invalid Airtable response structure:', airtableData);
+      return NextResponse.json(
+        { error: 'Invalid response from Airtable - missing record ID' },
+        { status: 500 }
+      );
+    }
+
     const airtableRecordId = airtableData.id;
 
     const [submission] = await db.insert(toolSubmissions).values({
@@ -122,6 +147,15 @@ export async function POST(request: NextRequest) {
       }),
       makeWebhookTriggered: false,
     }).returning();
+
+    // Validate submission was created
+    if (!submission?.id) {
+      console.error('Failed to create submission record');
+      return NextResponse.json(
+        { error: 'Failed to save submission to database' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,

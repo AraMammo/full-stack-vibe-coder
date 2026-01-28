@@ -11,18 +11,7 @@ import { z } from 'zod';
 import { db } from '@/server/db';
 import { toolPurchases, promoCodes } from '@/shared/schema';
 import { eq, sql } from 'drizzle-orm';
-
-// Initialize Stripe
-let stripe: Stripe | null = null;
-try {
-  if (process.env.STRIPE_SECRET_KEY) {
-    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2025-09-30.clover',
-    });
-  }
-} catch (error) {
-  console.error('[Stripe] Failed to initialize:', error);
-}
+import { stripe } from '@/lib/stripe';
 
 // ============================================
 // TOOL CONFIGURATION
@@ -78,18 +67,6 @@ const CheckoutToolSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if Stripe is initialized
-    if (!stripe) {
-      console.error('[Stripe] Cannot create checkout - Stripe not initialized');
-      return NextResponse.json(
-        {
-          error: 'Payment system not configured',
-          message: 'STRIPE_SECRET_KEY is not set',
-        },
-        { status: 500 }
-      );
-    }
-
     // Parse and validate request
     const body = await request.json();
     const { toolId, accessType, email, promoCode } = CheckoutToolSchema.parse(body);

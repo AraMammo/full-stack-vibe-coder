@@ -97,10 +97,22 @@ export function ProjectDetailClient({
       }
     };
 
-    eventSource.onerror = (error) => {
-      console.error('SSE error:', error);
+    // Listen for custom error events sent by the server (event: error)
+    eventSource.addEventListener('error', (event: Event) => {
+      // Check if this is a MessageEvent (custom error from server)
+      if (event instanceof MessageEvent) {
+        try {
+          const errorData = JSON.parse(event.data);
+          console.error('Server error event:', errorData);
+        } catch (e) {
+          console.error('Server error (unparseable):', event.data);
+        }
+      } else {
+        // Connection-level error
+        console.error('SSE connection error:', event);
+      }
       eventSource.close();
-    };
+    });
 
     return () => {
       eventSource.close();
