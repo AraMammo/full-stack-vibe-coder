@@ -128,10 +128,10 @@ export default function PaymentSuccessPage() {
 
           {/* Success Message */}
           <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
-            Payment Successful!
+            You&apos;re In.
           </h1>
           <p className="text-xl text-gray-300 mb-8">
-            Thank you for your purchase
+            Your ShipKit is already being built.
           </p>
 
           {/* Payment Details */}
@@ -171,25 +171,21 @@ export default function PaymentSuccessPage() {
           </button>
         </div>
 
-        {/* Next Steps */}
+        {/* What's Happening */}
         <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-          <h2 className="text-xl font-bold mb-4 text-cyan-400">📋 Next Steps:</h2>
+          <h2 className="text-xl font-bold mb-4 text-cyan-400">What&apos;s happening right now:</h2>
           <ol className="space-y-3 text-gray-300">
             <li className="flex items-start">
               <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">1</span>
-              <span>Record a voice note describing your business idea (1-3 minutes)</span>
+              <span>Eight AI agents are building your brand, strategy, and materials simultaneously</span>
             </li>
             <li className="flex items-start">
               <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">2</span>
-              <span>Upload any additional context (optional): PDFs, documents, or links</span>
+              <span>You can watch progress live in your dashboard</span>
             </li>
             <li className="flex items-start">
               <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">3</span>
-              <span>Submit and watch your business plan generate in real-time</span>
-            </li>
-            <li className="flex items-start">
-              <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">4</span>
-              <span>Download your complete package when finished</span>
+              <span>Everything will be ready to download in under 30 minutes</span>
             </li>
           </ol>
         </div>

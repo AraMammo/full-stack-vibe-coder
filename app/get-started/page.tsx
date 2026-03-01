@@ -27,27 +27,27 @@ const tiers: Tier[] = [
     id: "VALIDATION_PACK",
     name: "ShipKit Lite",
     price: 0,
-    description: "Interactive business brief from your idea",
+    description: "See your idea validated in 60 seconds",
     features: [
-      "Business Name Options",
-      "Value Proposition",
-      "Target Audience Analysis",
-      "Competitive Positioning",
-      "Mini Site Preview",
+      "3 business names with taglines",
+      "Target audience breakdown",
+      "Competitive positioning",
+      "Value proposition",
+      "Site preview mockup",
     ],
-    cta: "Start Free",
+    cta: "Try It Free",
   },
   {
     id: "LAUNCH_BLUEPRINT",
     name: "ShipKit Pro",
     price: 197,
-    description: "Full branding, strategy, and launch plan",
+    description: "The full business-in-a-box, minus the code",
     features: [
       "Everything in Lite",
-      "Brand Identity + Logo",
-      "Marketing & Launch Strategy",
-      "Financial Projections",
-      "Complete Business Plan",
+      "5 logo concepts + brand guidelines",
+      "Marketing & launch strategy",
+      "Financial projections",
+      "Complete business plan",
     ],
     highlight: "popular",
     cta: "Get ShipKit Pro",
@@ -56,13 +56,13 @@ const tiers: Tier[] = [
     id: "TURNKEY_SYSTEM",
     name: "ShipKit Complete",
     price: 497,
-    description: "Everything + full deployable codebase",
+    description: "You open for business today",
     features: [
       "Everything in Pro",
-      "Full Next.js Codebase",
-      "Live Deployed Website",
-      "GitHub Repository",
-      "30-Day Support",
+      "Full Next.js codebase on GitHub",
+      "Live website, deployed and running",
+      "Your domain, your code, your business",
+      "30 days of support",
     ],
     highlight: "best",
     cta: "Get ShipKit Complete",
@@ -71,19 +71,19 @@ const tiers: Tier[] = [
 
 const faqs = [
   {
-    question: "How does 30-minute delivery work?",
+    question: "30 minutes — seriously?",
     answer:
-      "After payment, you record a voice note describing your business. Our AI immediately builds your complete package. You'll see progress updates and receive everything within 30 minutes.",
+      "Seriously. Eight specialized AI agents work in parallel the moment you submit. Brand identity, market research, financial model, code — all building at the same time. You watch it happen in your dashboard.",
   },
   {
-    question: "Can I customize the website?",
+    question: "Do I own the code?",
     answer:
-      "Yes! You get full access to the code on GitHub. The Turnkey package includes a step-by-step guide for making changes and connecting your own domain.",
+      "100%. ShipKit Complete gives you a GitHub repo with the full Next.js codebase. Your repo, your code, your business. Modify it, extend it, hand it to a developer — it's yours.",
   },
   {
-    question: "What's your refund policy?",
+    question: "What if I don't like what I get?",
     answer:
-      "We offer a 30-day money back guarantee. If you're not satisfied with your deliverables, contact us for a full refund.",
+      "30-day money back guarantee, no questions asked. But try the free tier first — you'll see the quality before you spend a dollar.",
   },
 ];
 
@@ -164,13 +164,13 @@ export default function PricingPage() {
             backgroundClip: "text",
           }}
         >
-          Choose Your Package
+          Pick Your Speed
         </h1>
         <p className="text-lg text-gray-300 mb-2">
-          Voice note to complete business in 30 minutes
+          Every tier starts the same way: you describe your idea, we build it
         </p>
         <p className="text-gray-400">
-          Everything you need to launch, no templates
+          The only difference is how far we take it
         </p>
       </section>
 
@@ -294,8 +294,8 @@ export default function PricingPage() {
                 1
               </div>
               <div>
-                <p className="font-medium text-white">Record Voice Note</p>
-                <p className="text-xs text-gray-400">Describe your idea</p>
+                <p className="font-medium text-white">You Talk</p>
+                <p className="text-xs text-gray-400">60-second voice note or text</p>
               </div>
             </div>
 
@@ -307,8 +307,8 @@ export default function PricingPage() {
                 2
               </div>
               <div>
-                <p className="font-medium text-white">AI Builds Everything</p>
-                <p className="text-xs text-gray-400">Under 30 minutes</p>
+                <p className="font-medium text-white">We Build</p>
+                <p className="text-xs text-gray-400">8 agents, under 30 minutes</p>
               </div>
             </div>
 
@@ -320,8 +320,8 @@ export default function PricingPage() {
                 3
               </div>
               <div>
-                <p className="font-medium text-white">Launch & Sell</p>
-                <p className="text-xs text-gray-400">Go live immediately</p>
+                <p className="font-medium text-white">You Ship</p>
+                <p className="text-xs text-gray-400">Live site, your domain</p>
               </div>
             </div>
           </div>
@@ -332,20 +332,20 @@ export default function PricingPage() {
       <section className="px-4 sm:px-6 py-16 border-t border-white/5">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-center text-white mb-2">
-            What You Get with ShipKit Complete
+            What Ships with ShipKit Complete
           </h2>
           <p className="text-center text-gray-400 mb-10">
-            The full package for serious entrepreneurs
+            Everything a new business needs on day one
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { icon: "&#127760;", title: "Live Website", desc: "Deployed and working" },
-              { icon: "&#127912;", title: "5 Logo Designs", desc: "Professional variations" },
-              { icon: "&#128200;", title: "Market Research", desc: "Competitive analysis" },
-              { icon: "&#128196;", title: "Business Plan", desc: "Complete strategy" },
-              { icon: "&#127919;", title: "Marketing Plan", desc: "Go-to-market guide" },
-              { icon: "&#128640;", title: "Launch Guide", desc: "Step-by-step setup" },
+              { icon: "&#127760;", title: "Live Website", desc: "Deployed on your domain" },
+              { icon: "&#127912;", title: "5 Logo Concepts", desc: "With full brand guidelines" },
+              { icon: "&#128200;", title: "Market Research", desc: "Audience, competitors, opportunity" },
+              { icon: "&#128196;", title: "Business Plan", desc: "Strategy, model, projections" },
+              { icon: "&#127919;", title: "Launch Strategy", desc: "Channels, timeline, first 90 days" },
+              { icon: "&#128640;", title: "GitHub Repo", desc: "Full Next.js codebase you own" },
             ].map((item, idx) => (
               <div
                 key={idx}
@@ -392,11 +392,14 @@ export default function PricingPage() {
       {/* Final CTA */}
       <section className="px-4 sm:px-6 py-16 border-t border-white/5">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-            Ready to Launch?
+          <p className="text-gray-400 mb-2 text-sm">
+            One idea. Eight agents. Thirty minutes.
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+            One business, ready to run.
           </h2>
-          <p className="text-gray-400 mb-8">
-            30 minutes from now, you could have a complete business ready to sell.
+          <p className="text-gray-500 mb-8 text-sm">
+            One payment. No subscription. You own everything.
           </p>
           <button
             onClick={() => handleSelectTier("TURNKEY_SYSTEM")}
@@ -410,11 +413,8 @@ export default function PricingPage() {
           >
             {loading === "TURNKEY_SYSTEM"
               ? "Processing..."
-              : "Get ShipKit Complete - $497"}
+              : "Get ShipKit Complete — $497"}
           </button>
-          <p className="mt-4 text-sm text-gray-500">
-            One-time payment. No subscriptions. Own everything.
-          </p>
         </div>
       </section>
     </main>

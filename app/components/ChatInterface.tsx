@@ -31,7 +31,7 @@ export default function ChatInterface() {
     {
       role: "assistant",
       content:
-        "Got a business idea? Describe it here (or use the mic) and I'll create an interactive business brief for you — free.",
+        "Tell me your business idea — type it out or hit the mic. In 60 seconds, you'll have business names, a target audience, competitive positioning, and a site mockup. Free, no signup.",
     },
   ]);
   const [inputText, setInputText] = useState("");

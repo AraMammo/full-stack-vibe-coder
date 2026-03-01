@@ -136,15 +136,18 @@ export default function Home() {
                 backgroundClip: 'text',
               }}
             >
-              Turn Your Business Idea Into Reality
+              One Voice Note. One Complete Business.
             </h1>
 
-            {/* Subheadline */}
+            {/* Subheadline - Sunnybrook-style specificity */}
             <p className="text-lg sm:text-xl text-gray-300 mb-2">
-              Live website. Brand identity. Market research. Launch guide.
+              One idea. Three business names. Five logo designs. A full brand identity.
             </p>
-            <p className="text-base sm:text-lg text-gray-400 mb-6">
-              All from one voice note. Delivered in 30 minutes.
+            <p className="text-base sm:text-lg text-gray-400 mb-2">
+              Market research. Financial projections. A launch strategy.
+            </p>
+            <p className="text-base sm:text-lg text-white font-medium mb-6">
+              And a live website — deployed and ready for customers.
             </p>
 
             {/* Chat Interface - The Star of the Show */}
@@ -154,7 +157,7 @@ export default function Home() {
 
             {/* Sub-CTA */}
             <p className="mt-4 text-sm text-gray-500">
-              Describe your idea above to see what we can create for you
+              Try it free — describe your idea and get your first business brief in 60 seconds
             </p>
           </div>
         </section>
@@ -172,9 +175,9 @@ export default function Home() {
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500 to-cyan-500 flex items-center justify-center text-2xl font-bold text-white">
                   1
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Share Your Idea</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">You Talk, We Listen</h3>
                 <p className="text-gray-400 text-sm">
-                  Type or record a voice note describing your business concept. The more detail, the better the output.
+                  Record a 60-second voice note or type your business idea. A dog walking app, a SaaS for dentists, a candle brand — anything.
                 </p>
               </div>
 
@@ -183,9 +186,9 @@ export default function Home() {
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500 to-cyan-500 flex items-center justify-center text-2xl font-bold text-white">
                   2
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">AI Builds Everything</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">Eight AI Agents Get to Work</h3>
                 <p className="text-gray-400 text-sm">
-                  Our system generates your website, branding, market research, and business materials automatically.
+                  Brand identity. Market research. Financial model. Marketing strategy. Five logo concepts. A full Next.js codebase. Built simultaneously in under 30 minutes.
                 </p>
               </div>
 
@@ -194,9 +197,9 @@ export default function Home() {
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500 to-cyan-500 flex items-center justify-center text-2xl font-bold text-white">
                   3
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Launch Ready</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">You Open for Business</h3>
                 <p className="text-gray-400 text-sm">
-                  Download everything and go live immediately. Your complete business package in under 30 minutes.
+                  A live website on your domain. A GitHub repo you own. Brand assets ready for social. You&apos;re not planning a business — you&apos;re running one.
                 </p>
               </div>
             </div>
@@ -207,10 +210,10 @@ export default function Home() {
         <section className="px-4 sm:px-6 py-16 border-t border-white/5">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-4">
-              Choose Your Package
+              Three Ways to Ship
             </h2>
             <p className="text-center text-gray-400 mb-12">
-              Everything you need to launch your business
+              Start free. Upgrade when you&apos;re ready to go all in.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -223,22 +226,26 @@ export default function Home() {
                 <ul className="space-y-2 mb-6 text-sm text-gray-300">
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Market Research Report</span>
+                    <span>3 business name options with taglines</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Competitive Analysis</span>
+                    <span>Target audience breakdown</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Business Name Ideas</span>
+                    <span>Competitive positioning</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>Site preview mockup</span>
                   </li>
                 </ul>
                 <Link
                   href="/get-started?tier=VALIDATION_PACK"
                   className="block w-full py-3 text-center rounded-lg border border-green-500/50 text-green-400 hover:bg-green-500/10 transition-colors font-semibold"
                 >
-                  Start Free
+                  Try It Free
                 </Link>
               </div>
 
@@ -258,15 +265,19 @@ export default function Home() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>5 Logo Variations</span>
+                    <span>5 logo concepts + brand guidelines</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Brand Guidelines</span>
+                    <span>Marketing &amp; launch strategy</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Pitch Deck</span>
+                    <span>Financial projections</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
+                    <span>Complete business plan</span>
                   </li>
                 </ul>
                 <Link
@@ -293,15 +304,15 @@ export default function Home() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Live Deployed Website</span>
+                    <span>Full Next.js codebase on GitHub</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Custom Domain Setup</span>
+                    <span>Live website, deployed and running</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>30-Day Support</span>
+                    <span>30 days of support</span>
                   </li>
                 </ul>
                 <Link
@@ -331,14 +342,23 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Final CTA */}
+        {/* Final CTA - Sunnybrook-style momentum */}
         <section className="px-4 sm:px-6 py-16 border-t border-white/5">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-              Ready to Launch?
+            <p className="text-gray-400 mb-2 text-sm">
+              One voice note. Eight AI agents. Three business names. Five logo concepts.
+            </p>
+            <p className="text-gray-400 mb-2 text-sm">
+              One brand identity. One market analysis. One financial model. One launch strategy.
+            </p>
+            <p className="text-gray-400 mb-2 text-sm">
+              One complete codebase. One deployed website. One GitHub repo.
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mt-4 mb-2">
+              And one founder, open for business.
             </h2>
-            <p className="text-gray-400 mb-8">
-              Start with your idea above and see what we can create for you
+            <p className="text-gray-500 mb-8 text-sm">
+              From idea to income. That&apos;s ShipKit.
             </p>
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
