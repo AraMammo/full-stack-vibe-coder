@@ -486,7 +486,7 @@ function generateMainReadme(
     .join('\n');
 
   return `
-# ${projectName} - Business in a Box
+# ${projectName} - ShipKit
 
 Welcome to your complete business package! This contains everything you need to launch **${projectName}**.
 
@@ -542,8 +542,8 @@ Each folder contains:
 ## 📞 Need Help?
 
 If you have questions or need clarification on any section:
-- Email: support@fullstackvibecoder.com
-- Book a call: calendly.com/fullstackvibecoder/support
+- Email: support@shipkit.io
+- Book a call: calendly.com/shipkit/support
 
 ## 🎉 Ready to Launch?
 
@@ -555,7 +555,7 @@ Good luck! 🚀
 
 ---
 
-Generated with [FullStackVibeCoder](https://fullstackvibecoder.com) - Business in a Box
+Generated with [ShipKit](https://shipkit.io) - ShipKit
   `.trim();
 }
 
@@ -573,7 +573,7 @@ function generateGetStartedGuide(
   return `
 # 🚀 GET STARTED - ${projectName}
 
-**Congratulations!** You've received your complete **Business in a Box** package.
+**Congratulations!** You've received your complete **ShipKit** package.
 
 This quick guide will help you make the most of your documents in the next 7 days.
 
@@ -682,8 +682,8 @@ Connect with other builders:
 
 ## 📞 Questions?
 
-Email: support@fullstackvibecoder.com
-Book a call: calendly.com/fullstackvibecoder/support
+Email: support@shipkit.io
+Book a call: calendly.com/shipkit/support
 
 ---
 
@@ -691,6 +691,6 @@ Book a call: calendly.com/fullstackvibecoder/support
 
 The difference between dreamers and builders is action. You've done the planning. Now go build something people want.
 
-— Team FullStackVibeCoder
+— Team ShipKit
   `.trim();
 }

@@ -24,7 +24,7 @@ export class ScopeAgent extends BaseAgent<any, ProjectScope> {
   }
 
   getSystemPrompt(): string {
-    return `You are a senior technical architect at FullStackVibeCoder, responsible for defining project scope.
+    return `You are a senior technical architect at ShipKit, responsible for defining project scope.
 
 Your role is to take business requirements and create a detailed, structured project scope that can be estimated and built.
 
@@ -35,7 +35,7 @@ Your role is to take business requirements and create a detailed, structured pro
 4. Explicitly state what's OUT of scope
 5. Identify risks and dependencies
 
-# FullStackVibeCoder Service Catalog:
+# ShipKit Service Catalog:
 
 ## Startup Kit ($297 - 48 hours):
 - Professional website (5-10 pages, responsive)

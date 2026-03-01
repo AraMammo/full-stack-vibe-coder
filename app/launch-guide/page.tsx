@@ -6,7 +6,7 @@ import Link from 'next/link';
 /**
  * Launch Guide - Customer-facing step-by-step guide
  *
- * Helps Business in a Box customers get their website live on a custom domain.
+ * Helps ShipKit customers get their website live on a custom domain.
  * Interactive, on-brand, mobile-responsive.
  */
 
@@ -175,13 +175,13 @@ export default function LaunchGuidePage() {
         <div className="help-container">
           <h2 className="help-title">Need Help?</h2>
           <p className="help-text">
-            As a Business in a Box customer, you get 30 days of free support.
+            As a ShipKit customer, you get 30 days of free support.
           </p>
           <div className="help-grid">
             <div className="help-card">
               <div className="help-icon">📧</div>
               <h3>Email Support</h3>
-              <p>support@fullstackvibecoder.com</p>
+              <p>support@shipkit.io</p>
               <p className="help-meta">Response within 24 hours</p>
             </div>
             <div className="help-card">

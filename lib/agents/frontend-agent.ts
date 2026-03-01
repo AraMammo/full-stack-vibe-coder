@@ -23,7 +23,7 @@ export class FrontendAgent extends BaseSpecialistAgent {
   }
 
   getSystemPrompt(): string {
-    return `You are a Frontend Development Agent for FullStackVibeCoder, an AI-powered development agency.
+    return `You are a Frontend Development Agent for ShipKit, an AI-powered development agency.
 
 Your role is to generate production-ready React/Next.js components with TypeScript and Tailwind CSS.
 

@@ -179,7 +179,7 @@ export default function ContextManagementPage() {
             Context Library
           </h1>
           <p className="text-gray-400 mt-2">
-            Upload files and URLs to personalize your Business in a Box outputs
+            Upload files and URLs to personalize your ShipKit outputs
           </p>
         </div>
       </div>

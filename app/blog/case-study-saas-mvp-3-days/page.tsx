@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { BlogPostLayout, BlogSection, BlogHighlight, BlogQuote } from '@/components/BlogPostLayout';
 
 export const metadata: Metadata = {
-  title: "Case Study: SaaS MVP in 3 Days for $2,500 | FullStackVibeCoder",
+  title: "Case Study: SaaS MVP in 3 Days for $2,500 | ShipKit",
   description: "How we built a complete appointment booking SaaS from zero to paying customers in 72 hours. Tech stack, timeline, and exact costs.",
   keywords: "SaaS case study, MVP development, vibe coding, AI development",
   openGraph: {
@@ -48,7 +48,7 @@ export default function CaseStudySaasMVP3Days() {
         </p>
 
         <p className="mt-4">
-          She found FullStackVibeCoder through a therapist Facebook group. Recorded a 4-minute voice note
+          She found ShipKit through a therapist Facebook group. Recorded a 4-minute voice note
           explaining what she needed. We sent a proposal in 5 hours.
         </p>
 

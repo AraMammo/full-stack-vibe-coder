@@ -2,21 +2,36 @@
 
 import { useState, useRef, useEffect } from "react";
 
+interface BusinessName {
+  name: string;
+  tagline: string;
+}
+
+interface AudienceSegment {
+  segment: string;
+  description: string;
+}
+
+interface ShipKitAnalysis {
+  businessNames: BusinessName[];
+  valueProposition: string;
+  targetAudience: AudienceSegment[];
+  competitivePositioning: string;
+  sitePreviewHtml: string;
+  message: string;
+}
+
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
 
-interface ChatInterfaceProps {
-  onComplete?: () => void;
-}
-
-export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
+export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
       content:
-        "Got a business idea? Test it here! Describe your idea in a few sentences (or use the mic 🎤) and I'll give you a taste of what Business in a Box can create for you.",
+        "Got a business idea? Describe it here (or use the mic) and I'll create an interactive business brief for you — free.",
     },
   ]);
   const [inputText, setInputText] = useState("");
@@ -24,20 +39,20 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [businessSample, setBusinessSample] = useState<any>(null);
+  const [analysis, setAnalysis] = useState<ShipKitAnalysis | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [selectedName, setSelectedName] = useState<number | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to bottom when messages change (but not on initial load)
   const [hasInteracted, setHasInteracted] = useState(false);
-  
+
   useEffect(() => {
     if (hasInteracted) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, businessSample, hasInteracted]);
+  }, [messages, analysis, hasInteracted]);
 
   const startRecording = async () => {
     setHasInteracted(true);
@@ -58,7 +73,6 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
           type: "audio/webm",
         });
         stream.getTracks().forEach((track) => track.stop());
-
         setIsTranscribing(true);
 
         try {
@@ -71,15 +85,12 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
           });
 
           if (!res.ok) throw new Error("Transcription failed");
-
           const data = await res.json();
           setInputText(data.text);
           setInputType("voice");
         } catch (error) {
           console.error("Error transcribing:", error);
-          alert(
-            "Could not transcribe audio. Please try again or type your message.",
-          );
+          alert("Could not transcribe audio. Please try again or type your message.");
         } finally {
           setIsTranscribing(false);
         }
@@ -107,352 +118,216 @@ export default function ChatInterface({ onComplete }: ChatInterfaceProps) {
     setHasInteracted(true);
 
     try {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "user",
-          content: inputText,
-        },
-      ]);
+      setMessages((prev) => [...prev, { role: "user", content: inputText }]);
 
       const userInputCopy = inputText;
       setInputText("");
       setInputType("text");
 
-      const res = await fetch("/api/analyze-need", {
+      const res = await fetch("/api/shipkit/analyze", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: userInputCopy,
-          inputType,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: userInputCopy, inputType }),
       });
 
-      if (!res.ok) throw new Error("Failed to process request");
-
+      if (!res.ok) throw new Error("Failed to analyze");
       const data = await res.json();
 
+      setSessionId(data.sessionId);
+      setAnalysis(data.analysis);
+      setSelectedName(0);
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: data.analysis.message },
+      ]);
+    } catch (error) {
+      console.error("Error submitting:", error);
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: data.recommendation,
+          content: "Something went wrong. Please try again.",
         },
       ]);
-
-      setBusinessSample({
-        businessName: data.businessName,
-        valueProposition: data.valueProposition,
-        targetAudience: data.targetAudience,
-        keyFeatures: data.keyFeatures,
-      });
-    } catch (error) {
-      console.error("Error submitting:", error);
-      alert("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleGetFullPackage = () => {
-    window.location.href = "/get-started";
+  const handleGetFullShipKit = () => {
+    const params = new URLSearchParams();
+    if (sessionId) params.set("sessionId", sessionId);
+    params.set("tier", "LAUNCH_BLUEPRINT");
+    window.location.href = `/get-started?${params.toString()}`;
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-messages">
+    <div className="w-full">
+      {/* Chat Messages */}
+      <div className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-3 mb-3 min-h-[80px] max-h-[400px] overflow-y-auto">
         {messages.map((msg, idx) => (
-          <div key={idx} className={`message ${msg.role}`}>
-            <div className="message-content">{msg.content}</div>
+          <div
+            key={idx}
+            className={`mb-2 flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+          >
+            <div
+              className={`px-3 py-2 rounded-lg max-w-[80%] text-sm leading-relaxed ${
+                msg.role === "user"
+                  ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white"
+                  : "bg-white/5 border border-white/10 text-gray-300"
+              }`}
+            >
+              {msg.content}
+            </div>
           </div>
         ))}
 
-        {businessSample && (
-          <div className="business-sample-card">
-            <h3 className="sample-title">✨ Here's a Taste of What We Create:</h3>
-
-            <div className="sample-section">
-              <div className="sample-label">Business Name:</div>
-              <div className="sample-value">{businessSample.businessName}</div>
+        {isSubmitting && (
+          <div className="flex justify-start mb-2">
+            <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-lg">
+              <div className="flex items-center gap-2 text-gray-400 text-sm">
+                <div className="flex gap-1">
+                  <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                </div>
+                Analyzing your business idea...
+              </div>
             </div>
-
-            <div className="sample-section">
-              <div className="sample-label">Value Proposition:</div>
-              <div className="sample-value">{businessSample.valueProposition}</div>
-            </div>
-
-            <div className="sample-section">
-              <div className="sample-label">Target Audience:</div>
-              <div className="sample-value">{businessSample.targetAudience}</div>
-            </div>
-
-            <div className="sample-section">
-              <div className="sample-label">Key Features:</div>
-              <ul className="sample-features">
-                {businessSample.keyFeatures?.map((feature: string, idx: number) => (
-                  <li key={idx}>{feature}</li>
-                ))}
-              </ul>
-            </div>
-
-            <button
-              onClick={handleGetFullPackage}
-              className="cta-button"
-            >
-              Get Your Complete Business Package (30 min delivery) →
-            </button>
           </div>
         )}
 
-        {/* Scroll anchor for auto-scroll */}
+        {/* Interactive Business Brief */}
+        {analysis && (
+          <div className="mt-4 space-y-4">
+            {/* Business Name Options */}
+            <div>
+              <p className="text-xs font-semibold text-pink-400 uppercase tracking-wide mb-2">
+                Business Name Options
+              </p>
+              <div className="grid gap-2">
+                {analysis.businessNames.map((bn, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setSelectedName(idx)}
+                    className={`text-left p-3 rounded-lg border transition-all ${
+                      selectedName === idx
+                        ? "border-pink-500/50 bg-pink-500/10"
+                        : "border-white/10 bg-white/5 hover:border-white/20"
+                    }`}
+                  >
+                    <p className="font-semibold text-white text-sm">{bn.name}</p>
+                    <p className="text-xs text-gray-400">{bn.tagline}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Value Proposition */}
+            <div className="p-3 rounded-lg bg-gradient-to-r from-pink-500/5 to-cyan-500/5 border border-white/10">
+              <p className="text-xs font-semibold text-cyan-400 uppercase tracking-wide mb-1">
+                Value Proposition
+              </p>
+              <p className="text-white text-sm leading-relaxed">
+                {analysis.valueProposition}
+              </p>
+            </div>
+
+            {/* Target Audience */}
+            <div>
+              <p className="text-xs font-semibold text-green-400 uppercase tracking-wide mb-2">
+                Target Audience
+              </p>
+              <div className="grid gap-2">
+                {analysis.targetAudience.map((seg, idx) => (
+                  <div
+                    key={idx}
+                    className="p-2 rounded-lg bg-white/5 border border-white/10"
+                  >
+                    <p className="font-medium text-white text-sm">{seg.segment}</p>
+                    <p className="text-xs text-gray-400">{seg.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Competitive Positioning */}
+            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+              <p className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-1">
+                Competitive Edge
+              </p>
+              <p className="text-gray-300 text-sm leading-relaxed">
+                {analysis.competitivePositioning}
+              </p>
+            </div>
+
+            {/* Site Preview */}
+            <div>
+              <p className="text-xs font-semibold text-yellow-400 uppercase tracking-wide mb-2">
+                Site Preview
+              </p>
+              <div
+                className="rounded-lg overflow-hidden border border-white/10"
+                dangerouslySetInnerHTML={{ __html: analysis.sitePreviewHtml }}
+              />
+            </div>
+
+            {/* CTA */}
+            <button
+              type="button"
+              onClick={handleGetFullShipKit}
+              className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold text-sm hover:opacity-90 transition-opacity"
+            >
+              Get Your Full ShipKit →
+            </button>
+            <p className="text-center text-xs text-gray-500">
+              Branding, strategy, and deployable code — from $197
+            </p>
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="chat-input-container">
-        <div className="input-wrapper">
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleTextSubmit()}
-            placeholder={
-              isTranscribing
-                ? "Transcribing..."
-                : "Type your message or use the mic..."
-            }
-            className="chat-input"
-            disabled={isRecording || isTranscribing}
-          />
-          <button
-            onClick={isRecording ? stopRecording : startRecording}
-            className={`mic-button ${isRecording ? "recording" : ""}`}
-            disabled={isTranscribing}
-          >
-            {isRecording ? "⏹" : "🎤"}
-          </button>
-          <button
-            onClick={handleTextSubmit}
-            disabled={!inputText.trim() || isRecording || isTranscribing}
-            className="send-button"
-          >
-            Send
-          </button>
-        </div>
+      {/* Input */}
+      <div className="flex gap-2 items-center">
+        <input
+          type="text"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleTextSubmit()}
+          placeholder={
+            isTranscribing
+              ? "Transcribing..."
+              : "Describe your business idea..."
+          }
+          className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-pink-500/50 transition-colors"
+          disabled={isRecording || isTranscribing || isSubmitting}
+        />
+        <button
+          type="button"
+          onClick={isRecording ? stopRecording : startRecording}
+          disabled={isTranscribing || isSubmitting}
+          className={`w-10 h-10 flex items-center justify-center rounded-lg border transition-all text-lg ${
+            isRecording
+              ? "border-red-500/50 bg-red-500/20 animate-pulse"
+              : "border-white/10 bg-white/5 hover:bg-white/10"
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
+          aria-label={isRecording ? "Stop recording" : "Start recording"}
+        >
+          {isRecording ? "⏹" : "🎤"}
+        </button>
+        <button
+          type="button"
+          onClick={handleTextSubmit}
+          disabled={!inputText.trim() || isRecording || isTranscribing || isSubmitting}
+          className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? "..." : "Send"}
+        </button>
       </div>
-
-      <style jsx>{`
-        .chat-container {
-          background: rgba(0, 0, 0, 0.6);
-          border: 2px solid #ff0080;
-          border-radius: 12px;
-          padding: 12px;
-          margin: 15px 0;
-          max-width: 1000px;
-          margin-left: auto;
-          margin-right: auto;
-        }
-
-        .chat-messages {
-          min-height: 80px;
-          max-height: 400px;
-          overflow-y: auto;
-          margin-bottom: 12px;
-          scroll-behavior: smooth;
-        }
-
-        .message {
-          margin-bottom: 8px;
-          display: flex;
-        }
-
-        .message.user {
-          justify-content: flex-end;
-        }
-
-        .message.assistant {
-          justify-content: flex-start;
-        }
-
-        .message-content {
-          padding: 6px 12px;
-          border-radius: 8px;
-          max-width: 70%;
-        }
-
-        .message.user .message-content {
-          background: #ff0080;
-          color: white;
-        }
-
-        .message.assistant .message-content {
-          background: rgba(0, 255, 136, 0.2);
-          border: 1px solid #00ff88;
-          color: #00ff88;
-        }
-
-        .business-sample-card {
-          margin-top: 20px;
-          padding: 24px;
-          background: rgba(0, 255, 136, 0.05);
-          border: 2px solid #00ff88;
-          border-radius: 12px;
-        }
-
-        .sample-title {
-          color: #00ff88;
-          font-size: 20px;
-          font-weight: 700;
-          margin-bottom: 20px;
-          text-align: center;
-        }
-
-        .sample-section {
-          margin-bottom: 16px;
-        }
-
-        .sample-label {
-          color: #ff0080;
-          font-size: 13px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin-bottom: 6px;
-        }
-
-        .sample-value {
-          color: white;
-          font-size: 16px;
-          line-height: 1.5;
-        }
-
-        .sample-features {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-        }
-
-        .sample-features li {
-          color: white;
-          font-size: 15px;
-          padding: 6px 0;
-          padding-left: 20px;
-          position: relative;
-        }
-
-        .sample-features li:before {
-          content: "✓";
-          position: absolute;
-          left: 0;
-          color: #00ff88;
-          font-weight: bold;
-        }
-
-        .cta-button {
-          width: 100%;
-          margin-top: 20px;
-          background: linear-gradient(135deg, #ff0080, #00ff88);
-          color: white;
-          border: none;
-          padding: 16px 28px;
-          font-size: 16px;
-          font-weight: 700;
-          border-radius: 8px;
-          cursor: pointer;
-          transition:
-            transform 0.2s,
-            box-shadow 0.2s;
-          text-align: center;
-        }
-
-        .cta-button:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 25px rgba(255, 0, 128, 0.5);
-        }
-
-        .chat-input-container {
-          border-top: 1px solid rgba(255, 0, 128, 0.3);
-          padding-top: 10px;
-        }
-
-        .input-wrapper {
-          display: flex;
-          gap: 8px;
-          align-items: center;
-        }
-
-        .chat-input {
-          flex: 1;
-          background: rgba(0, 0, 0, 0.5);
-          border: 1px solid #00ff88;
-          border-radius: 8px;
-          padding: 8px 12px;
-          color: white;
-          font-size: 14px;
-        }
-
-        .chat-input:focus {
-          outline: none;
-          border-color: #ff0080;
-        }
-
-        .mic-button {
-          background: rgba(0, 170, 255, 0.2);
-          border: 2px solid #00aaff;
-          border-radius: 50%;
-          width: 36px;
-          height: 36px;
-          font-size: 18px;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
-
-        .mic-button:hover:not(:disabled) {
-          background: rgba(0, 170, 255, 0.4);
-        }
-
-        .mic-button:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .mic-button.recording {
-          background: rgba(255, 0, 0, 0.3);
-          border-color: #ff0000;
-          animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-          0%,
-          100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.5;
-          }
-        }
-
-        .send-button {
-          background: #ff0080;
-          border: none;
-          border-radius: 8px;
-          padding: 12px 24px;
-          color: white;
-          font-weight: 600;
-          cursor: pointer;
-          transition: background 0.3s;
-        }
-
-        .send-button:hover:not(:disabled) {
-          background: #cc0066;
-        }
-
-        .send-button:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-      `}</style>
     </div>
   );
 }

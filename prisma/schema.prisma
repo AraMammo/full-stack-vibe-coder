@@ -76,27 +76,26 @@ model Project {
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   completedAt         DateTime?
-  v0ChatId            String?
-  v0DeployUrl         String?
-  v0GeneratedAt       DateTime?
-  v0PreviewUrl        String?
+  codegenStatus       String?
+  githubRepoName      String?
   contextIds          String[]      @default([])
 
   @@index([userId])
   @@index([status])
   @@index([biabTier])
-  @@index([v0ChatId])
   @@map("projects")
 }
 
 model chat_submissions {
   id                  Int      @id @default(autoincrement())
+  session_id          String?  @unique
   name                String
   email               String
   user_input          String
   input_type          String
   ai_recommendation   String?
   recommended_product String?
+  analysis_json       Json?
   created_at          DateTime @default(now()) @db.Timestamp(6)
 }
 
@@ -305,71 +304,3 @@ enum ProjectStatus {
   FAILED
 }
 
-// Faceless Video Generator Models
-model FacelessVideoJob {
-  id                String               @id @default(uuid())
-  userId            String
-  userEmail         String
-  status            VideoJobStatus       @default(QUEUED)
-  progress          Int                  @default(0)
-  errorMessage      String?
-
-  // Caption settings
-  fontFamily        String               @default("The Bold Font")
-  fontSize          Int                  @default(60)
-  lineColor         String               @default("#FFFFFF")
-  wordColor         String               @default("#66ff74")
-  maxWordsPerLine   Int                  @default(3)
-  position          String               @default("bottom_center")
-  captionStyle      String               @default("highlight")
-
-  // Output
-  outputVideoUrl    String?
-  outputVideoPath   String?
-  videoDuration     Float?
-  fileSize          Int?
-
-  // Metadata
-  n8nWebhookData    Json?
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
-  startedAt         DateTime?
-  completedAt       DateTime?
-
-  scenes            VideoScene[]
-
-  @@index([userId])
-  @@index([status])
-  @@index([userEmail])
-  @@map("faceless_video_jobs")
-}
-
-model VideoScene {
-  id                String               @id @default(uuid())
-  jobId             String
-  sceneIndex        Int
-
-  // Input files
-  imageUrl          String
-  imagePath         String
-  audioUrl          String
-  audioPath         String
-
-  // Metadata
-  audioDuration     Float?
-  uploadedAt        DateTime             @default(now())
-
-  job               FacelessVideoJob     @relation(fields: [jobId], references: [id], onDelete: Cascade)
-
-  @@index([jobId])
-  @@index([jobId, sceneIndex])
-  @@map("video_scenes")
-}
-
-enum VideoJobStatus {
-  QUEUED
-  UPLOADING
-  PROCESSING
-  COMPLETED
-  FAILED
-}

@@ -25,49 +25,47 @@ interface Tier {
 const tiers: Tier[] = [
   {
     id: "VALIDATION_PACK",
-    name: "Starter",
+    name: "ShipKit Lite",
     price: 0,
-    description: "Test your idea with market research",
+    description: "Interactive business brief from your idea",
     features: [
-      "Market Research Report",
-      "Competitive Analysis",
-      "Target Audience Definition",
-      "Business Model Validation",
-      "Pricing Recommendations",
+      "Business Name Options",
+      "Value Proposition",
+      "Target Audience Analysis",
+      "Competitive Positioning",
+      "Mini Site Preview",
     ],
     cta: "Start Free",
   },
   {
     id: "LAUNCH_BLUEPRINT",
-    name: "Complete",
+    name: "ShipKit Pro",
     price: 197,
-    description: "Full business plan with branding",
+    description: "Full branding, strategy, and launch plan",
     features: [
-      "Everything in Starter",
-      "5 Custom Logo Designs",
-      "Brand Guidelines",
-      "Investor Pitch Deck",
-      "Marketing Strategy",
+      "Everything in Lite",
+      "Brand Identity + Logo",
+      "Marketing & Launch Strategy",
       "Financial Projections",
+      "Complete Business Plan",
     ],
     highlight: "popular",
-    cta: "Get Started",
+    cta: "Get ShipKit Pro",
   },
   {
     id: "TURNKEY_SYSTEM",
-    name: "Turnkey",
+    name: "ShipKit Complete",
     price: 497,
-    description: "Complete business ready to launch",
+    description: "Everything + full deployable codebase",
     features: [
-      "Everything in Complete",
+      "Everything in Pro",
+      "Full Next.js Codebase",
       "Live Deployed Website",
-      "Custom Domain Setup Guide",
-      "Payment System Ready",
-      "Email System Configured",
+      "GitHub Repository",
       "30-Day Support",
     ],
     highlight: "best",
-    cta: "Get Started",
+    cta: "Get ShipKit Complete",
   },
 ];
 
@@ -117,12 +115,14 @@ export default function PricingPage() {
     setError(null);
 
     try {
+      const chatSessionId = searchParams.get("sessionId");
       const response = await fetch("/api/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tier: tierId,
           userEmail: session.user?.email,
+          ...(chatSessionId ? { sessionId: chatSessionId } : {}),
         }),
       });
 
@@ -332,10 +332,10 @@ export default function PricingPage() {
       <section className="px-4 sm:px-6 py-16 border-t border-white/5">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-center text-white mb-2">
-            What You Get with Turnkey
+            What You Get with ShipKit Complete
           </h2>
           <p className="text-center text-gray-400 mb-10">
-            The complete package for serious entrepreneurs
+            The full package for serious entrepreneurs
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -410,7 +410,7 @@ export default function PricingPage() {
           >
             {loading === "TURNKEY_SYSTEM"
               ? "Processing..."
-              : "Get Your Market-Ready Business - $497"}
+              : "Get ShipKit Complete - $497"}
           </button>
           <p className="mt-4 text-sm text-gray-500">
             One-time payment. No subscriptions. Own everything.

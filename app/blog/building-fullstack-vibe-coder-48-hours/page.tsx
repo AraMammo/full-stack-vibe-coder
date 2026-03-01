@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { BlogPostLayout, BlogSection, BlogHighlight, BlogQuote } from '@/components/BlogPostLayout';
 
 export const metadata: Metadata = {
-  title: "I Built This Entire Platform in 48 Hours | FullStackVibeCoder Blog",
-  description: "The complete build log of FullStackVibeCoder.com. What worked, what broke, and how AI did 90% of the heavy lifting.",
+  title: "I Built This Entire Platform in 48 Hours | ShipKit Blog",
+  description: "The complete build log of shipkit.io. What worked, what broke, and how AI did 90% of the heavy lifting.",
   keywords: "building in public, AI development, vibe coding, 48 hour build",
   openGraph: {
     title: "I Built This Entire Platform in 48 Hours (Here's How)",
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   }
 };
 
-export default function BuildingFullStackVibeCoder48Hours() {
+export default function BuildingShipKit48Hours() {
   return (
     <BlogPostLayout
       title="I Built This Entire Platform in 48 Hours (Here's How)"
@@ -25,7 +25,7 @@ export default function BuildingFullStackVibeCoder48Hours() {
           Friday morning: domain purchased. Sunday evening: live in production with paying customers.
         </p>
         <p className="text-white/80 leading-relaxed">
-          This is the complete build log of FullStackVibeCoder.com. Every decision. Every prompt. Every fuck-up.
+          This is the complete build log of shipkit.io. Every decision. Every prompt. Every fuck-up.
           Complete transparency because that's how you learn.
         </p>
       </BlogSection>

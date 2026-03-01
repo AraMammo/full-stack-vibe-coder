@@ -377,7 +377,7 @@ export function generateHandoffDocumentation(
 ): HandoffDocumentation {
   return {
     githubSetup: repoUrl
-      ? generateGitHubTransferInstructions(repoUrl, 'fullstackvibecoder')
+      ? generateGitHubTransferInstructions(repoUrl, 'shipkit')
       : 'GitHub repository not created',
 
     vercelDeployment: deploymentUrl

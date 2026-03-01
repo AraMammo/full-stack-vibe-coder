@@ -48,7 +48,7 @@ export default function PaymentSuccessPage() {
     if (paymentInfo && countdown === 0) {
       // Store tier in sessionStorage and redirect
       sessionStorage.setItem('selectedTier', paymentInfo.tier);
-      router.push('/upload');
+      router.push('/dashboard');
     }
   }, [paymentInfo, countdown, router]);
 
@@ -72,9 +72,9 @@ export default function PaymentSuccessPage() {
 
   const getTierDisplayName = (tier: string): string => {
     const tierNames: Record<string, string> = {
-      VALIDATION_PACK: 'Validation Pack',
-      LAUNCH_BLUEPRINT: 'Launch Blueprint',
-      TURNKEY_SYSTEM: 'Turnkey System',
+      VALIDATION_PACK: 'ShipKit Lite',
+      LAUNCH_BLUEPRINT: 'ShipKit Pro',
+      TURNKEY_SYSTEM: 'ShipKit Complete',
     };
     return tierNames[tier] || tier;
   };
@@ -155,7 +155,7 @@ export default function PaymentSuccessPage() {
           {/* Auto-redirect Message */}
           <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4 mb-4">
             <p className="text-cyan-400">
-              Redirecting to upload page in <span className="font-bold text-2xl">{countdown}</span> seconds...
+              Redirecting to dashboard in <span className="font-bold text-2xl">{countdown}</span> seconds...
             </p>
           </div>
 
@@ -163,11 +163,11 @@ export default function PaymentSuccessPage() {
           <button
             onClick={() => {
               sessionStorage.setItem('selectedTier', paymentInfo.tier);
-              router.push('/upload');
+              router.push('/dashboard');
             }}
             className="w-full py-3 bg-gradient-to-r from-cyan-500 to-green-500 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-green-600 transition-all transform hover:scale-105"
           >
-            Continue to Upload →
+            Go to Dashboard →
           </button>
         </div>
 

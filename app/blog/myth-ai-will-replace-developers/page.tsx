@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { BlogPostLayout, BlogSection, BlogHighlight, BlogQuote, BlogWarning } from '@/components/BlogPostLayout';
 
 export const metadata: Metadata = {
-  title: "Myth: 'AI Will Replace Developers' | FullStackVibeCoder",
+  title: "Myth: 'AI Will Replace Developers' | ShipKit",
   description: "Why this narrative is complete BS. AI makes good developers unstoppable. It makes bad developers unemployable. Here's the difference.",
   keywords: "AI replacing developers, future of coding, AI development myth",
   openGraph: {

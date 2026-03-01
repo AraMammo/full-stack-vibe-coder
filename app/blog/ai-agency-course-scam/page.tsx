@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { BlogPostLayout, BlogSection, BlogWarning, BlogQuote } from '@/components/BlogPostLayout';
 
 export const metadata: Metadata = {
-  title: "I Paid $3K for an 'AI Agency Course' - Complete Scam | FullStackVibeCoder",
+  title: "I Paid $3K for an 'AI Agency Course' - Complete Scam | ShipKit",
   description: "Fell for the AI agency guru playbook. Paid $3,000. Got recycled ChatGPT prompts. Here are the exact red flags I missed.",
   keywords: "AI agency scam, course scam, AI development course, fake guru",
   openGraph: {
@@ -231,7 +231,7 @@ export default function AIAgencyCourseScam() {
               automated income, work 2 hours a week"—all lies designed to extract money from desperate people.
             </li>
             <li>
-              <strong>4. Real success takes work.</strong> I built FullStackVibeCoder in 48 hours, but
+              <strong>4. Real success takes work.</strong> I built ShipKit in 48 hours, but
               I have 18 years of development experience. AI amplified my skills. It didn't replace them.
             </li>
           </ol>

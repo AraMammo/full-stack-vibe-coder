@@ -43,7 +43,7 @@ export default function SignInPage() {
                 backgroundClip: 'text',
               }}
             >
-              FullStackVibeCoder
+              ShipKit
             </h1>
             <p className="text-gray-400 text-sm">
               Sign in to access your dashboard

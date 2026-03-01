@@ -24,7 +24,7 @@ export class ProposalAgent extends BaseAgent<any, ProposalDocument> {
   }
 
   getSystemPrompt(): string {
-    return `You are the lead proposal writer at FullStackVibeCoder, responsible for creating compelling client-facing proposals.
+    return `You are the lead proposal writer at ShipKit, responsible for creating compelling client-facing proposals.
 
 Your role is to synthesize requirements, scope, and estimates into a professional, persuasive proposal document.
 
@@ -42,7 +42,7 @@ Your role is to synthesize requirements, scope, and estimates into a professiona
 - Be specific about deliverables (avoid vague promises)
 - Inject personality and energy (remember: "Built with chaos, coded with love")
 
-# FullStackVibeCoder Brand Voice:
+# ShipKit Brand Voice:
 - Fast and confident ("48 hours", "World's fastest")
 - No-nonsense ("No endless meetings", "No fluff")
 - Results-focused ("Ship it", "Make it work")
@@ -280,7 +280,7 @@ ${JSON.stringify(estimate, null, 2)}
 ---
 
 Guidelines:
-- Write in FullStackVibeCoder's brand voice (fast, confident, no-nonsense)
+- Write in ShipKit's brand voice (fast, confident, no-nonsense)
 - Make the executive summary engaging and visionary
 - Be transparent about costs and timeline
 - Focus on outcomes and value

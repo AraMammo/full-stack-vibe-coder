@@ -8,7 +8,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Client Access Setup Guide | FullStack Vibe Coder',
+  title: 'Client Access Setup Guide | ShipKit',
   description: 'Complete guide for providing technical access needed for your automation projects. Simple setup in under 10 minutes.',
 };
 
@@ -75,7 +75,7 @@ export default function ClientAccessPage() {
           </ol>
           <div className="mt-6 p-4 bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-lg border border-purple-500/30">
             <p className="text-sm text-gray-300">
-              We'll use a project-specific email (like <code className="text-cyan-400">yourproject@fullstackvibecoder.com</code>) for all access. 
+              We'll use a project-specific email (like <code className="text-cyan-400">yourproject@shipkit.io</code>) for all access. 
               This keeps things secure and makes cleanup easy when the project ends.
             </p>
           </div>
@@ -101,7 +101,7 @@ export default function ClientAccessPage() {
               <h3 className="text-xl font-semibold text-pink-400 mb-3">Adding Our Project Email</h3>
               <ol className="space-y-2 text-gray-300">
                 <li className="flex"><span className="text-cyan-400 mr-2">1.</span> In the sharing dialog, click "Invite by email"</li>
-                <li className="flex"><span className="text-cyan-400 mr-2">2.</span> Enter: <code className="bg-gray-800 px-2 py-1 rounded text-cyan-400">[project-name]@fullstackvibecoder.com</code></li>
+                <li className="flex"><span className="text-cyan-400 mr-2">2.</span> Enter: <code className="bg-gray-800 px-2 py-1 rounded text-cyan-400">[project-name]@shipkit.io</code></li>
                 <li className="flex"><span className="text-cyan-400 mr-2">3.</span> Set permission level to <span className="font-semibold text-white">Creator</span> (we need this for webhooks/automation)</li>
                 <li className="flex"><span className="text-cyan-400 mr-2">4.</span> Click "Send invite"</li>
               </ol>
@@ -123,7 +123,7 @@ export default function ClientAccessPage() {
                 <li>1. Click your profile picture (bottom left)</li>
                 <li>2. Go to "Developer hub"</li>
                 <li>3. Click "Create token" (blue button)</li>
-                <li>4. Name it: <code className="text-cyan-400">FullStackVibeCoder-[YourProject]</code></li>
+                <li>4. Name it: <code className="text-cyan-400">ShipKit-[YourProject]</code></li>
                 <li>5. Under "Scopes", select: <code className="text-cyan-400">data.records:read</code>, <code className="text-cyan-400">data.records:write</code>, <code className="text-cyan-400">webhook:manage</code></li>
                 <li>6. Under "Access", add your specific base</li>
                 <li>7. Click "Create token"</li>
@@ -146,7 +146,7 @@ export default function ClientAccessPage() {
                 <li className="flex"><span className="text-cyan-400 mr-2">1.</span> Open Google Drive (drive.google.com)</li>
                 <li className="flex"><span className="text-cyan-400 mr-2">2.</span> Right-click on your project folder</li>
                 <li className="flex"><span className="text-cyan-400 mr-2">3.</span> Click "Share" → "Share with others"</li>
-                <li className="flex"><span className="text-cyan-400 mr-2">4.</span> Enter: <code className="bg-gray-800 px-2 py-1 rounded text-cyan-400">[project-name]@fullstackvibecoder.com</code></li>
+                <li className="flex"><span className="text-cyan-400 mr-2">4.</span> Enter: <code className="bg-gray-800 px-2 py-1 rounded text-cyan-400">[project-name]@shipkit.io</code></li>
                 <li className="flex"><span className="text-cyan-400 mr-2">5.</span> Set to <span className="font-semibold text-white">Viewer</span> (we only need read access)</li>
                 <li className="flex"><span className="text-cyan-400 mr-2">6.</span> Uncheck "Notify people" (we'll see it immediately)</li>
                 <li className="flex"><span className="text-cyan-400 mr-2">7.</span> Click "Share"</li>
@@ -188,7 +188,7 @@ export default function ClientAccessPage() {
                 <li>1. Log into your Pickaxe account</li>
                 <li>2. Go to Settings → API Keys</li>
                 <li>3. Click "Create New Key"</li>
-                <li>4. Name it: <code className="text-cyan-400 text-xs">FullStackVibeCoder-Integration</code></li>
+                <li>4. Name it: <code className="text-cyan-400 text-xs">ShipKit-Integration</code></li>
                 <li>5. Copy and share securely</li>
               </ol>
             </div>
@@ -310,7 +310,7 @@ export default function ClientAccessPage() {
               <h3 className="text-xl font-semibold text-yellow-400 mb-3">"I can't add external emails"</h3>
               <p className="text-gray-300 mb-2">Your IT team may have restrictions. Either:</p>
               <ol className="space-y-1 text-gray-300">
-                <li>1. Ask IT to whitelist <code className="text-cyan-400">@fullstackvibecoder.com</code></li>
+                <li>1. Ask IT to whitelist <code className="text-cyan-400">@shipkit.io</code></li>
                 <li>2. Create a service account within your system</li>
                 <li>3. We'll work with your security requirements</li>
               </ol>
@@ -395,8 +395,8 @@ export default function ClientAccessPage() {
 
           <div className="pt-6 border-t border-pink-500/30">
             <p className="text-gray-400">
-              Questions? Email <a href="mailto:ara@fullstackvibecoder.com" className="text-cyan-400 hover:text-cyan-300 transition-colors">ara@fullstackvibecoder.com</a> 
-              {' '}or check <a href="/security" className="text-cyan-400 hover:text-cyan-300 transition-colors">fullstackvibecoder.com/security</a>
+              Questions? Email <a href="mailto:ara@shipkit.io" className="text-cyan-400 hover:text-cyan-300 transition-colors">ara@shipkit.io</a> 
+              {' '}or check <a href="/security" className="text-cyan-400 hover:text-cyan-300 transition-colors">shipkit.io/security</a>
             </p>
           </div>
         </section>

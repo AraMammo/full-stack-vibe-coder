@@ -1,5 +1,5 @@
 /**
- * Business in a Box - Delivery Packaging System
+ * ShipKit - Delivery Packaging System
  *
  * Creates tier-specific downloadable packages:
  * - VALIDATION_PACK: Single PDF report
@@ -36,10 +36,8 @@ export interface PackagingOptions {
   deploymentUrl?: string; // For TURNKEY_SYSTEM
   supabaseProjectId?: string; // For TURNKEY_SYSTEM
   projectName?: string;
-  // v0 deployment info
-  v0ChatId?: string;
-  v0PreviewUrl?: string;
-  v0DeployUrl?: string;
+  githubRepoUrl?: string;
+  vercelDeploymentUrl?: string;
 }
 
 interface SectionOutputs {
@@ -73,7 +71,7 @@ export async function packageBIABDeliverables(
     console.log(`[Package BIAB] Starting packaging for project ${projectId}`);
     console.log(`[Package BIAB] Tier: ${options.tier}`);
 
-    // Query project to get v0 deployment info
+    // Query project to get deployment info
     const project = await prisma.project.findUnique({
       where: { id: projectId },
     });
@@ -85,12 +83,11 @@ export async function packageBIABDeliverables(
       };
     }
 
-    // Add v0 data to options if available
-    if (project.v0ChatId) {
-      options.v0ChatId = project.v0ChatId;
-      options.v0PreviewUrl = project.v0PreviewUrl || undefined;
-      options.v0DeployUrl = project.v0DeployUrl || undefined;
-      console.log(`[Package BIAB] Including v0 deployment info: ${project.v0PreviewUrl}`);
+    // Add deployment data to options if available
+    if (project.githubRepoUrl) {
+      options.githubRepoUrl = project.githubRepoUrl;
+      options.vercelDeploymentUrl = project.vercelDeploymentUrl || undefined;
+      console.log(`[Package ShipKit] Including deployment info: ${project.vercelDeploymentUrl}`);
     }
 
     // Query all prompt executions for this project
@@ -336,7 +333,7 @@ Based on this validation analysis:
 
 ---
 
-*Generated with FullStackVibeCoder - AI-Powered Startup Toolkit*
+*Generated with ShipKit*
 `;
 
   return report;
@@ -514,17 +511,15 @@ async function createZIPPackage(
     }
   }
 
-  // LAUNCH_BLUEPRINT and TURNKEY_SYSTEM: Add v0 deployment info
-  if (options.tier !== BIABTier.VALIDATION_PACK && (options.v0ChatId || options.v0PreviewUrl)) {
-    const v0Folder = zip.folder('v0-deployment');
+  // LAUNCH_BLUEPRINT and TURNKEY_SYSTEM: Add deployment info
+  if (options.tier !== BIABTier.VALIDATION_PACK && (options.githubRepoUrl || options.vercelDeploymentUrl)) {
+    const deployFolder = zip.folder('deployment');
 
-    if (v0Folder) {
-      const v0Content = `# v0 Deployment Information\n\nYour application has been automatically deployed to Vercel v0!\n\n## Live URLs\n\n**Preview & Edit:**\n- URL: ${options.v0PreviewUrl || 'Not available'}\n- Chat ID: ${options.v0ChatId || 'Not available'}\n\n${options.v0DeployUrl ? `**Live Demo:**\n- URL: ${options.v0DeployUrl}\n\n` : ''}## What is v0?\n\nv0 is Vercel's AI-powered code generation platform. Your application has been automatically generated and is ready to preview, edit, and deploy.\n\n## Next Steps\n\n1. **Visit the Preview URL**\n   - Open ${options.v0PreviewUrl} in your browser\n   - You'll see your application running live\n\n2. **Make Changes**\n   - Use the chat interface to request modifications\n   - Edit code directly in the v0 editor\n   - See changes reflected in real-time\n\n3. **Deploy to Production**\n   - Click "Deploy" in the v0 interface\n   - Your app will be published to Vercel\n   - Get a permanent production URL\n\n4. **Customize Further**\n   - Download the code from v0\n   - Clone to GitHub repository\n   - Continue development locally\n\n## Alternative: Use the Replit Prompt\n\nIf you prefer to build manually or customize heavily:\n- Check the "Launch-Tools" folder for the Replit prompt\n- Use this prompt with any AI coding assistant\n- Build exactly to your specifications\n\n## Support\n\nFor help with v0 or your deployment:\n- v0 Documentation: https://v0.dev/docs\n- Vercel Support: https://vercel.com/support\n- FullStackVibeCoder: support@fullstackvibecoder.com\n`;
+    if (deployFolder) {
+      const deployContent = `# Deployment Information\n\nYour application has been automatically deployed!\n\n## Live URLs\n\n${options.vercelDeploymentUrl ? `**Live Site:** ${options.vercelDeploymentUrl}\n` : ''}${options.githubRepoUrl ? `**GitHub Repo:** ${options.githubRepoUrl}\n` : ''}\n## Next Steps\n\n1. **Visit the Live Site** — Your application is running and ready to use\n2. **Clone the Repo** — Make local changes and push updates\n3. **Customize** — Update branding, add features, connect services\n\n## Support\n\nFor help with your deployment: support@shipkit.io\n`;
 
-      v0Folder.file('README.md', v0Content);
-
-      // Add quick access file with just the URLs
-      v0Folder.file('DEPLOYMENT_URLS.txt', `v0 Preview & Edit: ${options.v0PreviewUrl || 'Not available'}\nv0 Chat ID: ${options.v0ChatId || 'Not available'}\n${options.v0DeployUrl ? `v0 Live Demo: ${options.v0DeployUrl}\n` : ''}\nGenerated: ${new Date().toISOString()}\n`);
+      deployFolder.file('README.md', deployContent);
+      deployFolder.file('DEPLOYMENT_URLS.txt', `${options.vercelDeploymentUrl ? `Live Site: ${options.vercelDeploymentUrl}\n` : ''}${options.githubRepoUrl ? `GitHub Repo: ${options.githubRepoUrl}\n` : ''}Generated: ${new Date().toISOString()}\n`);
     }
   }
 
@@ -562,14 +557,14 @@ async function createZIPPackage(
 /**
  * Generate README file for the package
  */
-function generateREADME(projectId: string, sectionOutputs: SectionOutputs[], tier: BIABTier, v0Info?: { chatId?: string; previewUrl?: string; deployUrl?: string }): string {
+function generateREADME(projectId: string, sectionOutputs: SectionOutputs[], tier: BIABTier, deployInfo?: { githubRepoUrl?: string; vercelUrl?: string }): string {
   const totalOutputs = sectionOutputs.reduce((sum, s) => sum + s.outputs.length, 0);
   const sections = sectionOutputs.map(s => s.section).join(', ');
 
-  const tierName = tier === BIABTier.VALIDATION_PACK ? 'Validation Pack' :
-                   tier === BIABTier.LAUNCH_BLUEPRINT ? 'Launch Blueprint' : 'Turnkey System';
+  const tierName = tier === BIABTier.VALIDATION_PACK ? 'ShipKit Lite' :
+                   tier === BIABTier.LAUNCH_BLUEPRINT ? 'ShipKit Pro' : 'ShipKit Complete';
 
-  return `# Business in a Box - ${tierName}
+  return `# ShipKit - ${tierName}
 
 **Project ID**: ${projectId}
 **Tier**: ${tierName}
@@ -578,7 +573,7 @@ function generateREADME(projectId: string, sectionOutputs: SectionOutputs[], tie
 
 ## What's Inside
 
-This package contains a ${tierName === 'Validation Pack' ? 'business validation toolkit' : tierName === 'Launch Blueprint' ? 'complete startup toolkit' : 'turnkey business system'} generated by FullStackVibeCoder's AI agents. Each section below contains detailed documents to help you ${tierName === 'Validation Pack' ? 'validate your business idea' : 'launch your business'}.
+This package contains a ${tierName === 'ShipKit Lite' ? 'business validation toolkit' : tierName === 'ShipKit Pro' ? 'complete startup toolkit' : 'turnkey business system'} generated by ShipKit's AI agents. Each section below contains detailed documents to help you ${tierName === 'ShipKit Lite' ? 'validate your business idea' : 'launch your business'}.
 
 ## Folder Structure
 
@@ -603,13 +598,13 @@ ${section.outputs.map((output, j) => `- ${j + 1}-${sanitizeFileName(output.promp
 
 ${sectionOutputs.map((section, i) => `${i + 1}. **${section.section}** (${section.outputs.length} documents)`).join('\n')}
 
-## ${v0Info && v0Info.previewUrl ? '🚀 Live Deployment\n\nYour application has been automatically deployed to v0!\n\n**Preview & Edit:** ' + v0Info.previewUrl + '\n' + (v0Info.deployUrl ? '**Live Demo:** ' + v0Info.deployUrl + '\n' : '') + '\nSee the `v0-deployment/` folder for complete deployment information and instructions.\n\n## ' : ''}Support
+## ${deployInfo && deployInfo.vercelUrl ? 'Live Deployment\n\nYour application has been deployed!\n\n**Live Site:** ' + deployInfo.vercelUrl + '\n' + (deployInfo.githubRepoUrl ? '**GitHub Repo:** ' + deployInfo.githubRepoUrl + '\n' : '') + '\nSee the `deployment/` folder for complete deployment information.\n\n## ' : ''}Support
 
-For questions or support, contact: support@fullstackvibecoder.com
+For questions or support, contact: support@shipkit.io
 
 ---
 
-*Generated with FullStackVibeCoder - AI-Powered Startup Toolkit*
+*Generated with ShipKit*
 `;
 }
 
@@ -629,7 +624,7 @@ ${output.content}
 
 ---
 
-*Generated by FullStackVibeCoder AI*
+*Generated by ShipKit*
 *Tokens used: ${output.tokensUsed.toLocaleString()}*
 `;
 }
@@ -664,7 +659,7 @@ function extractBrandColors(sectionOutputs: SectionOutputs[]): {
   secondary: string;
   accent: string;
 } {
-  // Default colors (FullStackVibeCoder brand)
+  // Default colors (ShipKit brand)
   const defaultColors = {
     primary: '#ec4899', // Pink
     secondary: '#06b6d4', // Cyan

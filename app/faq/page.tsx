@@ -73,7 +73,7 @@ export default function FAQPage() {
       answer: (
         <div className="faq-answer-content">
           <p>
-            Business In A Box packages are delivered in under 30 minutes. Most complete in 10-20 minutes.
+            ShipKit packages are delivered in under 30 minutes. Most complete in 10-20 minutes.
           </p>
           <p>
             Record a voice note describing your business idea. Our AI generates everything—market research,
@@ -86,7 +86,7 @@ export default function FAQPage() {
       )
     },
     {
-      question: "What's included in Business In A Box?",
+      question: "What's included in ShipKit?",
       answer: (
         <div className="faq-answer-content">
           <p>Everything you need to launch your business, delivered in under 30 minutes:</p>
@@ -106,10 +106,10 @@ export default function FAQPage() {
       answer: (
         <div className="faq-answer-content">
           <p>
-            <strong>Business In A Box:</strong> Start free, upgrade anytime
+            <strong>ShipKit:</strong> Start free, upgrade anytime
           </p>
           <p>
-            Three tiers available: Starter (Free), Complete ($197), and Turnkey ($497).
+            Three tiers available: Lite (Free), Pro ($197), and Complete ($497).
             Each includes market research, brand identity, and everything you need to launch.
             Delivered in under 30 minutes. You own everything.
           </p>
@@ -160,7 +160,7 @@ export default function FAQPage() {
       answer: (
         <div className="faq-answer-content">
           <p>
-            Business In A Box includes one round of revisions within the first week.
+            ShipKit includes one round of revisions within the first week.
           </p>
           <p>
             For enterprise projects, revisions are handled based on the scope outlined in your proposal. 

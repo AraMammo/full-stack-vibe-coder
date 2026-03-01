@@ -116,7 +116,7 @@ export function Navigation() {
             >
               <Image
                 src="/logo.svg"
-                alt="FullStack Vibe Coder Logo"
+                alt="ShipKit Logo"
                 width={40}
                 height={40}
                 className="transition-transform group-hover:scale-110"
@@ -131,7 +131,7 @@ export function Navigation() {
                   backgroundClip: 'text',
                 }}
               >
-                Fullstack Vibe Coder
+                ShipKit
               </span>
             </Link>
 

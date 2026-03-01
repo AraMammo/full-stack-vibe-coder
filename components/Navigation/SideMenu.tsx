@@ -72,7 +72,6 @@ const SignInIcon = () => (
 const navItems: NavItem[] = [
   { label: 'Home', href: '/', icon: <HomeIcon />, showWhenAuth: 'always' },
   { label: 'Pricing', href: '/get-started', icon: <PricingIcon />, showWhenAuth: 'always' },
-  { label: 'Tools', href: '/tools', icon: <ToolsIcon />, showWhenAuth: 'always' },
   { label: 'Blog', href: '/blog', icon: <BlogIcon />, showWhenAuth: 'always' },
   { label: 'FAQ', href: '/faq', icon: <FAQIcon />, showWhenAuth: 'always' },
 ];
@@ -276,7 +275,7 @@ export function SideMenu({ isOpen, onClose, currentPath, isAuthenticated, authLo
         {/* Footer */}
         <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-white/10">
           <p className="text-xs text-gray-500 text-center">
-            FullStack Vibe Coder
+            ShipKit
           </p>
         </div>
       </div>

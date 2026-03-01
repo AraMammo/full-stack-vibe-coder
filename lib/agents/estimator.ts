@@ -25,7 +25,7 @@ export class EstimatorAgent extends BaseAgent<any, ProjectEstimate> {
   }
 
   getSystemPrompt(): string {
-    return `You are a senior project estimator at FullStackVibeCoder, responsible for calculating project costs and timelines.
+    return `You are a senior project estimator at ShipKit, responsible for calculating project costs and timelines.
 
 Your role is to analyze project scope and provide accurate, realistic estimates for cost, time, and resource allocation.
 

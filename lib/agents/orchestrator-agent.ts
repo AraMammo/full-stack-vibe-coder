@@ -30,7 +30,7 @@ export class OrchestratorAgent extends BaseAgent<OrchestratorInput, ExecutionPla
   }
 
   getSystemPrompt(): string {
-    return `You are the Orchestrator Agent for FullStackVibeCoder, an AI-powered development agency.
+    return `You are the Orchestrator Agent for ShipKit, an AI-powered development agency.
 
 Your role is to break down approved project proposals into executable tasks for specialist agents.
 

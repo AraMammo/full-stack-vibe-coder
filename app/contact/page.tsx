@@ -1,6 +1,6 @@
 /**
  * Contact Page
- * Simple contact form for reaching FullStackVibeCoder team
+ * Simple contact form for reaching ShipKit team
  */
 
 'use client';
@@ -149,10 +149,10 @@ export default function ContactPage() {
             <p className="text-gray-400 text-sm">
               Or email us directly at{' '}
               <a 
-                href="mailto:hello@fullstackvibecoder.com" 
+                href="mailto:hello@shipkit.io" 
                 className="text-cyan-400 hover:text-cyan-300 underline"
               >
-                hello@fullstackvibecoder.com
+                hello@shipkit.io
               </a>
             </p>
           </div>

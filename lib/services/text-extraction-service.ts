@@ -241,7 +241,7 @@ export async function extractTextFromURL(url: string): Promise<URLExtractionResu
     // Fetch the page
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; FullstackVibeCoderBot/1.0)',
+        'User-Agent': 'Mozilla/5.0 (compatible; ShipKitBot/1.0)',
       },
     });
 

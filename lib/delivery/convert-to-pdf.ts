@@ -381,7 +381,7 @@ export async function convertMarkdownToPDF(
     <h1 class="cover-title">${projectName}</h1>
     <p class="cover-subtitle">${documentTitle}</p>
     <span class="cover-section">${sectionName}</span>
-    <p class="cover-footer">Generated with Business in a Box</p>
+    <p class="cover-footer">Generated with ShipKit</p>
   </div>
 
   <!-- Table of Contents -->

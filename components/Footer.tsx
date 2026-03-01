@@ -26,24 +26,23 @@ export function Footer() {
         {/* SEO-Rich Content Section */}
         <div className="footer-content">
           <div className="footer-section">
-            <h3 className="footer-heading">Vibe Coding</h3>
+            <h3 className="footer-heading">ShipKit</h3>
             <p className="footer-description">
-              The future of software development. Vibe coding combines AI-powered code generation
-              with human expertise to build production-ready applications 10x faster than traditional development.
+              From idea to live business in 30 minutes. ShipKit turns your business concept into a complete
+              launch-ready package: branding, strategy, and a full deployable Next.js codebase.
             </p>
             <p className="footer-description">
-              What is vibe coding? It's describing what you want in natural language and getting working code—TypeScript,
-              React, Python, full-stack applications—instantly. Not no-code templates. Real, custom code you own.
+              All from a single voice note or chat message. Not templates — real, custom code and strategy you own.
             </p>
           </div>
 
           <div className="footer-section">
-            <h3 className="footer-heading">Services</h3>
+            <h3 className="footer-heading">Products</h3>
             <ul className="footer-links">
-              <li><Link href="/get-started" className="footer-link-item">Market-Ready Business</Link></li>
-              <li><Link href="/what-is-vibe-coding" className="footer-link-item">What is Vibe Coding?</Link></li>
-              <li><Link href="/tools" className="footer-link-item">Automation Tools</Link></li>
-              <li><Link href="/contact" className="footer-link-item">Custom Development</Link></li>
+              <li><Link href="/get-started" className="footer-link-item">Pricing</Link></li>
+              <li><Link href="/get-started?tier=VALIDATION_PACK" className="footer-link-item">ShipKit Lite (Free)</Link></li>
+              <li><Link href="/get-started?tier=LAUNCH_BLUEPRINT" className="footer-link-item">ShipKit Pro</Link></li>
+              <li><Link href="/get-started?tier=TURNKEY_SYSTEM" className="footer-link-item">ShipKit Complete</Link></li>
             </ul>
           </div>
 
@@ -51,8 +50,8 @@ export function Footer() {
             <h3 className="footer-heading">Resources</h3>
             <ul className="footer-links">
               <li><Link href="/faq" className="footer-link-item">FAQ</Link></li>
-              <li><Link href="/blog/what-is-vibe-coding" className="footer-link-item">Vibe Coding Guide</Link></li>
-              <li><Link href="/client-access" className="footer-link-item">Client Access Guide</Link></li>
+              <li><Link href="/blog" className="footer-link-item">Blog</Link></li>
+              <li><Link href="/contact" className="footer-link-item">Contact</Link></li>
               <li><Link href="/get-started" className="footer-link-item">Get Started</Link></li>
             </ul>
           </div>
@@ -60,11 +59,8 @@ export function Footer() {
           <div className="footer-section">
             <h3 className="footer-heading">Company</h3>
             <p className="footer-description">
-              <strong>FullStackVibeCoder</strong> - AI-powered development agency specializing in vibe coding.
-              We turn business ideas into production-ready software in under 30 minutes.
-            </p>
-            <p className="footer-description">
-              From Toronto to worldwide. Building the future of rapid application development.
+              <strong>ShipKit</strong> — AI-powered business launch platform.
+              We turn business ideas into complete, deployable products in under 30 minutes.
             </p>
           </div>
         </div>
@@ -94,10 +90,10 @@ export function Footer() {
 
         <div className="footer-bottom">
           <p className="footer-copyright">
-            &copy; {currentYear} FullStackVibeCoder. All rights reserved.
+            &copy; {currentYear} ShipKit. All rights reserved.
           </p>
           <p className="footer-tech">
-            Built with vibe coding | Next.js | TypeScript | AI-Powered Development
+            Built with Next.js | TypeScript | AI-Powered
           </p>
         </div>
       </div>

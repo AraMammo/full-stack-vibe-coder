@@ -2,12 +2,16 @@
  * Stripe Checkout API
  *
  * POST /api/create-checkout
- * Creates Stripe checkout session for BIAB tiers
+ * Creates Stripe checkout session for ShipKit tiers.
+ * Free tier (VALIDATION_PACK) creates a project directly and triggers the orchestrator.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { stripe } from '@/lib/stripe';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/db';
 
 // ============================================
 // TIER CONFIGURATION
@@ -21,18 +25,18 @@ interface TierConfig {
 
 const TIER_CONFIG: Record<string, TierConfig> = {
   VALIDATION_PACK: {
-    name: 'Starter Pack',
-    description: 'Validate your business idea with market research and competitive analysis',
+    name: 'ShipKit Lite',
+    description: 'Interactive business brief with name options, value prop, and site preview',
     price: 0, // Free tier
   },
   LAUNCH_BLUEPRINT: {
-    name: 'Launch Blueprint',
-    description: 'Complete business plan with 16 sections + 5 AI-generated logos',
+    name: 'ShipKit Pro',
+    description: 'Full branding, strategy, financial projections, and complete business plan',
     price: 19700, // $197.00
   },
   TURNKEY_SYSTEM: {
-    name: 'Turnkey System',
-    description: 'Everything + live website deployment with full infrastructure',
+    name: 'ShipKit Complete',
+    description: 'Everything in Pro + full Next.js codebase, deployed website, and GitHub repo',
     price: 49700, // $497.00
   },
 };
@@ -44,6 +48,7 @@ const TIER_CONFIG: Record<string, TierConfig> = {
 const CheckoutSchema = z.object({
   tier: z.enum(['VALIDATION_PACK', 'LAUNCH_BLUEPRINT', 'TURNKEY_SYSTEM']),
   userEmail: z.string().email().optional(),
+  sessionId: z.string().optional(), // From chat analysis
 });
 
 // ============================================
@@ -54,7 +59,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse and validate request
     const body = await request.json();
-    const { tier, userEmail } = CheckoutSchema.parse(body);
+    const { tier, userEmail, sessionId } = CheckoutSchema.parse(body);
 
     // Get tier configuration
     const tierConfig = TIER_CONFIG[tier];
@@ -65,13 +70,66 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Handle free tier - skip Stripe checkout entirely
+    // Handle free tier - create project directly, no Stripe
     if (tierConfig.price === 0) {
       console.log(`[Checkout] Free tier selected: ${tierConfig.name}`);
+
+      const authSession = await getServerSession(authOptions);
+      if (!authSession?.user?.id) {
+        return NextResponse.json(
+          { error: 'Authentication required' },
+          { status: 401 }
+        );
+      }
+
+      // Look up business concept from chat analysis
+      let businessConcept = '';
+      if (sessionId) {
+        try {
+          const chatSubmission = await prisma.chat_submissions.findUnique({
+            where: { session_id: sessionId },
+          });
+          if (chatSubmission) {
+            businessConcept = chatSubmission.user_input;
+            console.log(`[Checkout] Found chat submission for sessionId: ${sessionId}`);
+          }
+        } catch (lookupError) {
+          console.error('[Checkout] Failed to look up chat submission:', lookupError);
+        }
+      }
+
+      // Create project for free tier
+      const project = await prisma.project.create({
+        data: {
+          userId: authSession.user.id,
+          projectName: tierConfig.name,
+          biabTier: 'VALIDATION_PACK',
+          businessConcept,
+          status: 'PENDING',
+        },
+      });
+      console.log(`[Checkout] Free tier project created: ${project.id}`);
+
+      // Trigger orchestrator (fire and forget — don't block the response)
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+      fetch(`${baseUrl}/api/shipkit/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: project.id,
+          businessConcept: businessConcept || 'Business concept for ShipKit Lite',
+          userId: authSession.user.id,
+          tier: 'VALIDATION_PACK',
+        }),
+      }).catch((err) => {
+        console.error('[Checkout] Failed to trigger orchestrator for free tier:', err);
+      });
+
       return NextResponse.json({
         free: true,
         tier,
-        redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/upload?tier=${tier}`,
+        projectId: project.id,
+        redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`,
       });
     }
 
@@ -91,7 +149,7 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: `Business In A Box - ${tierConfig.name}`,
+              name: tierConfig.name,
               description: tierConfig.description,
             },
             unit_amount: tierConfig.price,
@@ -104,7 +162,7 @@ export async function POST(request: NextRequest) {
       customer_email: userEmail,
       metadata: {
         tier,
-        // Will be populated by webhook after payment
+        ...(sessionId ? { sessionId } : {}),
       },
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/get-started`,

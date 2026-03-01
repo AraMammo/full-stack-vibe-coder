@@ -118,8 +118,9 @@ async function handleCheckoutCompleted(
       return;
     }
 
-    // Handle BIAB purchase
+    // Handle ShipKit purchase
     const tier = session.metadata.tier;
+    const chatSessionId = session.metadata.sessionId; // From chat analysis
     const validTiers = ['VALIDATION_PACK', 'LAUNCH_BLUEPRINT', 'TURNKEY_SYSTEM'] as const;
 
     if (tier && !validTiers.includes(tier as typeof validTiers[number])) {
@@ -137,8 +138,29 @@ async function handleCheckoutCompleted(
 
     const validatedTier = tier as 'VALIDATION_PACK' | 'LAUNCH_BLUEPRINT' | 'TURNKEY_SYSTEM';
 
+    // Look up business concept from chat_submissions if sessionId provided
+    let businessConcept = '';
+    if (chatSessionId) {
+      try {
+        const chatSubmission = await prisma.chat_submissions.findUnique({
+          where: { session_id: chatSessionId },
+        });
+        if (chatSubmission) {
+          businessConcept = chatSubmission.user_input;
+          console.log(`[Stripe Webhook] Found chat submission for sessionId: ${chatSessionId}`);
+        }
+      } catch (lookupError) {
+        console.error('[Stripe Webhook] Failed to look up chat submission:', lookupError);
+      }
+    }
+
+    const tierDisplayNames: Record<string, string> = {
+      VALIDATION_PACK: 'ShipKit Lite',
+      LAUNCH_BLUEPRINT: 'ShipKit Pro',
+      TURNKEY_SYSTEM: 'ShipKit Complete',
+    };
+
     // Use transaction to ensure atomic creation of user, project, and payment
-    // This prevents race conditions and ensures data consistency
     const result = await prisma.$transaction(async (tx) => {
       // Check if payment already exists (idempotency check)
       const existingPayment = await tx.payment.findUnique({
@@ -147,14 +169,13 @@ async function handleCheckoutCompleted(
 
       if (existingPayment) {
         console.log(`[Stripe Webhook] Payment already exists: ${existingPayment.id} (idempotent)`);
-        // Return existing data for idempotent response
         const existingProject = existingPayment.projectId
           ? await tx.project.findUnique({ where: { id: existingPayment.projectId } })
           : null;
         return { payment: existingPayment, project: existingProject, isNew: false };
       }
 
-      // Find or create user (upsert pattern to handle race conditions)
+      // Find or create user
       let user = await tx.user.findUnique({
         where: { email: userEmail },
       });
@@ -174,16 +195,16 @@ async function handleCheckoutCompleted(
       const project = await tx.project.create({
         data: {
           userId: user.id,
-          projectName: `Business in a Box - ${validatedTier.replace(/_/g, ' ')}`,
+          projectName: tierDisplayNames[validatedTier] || 'ShipKit',
           biabTier: validatedTier,
-          businessConcept: '', // Will be populated when execution starts
+          businessConcept,
           status: 'PENDING',
         },
       });
 
       console.log(`[Stripe Webhook] ✓ Project created: ${project.id}`);
 
-      // Create payment record (linked to project)
+      // Create payment record
       const payment = await tx.payment.create({
         data: {
           userId: user.id,
@@ -214,19 +235,19 @@ async function handleCheckoutCompleted(
 
     const { user, project, payment } = result as { user: { id: string; email: string | null }; project: { id: string }; payment: { id: string }; isNew: true };
 
-    // Trigger BIAB execution
+    // Trigger ShipKit orchestrator
     // NOTE: We await this but don't fail the webhook if execution fails.
     // The payment is already recorded, and execution can be retried.
-    console.log(`[Stripe Webhook] 🚀 Triggering BIAB execution for project: ${project.id}`);
+    console.log(`[Stripe Webhook] Triggering ShipKit orchestrator for project: ${project.id}`);
 
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-      const executionResponse = await fetch(`${baseUrl}/api/business-in-a-box/execute`, {
+      const executionResponse = await fetch(`${baseUrl}/api/shipkit/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectId: project.id,
-          businessConcept: `Business concept for ${validatedTier.replace(/_/g, ' ')}`,
+          businessConcept: businessConcept || `Business concept for ${tierDisplayNames[validatedTier]}`,
           userId: user.id,
           tier: validatedTier,
         }),

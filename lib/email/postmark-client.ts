@@ -51,7 +51,7 @@ export async function sendProjectStartedEmail(
   projectData: ProjectEmailData
 ): Promise<EmailResult> {
   const apiKey = process.env.SENDGRID_API_KEY;
-  const fromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@fullstackvibecoder.com';
+  const fromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@shipkit.io';
   const replyToEmail = process.env.SENDGRID_REPLY_TO_EMAIL || 'ara@foundercorepro.com';
 
   if (!apiKey) {
@@ -121,7 +121,7 @@ export async function sendProjectCompleteEmail(
   completionData: CompletionEmailData
 ): Promise<EmailResult> {
   const apiKey = process.env.SENDGRID_API_KEY;
-  const fromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@fullstackvibecoder.com';
+  const fromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@shipkit.io';
   const replyToEmail = process.env.SENDGRID_REPLY_TO_EMAIL || 'ara@foundercorepro.com';
 
   if (!apiKey) {
@@ -188,13 +188,13 @@ export async function sendProjectCompleteEmail(
 function getTierDisplayName(tier: BIABTier): string {
   switch (tier) {
     case BIABTier.VALIDATION_PACK:
-      return 'Validation Pack';
+      return 'ShipKit Lite';
     case BIABTier.LAUNCH_BLUEPRINT:
-      return 'Launch Blueprint';
+      return 'ShipKit Pro';
     case BIABTier.TURNKEY_SYSTEM:
-      return 'Turnkey System';
+      return 'ShipKit Complete';
     default:
-      return 'Business Package';
+      return 'ShipKit';
   }
 }
 
@@ -262,8 +262,8 @@ function generateProjectStartedHTML(
     <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
 
     <p style="font-size: 12px; color: #999; text-align: center;">
-      FullStackVibeCoder - AI-Powered Startup Toolkit<br>
-      <a href="https://fullstackvibecoder.com" style="color: #06b6d4; text-decoration: none;">fullstackvibecoder.com</a>
+      ShipKit - From Idea to Live Business<br>
+      <a href="https://shipkit.io" style="color: #06b6d4; text-decoration: none;">shipkit.io</a>
     </p>
   </div>
 </body>
@@ -296,8 +296,8 @@ ${dashboardUrl}
 You'll receive another email when your ${tierName} is ready to download.
 
 ---
-FullStackVibeCoder - AI-Powered Startup Toolkit
-https://fullstackvibecoder.com
+ShipKit - From Idea to Live Business
+https://shipkit.io
 `;
 }
 
@@ -354,8 +354,8 @@ function generateProjectCompleteHTML(
     <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
 
     <p style="font-size: 12px; color: #999; text-align: center;">
-      FullStackVibeCoder - AI-Powered Startup Toolkit<br>
-      <a href="https://fullstackvibecoder.com" style="color: #06b6d4; text-decoration: none;">fullstackvibecoder.com</a>
+      ShipKit - From Idea to Live Business<br>
+      <a href="https://shipkit.io" style="color: #06b6d4; text-decoration: none;">shipkit.io</a>
     </p>
   </div>
 </body>
@@ -394,7 +394,7 @@ ${dashboardUrl}
 Note: Download link expires in 7 days. Download and save your files soon!
 
 ---
-FullStackVibeCoder - AI-Powered Startup Toolkit
-https://fullstackvibecoder.com
+ShipKit - From Idea to Live Business
+https://shipkit.io
 `;
 }

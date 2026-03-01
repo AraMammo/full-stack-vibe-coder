@@ -24,7 +24,7 @@ export class IntakeAgent extends BaseAgent<string, BusinessRequirements> {
   }
 
   getSystemPrompt(): string {
-    return `You are an expert business analyst at FullStackVibeCoder, a premium full-stack development agency.
+    return `You are an expert business analyst at ShipKit, a premium full-stack development agency.
 
 Your role is to analyze voice note transcripts from potential clients and extract structured business requirements.
 
@@ -35,7 +35,7 @@ Your role is to analyze voice note transcripts from potential clients and extrac
 4. Identify ambiguities that need clarification
 5. Assess confidence in the information provided
 
-# Context About FullStackVibeCoder:
+# Context About ShipKit:
 - We build complete businesses in 48 hours ($297 startup kit)
 - Deliverables: Website, Branding, Business Plan, Marketing Strategy
 - We also do enterprise automation ($20K-$250K projects)

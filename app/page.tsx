@@ -214,9 +214,9 @@ export default function Home() {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Starter - Free */}
+              {/* ShipKit Lite - Free */}
               <div className="relative p-6 rounded-xl bg-black/50 border border-white/10 hover:border-green-500/30 transition-all">
-                <h3 className="text-lg font-semibold text-white mb-1">Starter</h3>
+                <h3 className="text-lg font-semibold text-white mb-1">ShipKit Lite</h3>
                 <div className="text-3xl font-bold text-green-400 mb-4">
                   Free
                 </div>
@@ -242,19 +242,19 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Complete - Highlighted */}
+              {/* ShipKit Pro - Highlighted */}
               <div className="relative p-6 rounded-xl bg-gradient-to-b from-pink-500/10 to-cyan-500/10 border-2 border-pink-500/50 hover:border-pink-500 transition-all transform md:-translate-y-2">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-pink-500 to-cyan-500 rounded-full text-xs font-bold text-white">
                   POPULAR
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-1">Complete</h3>
+                <h3 className="text-lg font-semibold text-white mb-1">ShipKit Pro</h3>
                 <div className="text-3xl font-bold text-white mb-4">
                   $197
                 </div>
                 <ul className="space-y-2 mb-6 text-sm text-gray-300">
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Everything in Starter</span>
+                    <span>Everything in Lite</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
@@ -277,19 +277,19 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Turnkey */}
+              {/* ShipKit Complete */}
               <div className="relative p-6 rounded-xl bg-black/50 border border-white/10 hover:border-cyan-500/30 transition-all">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-cyan-500 rounded-full text-xs font-bold text-white">
                   BEST VALUE
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-1">Turnkey</h3>
+                <h3 className="text-lg font-semibold text-white mb-1">ShipKit Complete</h3>
                 <div className="text-3xl font-bold text-white mb-4">
                   $497
                 </div>
                 <ul className="space-y-2 mb-6 text-sm text-gray-300">
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Everything in Complete</span>
+                    <span>Everything in Pro</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-cyan-400 mt-0.5">&#10003;</span>
@@ -328,46 +328,6 @@ export default function Home() {
                 Own everything forever
               </span>
             </div>
-          </div>
-        </section>
-
-        {/* Tools Section Preview */}
-        <section className="px-4 sm:px-6 py-16 border-t border-white/5">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-              Automation Tools for Creators
-            </h2>
-            <p className="text-gray-400 mb-8">
-              Save hours every week with AI-powered tools
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-              <div className="p-5 rounded-xl bg-white/5 border border-white/10 text-left">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">&#128221;</span>
-                  <span className="font-semibold text-white">Whiteboard</span>
-                  <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full">FREE</span>
-                </div>
-                <p className="text-sm text-gray-400">Collaborative whiteboard for brainstorming and planning</p>
-              </div>
-
-              <div className="p-5 rounded-xl bg-white/5 border border-white/10 text-left">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">&#127909;</span>
-                  <span className="font-semibold text-white">Faceless Video</span>
-                  <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-400 text-xs rounded-full">BETA</span>
-                </div>
-                <p className="text-sm text-gray-400">Generate faceless videos for social media content</p>
-              </div>
-            </div>
-
-            <Link
-              href="/tools"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-pink-500/50 text-pink-400 hover:bg-pink-500/10 transition-colors"
-            >
-              Explore All Tools
-              <span>&#8594;</span>
-            </Link>
           </div>
         </section>
 
