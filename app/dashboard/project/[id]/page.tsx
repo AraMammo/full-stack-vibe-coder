@@ -12,6 +12,7 @@ import { prisma } from '@/lib/db';
 import { StatusBadge } from '@/components/StatusBadge';
 import { ProjectDetailClient } from './ProjectDetailClient';
 import { ShipKitReady } from '@/components/ShipKitReady';
+import { EjectButton } from './EjectButton';
 import Link from 'next/link';
 
 const tierConfig = {
@@ -283,12 +284,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 </a>
               )}
               {deployedApp.hostingStatus === 'ACTIVE' && (
-                <Link
-                  href={`/api/project/${params.id}/eject`}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Eject &amp; Self-Host
-                </Link>
+                <EjectButton projectId={params.id} />
               )}
             </div>
           </div>

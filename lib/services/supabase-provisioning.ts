@@ -54,7 +54,7 @@ export async function createProject(
   name: string,
   region: string = 'us-east-1',
   dbPassword?: string
-): Promise<{ projectRef: string }> {
+): Promise<{ projectRef: string; dbPassword: string }> {
   const orgId = process.env.SUPABASE_ORGANIZATION_ID;
   if (!orgId) throw new Error('SUPABASE_ORGANIZATION_ID not set');
 
@@ -80,7 +80,7 @@ export async function createProject(
   const project: SupabaseProject = await response.json();
   console.log(`[Supabase] Project created: ${project.id} (${project.name})`);
 
-  return { projectRef: project.id };
+  return { projectRef: project.id, dbPassword: password };
 }
 
 /**
@@ -165,14 +165,15 @@ export async function provisionProject(
   name: string,
   region?: string
 ): Promise<ProvisionedSupabase> {
-  const { projectRef } = await createProject(name, region);
+  const actualRegion = region || 'us-east-1';
+  const { projectRef, dbPassword } = await createProject(name, actualRegion);
 
   await waitForReady(projectRef);
 
   const keys = await getApiKeys(projectRef);
 
   const projectUrl = `https://${projectRef}.supabase.co`;
-  const databaseUrl = `postgresql://postgres.${projectRef}:${process.env.SUPABASE_DB_PASSWORD || 'password'}@aws-0-${region || 'us-east-1'}.pooler.supabase.com:6543/postgres`;
+  const databaseUrl = `postgresql://postgres.${projectRef}:${encodeURIComponent(dbPassword)}@aws-0-${actualRegion}.pooler.supabase.com:6543/postgres`;
 
   return {
     projectRef,
