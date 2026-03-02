@@ -136,18 +136,18 @@ export default function Home() {
                 backgroundClip: 'text',
               }}
             >
-              One Voice Note. One Complete Business.
+              Describe Your Business. Get a Working App.
             </h1>
 
-            {/* Subheadline - Sunnybrook-style specificity */}
+            {/* Subheadline */}
             <p className="text-lg sm:text-xl text-gray-300 mb-2">
-              One idea. Three business names. Five logo designs. A full brand identity.
+              Database. Auth. Payments. Email. Custom domain.
             </p>
             <p className="text-base sm:text-lg text-gray-400 mb-2">
-              Market research. Financial projections. A launch strategy.
+              Not a template. Not a mockup. A full-stack app — built and deployed.
             </p>
             <p className="text-base sm:text-lg text-white font-medium mb-6">
-              And a live website — deployed and ready for customers.
+              $497 to build. $49/mo to host. Eject anytime.
             </p>
 
             {/* Chat Interface - The Star of the Show */}
@@ -157,7 +157,7 @@ export default function Home() {
 
             {/* Sub-CTA */}
             <p className="mt-4 text-sm text-gray-500">
-              Try it free — describe your idea and get your first business brief in 60 seconds
+              Try it free — describe your idea and see what ShipKit builds in 60 seconds
             </p>
           </div>
         </section>
@@ -186,9 +186,9 @@ export default function Home() {
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500 to-cyan-500 flex items-center justify-center text-2xl font-bold text-white">
                   2
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Eight AI Agents Get to Work</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">AI Builds Your Full-Stack App</h3>
                 <p className="text-gray-400 text-sm">
-                  Brand identity. Market research. Financial model. Marketing strategy. Five logo concepts. A full Next.js codebase. Built simultaneously in under 30 minutes.
+                  Database schema. Auth flows. Payment integration. Email setup. API routes. Frontend UI. All generated and wired together in under 30 minutes.
                 </p>
               </div>
 
@@ -197,131 +197,69 @@ export default function Home() {
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500 to-cyan-500 flex items-center justify-center text-2xl font-bold text-white">
                   3
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">You Open for Business</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">Your App Goes Live</h3>
                 <p className="text-gray-400 text-sm">
-                  A live website on your domain. A GitHub repo you own. Brand assets ready for social. You&apos;re not planning a business — you&apos;re running one.
+                  Deployed to your domain. Stripe connected. Database running. Users can sign up and pay. You&apos;re not planning — you&apos;re live.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Pricing Preview Section */}
+        {/* Single Offering Section */}
         <section className="px-4 sm:px-6 py-16 border-t border-white/5">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-4">
-              Three Ways to Ship
+              One Price. One Working App.
             </h2>
-            <p className="text-center text-gray-400 mb-12">
-              Start free. Upgrade when you&apos;re ready to go all in.
+            <p className="text-center text-gray-400 mb-10">
+              Every vibe-coding tool generates a frontend shell. ShipKit generates the full stack — and deploys it live.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* ShipKit Lite - Free */}
-              <div className="relative p-6 rounded-xl bg-black/50 border border-white/10 hover:border-green-500/30 transition-all">
-                <h3 className="text-lg font-semibold text-white mb-1">ShipKit Lite</h3>
-                <div className="text-3xl font-bold text-green-400 mb-4">
-                  Free
+            {/* Single Pricing Card */}
+            <div className="relative p-8 rounded-2xl bg-gradient-to-b from-pink-500/10 to-cyan-500/10 border-2 border-pink-500/50 max-w-lg mx-auto">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-white mb-2">Build My App</h3>
+                <div className="flex items-baseline justify-center gap-2">
+                  <span className="text-5xl font-black text-white">$497</span>
+                  <span className="text-gray-400">one-time</span>
                 </div>
-                <ul className="space-y-2 mb-6 text-sm text-gray-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>3 business name options with taglines</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Target audience breakdown</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Competitive positioning</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Site preview mockup</span>
-                  </li>
-                </ul>
-                <Link
-                  href="/get-started?tier=VALIDATION_PACK"
-                  className="block w-full py-3 text-center rounded-lg border border-green-500/50 text-green-400 hover:bg-green-500/10 transition-colors font-semibold"
-                >
-                  Try It Free
-                </Link>
+                <p className="text-sm text-gray-400 mt-1">+ $49/mo hosting (first month free)</p>
               </div>
 
-              {/* ShipKit Pro - Highlighted */}
-              <div className="relative p-6 rounded-xl bg-gradient-to-b from-pink-500/10 to-cyan-500/10 border-2 border-pink-500/50 hover:border-pink-500 transition-all transform md:-translate-y-2">
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-pink-500 to-cyan-500 rounded-full text-xs font-bold text-white">
-                  POPULAR
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-1">ShipKit Pro</h3>
-                <div className="text-3xl font-bold text-white mb-4">
-                  $197
-                </div>
-                <ul className="space-y-2 mb-6 text-sm text-gray-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Everything in Lite</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>5 logo concepts + brand guidelines</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Marketing &amp; launch strategy</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Financial projections</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Complete business plan</span>
-                  </li>
-                </ul>
-                <Link
-                  href="/get-started?tier=LAUNCH_BLUEPRINT"
-                  className="block w-full py-3 text-center rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold hover:opacity-90 transition-opacity"
-                >
-                  Get Started
-                </Link>
-              </div>
+              <ul className="space-y-3 mb-8 text-sm">
+                <li className="flex items-start gap-2 text-gray-300">
+                  <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+                  <span>Live website, deployed on your domain</span>
+                </li>
+                <li className="flex items-start gap-2 text-gray-300">
+                  <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+                  <span>Real database with auth and user management</span>
+                </li>
+                <li className="flex items-start gap-2 text-gray-300">
+                  <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+                  <span>Stripe payments — accept money day one</span>
+                </li>
+                <li className="flex items-start gap-2 text-gray-300">
+                  <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+                  <span>Transactional email on your domain</span>
+                </li>
+                <li className="flex items-start gap-2 text-gray-300">
+                  <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+                  <span>GitHub repo — your code, transferable</span>
+                </li>
+                <li className="flex items-start gap-2 text-gray-300">
+                  <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+                  <span>Eject anytime — take everything with you</span>
+                </li>
+              </ul>
 
-              {/* ShipKit Complete */}
-              <div className="relative p-6 rounded-xl bg-black/50 border border-white/10 hover:border-cyan-500/30 transition-all">
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-cyan-500 rounded-full text-xs font-bold text-white">
-                  BEST VALUE
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-1">ShipKit Complete</h3>
-                <div className="text-3xl font-bold text-white mb-4">
-                  $497
-                </div>
-                <ul className="space-y-2 mb-6 text-sm text-gray-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Everything in Pro</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Full Next.js codebase on GitHub</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>Live website, deployed and running</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-cyan-400 mt-0.5">&#10003;</span>
-                    <span>30 days of support</span>
-                  </li>
-                </ul>
-                <Link
-                  href="/get-started?tier=TURNKEY_SYSTEM"
-                  className="block w-full py-3 text-center rounded-lg border border-cyan-500/50 text-white hover:bg-cyan-500/10 transition-colors"
-                >
-                  Get Started
-                </Link>
-              </div>
+              <Link
+                href="/get-started"
+                className="block w-full py-4 text-center rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-bold text-lg hover:opacity-90 transition-opacity"
+              >
+                Build My App &mdash; $497
+              </Link>
             </div>
 
             {/* Trust Badges */}
@@ -332,41 +270,37 @@ export default function Home() {
               </span>
               <span className="flex items-center gap-2">
                 <span className="text-green-400">&#10003;</span>
-                Delivered in under 30 minutes
+                Built in under 30 minutes
               </span>
               <span className="flex items-center gap-2">
                 <span className="text-green-400">&#10003;</span>
-                Own everything forever
+                Eject anytime — no lock-in
               </span>
             </div>
           </div>
         </section>
 
-        {/* Final CTA - Sunnybrook-style momentum */}
+        {/* Final CTA */}
         <section className="px-4 sm:px-6 py-16 border-t border-white/5">
           <div className="max-w-2xl mx-auto text-center">
             <p className="text-gray-400 mb-2 text-sm">
-              One voice note. Eight AI agents. Three business names. Five logo concepts.
+              One voice note. One full-stack app. One live deployment.
             </p>
             <p className="text-gray-400 mb-2 text-sm">
-              One brand identity. One market analysis. One financial model. One launch strategy.
-            </p>
-            <p className="text-gray-400 mb-2 text-sm">
-              One complete codebase. One deployed website. One GitHub repo.
+              Database, auth, payments, email — all wired up and running.
             </p>
             <h2 className="text-2xl sm:text-3xl font-bold text-white mt-4 mb-2">
-              And one founder, open for business.
+              Your SaaS, live in 30 minutes.
             </h2>
             <p className="text-gray-500 mb-8 text-sm">
-              From idea to income. That&apos;s ShipKit.
+              From idea to production. That&apos;s ShipKit.
             </p>
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            <Link
+              href="/get-started"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold hover:opacity-90 transition-opacity"
             >
-              <span>&#8593;</span>
-              Start With Your Idea
-            </button>
+              Build My App &mdash; $497
+            </Link>
           </div>
         </section>
       </main>

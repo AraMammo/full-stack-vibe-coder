@@ -63,12 +63,20 @@ export async function POST(request: NextRequest) {
         await handlePaymentFailed(event.data.object as Stripe.PaymentIntent);
         break;
 
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
+        break;
+
       case 'customer.subscription.deleted':
         await handleSubscriptionCanceled(event.data.object as Stripe.Subscription);
         break;
 
       case 'invoice.payment_failed':
-        console.log('[Stripe Webhook] Subscription payment failed - will be handled by customer.subscription.deleted if cancelled');
+        await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
+        break;
+
+      case 'invoice.paid':
+        await handleInvoicePaid(event.data.object as Stripe.Invoice);
         break;
 
       default:
@@ -396,21 +404,130 @@ async function handleToolPurchase(
 }
 
 /**
- * Handle subscription cancellation
+ * Handle subscription cancellation (both tool purchases and hosting subscriptions)
  */
 async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
   console.log(`[Stripe Webhook] Processing subscription cancellation: ${subscription.id}`);
 
   try {
-    // Find and deactivate the tool purchase by subscription ID
+    // Check if this is a hosting subscription
+    const hostingSub = await prisma.hostingSubscription.findUnique({
+      where: { stripeSubscriptionId: subscription.id },
+      include: { deployedApp: true },
+    });
+
+    if (hostingSub) {
+      await prisma.hostingSubscription.update({
+        where: { id: hostingSub.id },
+        data: { status: 'cancelled' },
+      });
+      await prisma.deployedApp.update({
+        where: { id: hostingSub.deployedAppId },
+        data: { hostingStatus: 'CANCELLED' },
+      });
+      console.log(`[Stripe Webhook] Hosting subscription ${subscription.id} cancelled`);
+      return;
+    }
+
+    // Otherwise handle as tool purchase
     await db
       .update(toolPurchases)
       .set({ status: 'cancelled' })
       .where(eq(toolPurchases.stripeSubscriptionId, subscription.id));
 
-    console.log(`[Stripe Webhook] ✓ Subscription ${subscription.id} marked as cancelled`);
+    console.log(`[Stripe Webhook] Subscription ${subscription.id} marked as cancelled`);
   } catch (error: any) {
     console.error('[Stripe Webhook] Failed to process subscription cancellation:', error);
     throw error;
+  }
+}
+
+/**
+ * Handle subscription updates (status changes, renewals)
+ */
+async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
+  console.log(`[Stripe Webhook] Processing subscription update: ${subscription.id}`);
+
+  try {
+    const hostingSub = await prisma.hostingSubscription.findUnique({
+      where: { stripeSubscriptionId: subscription.id },
+    });
+
+    if (!hostingSub) {
+      console.log(`[Stripe Webhook] No hosting subscription found for ${subscription.id}`);
+      return;
+    }
+
+    await prisma.hostingSubscription.update({
+      where: { id: hostingSub.id },
+      data: {
+        status: subscription.status,
+        currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
+      },
+    });
+
+    console.log(`[Stripe Webhook] Hosting subscription updated: ${subscription.status}`);
+  } catch (error: any) {
+    console.error('[Stripe Webhook] Failed to update subscription:', error);
+    throw error;
+  }
+}
+
+/**
+ * Handle failed invoice payment — suspend the hosted app
+ */
+async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
+  const sub = (invoice as any).subscription;
+  const subscriptionId = typeof sub === 'string' ? sub : sub?.id;
+
+  if (!subscriptionId) return;
+
+  console.log(`[Stripe Webhook] Invoice payment failed for subscription: ${subscriptionId}`);
+
+  try {
+    const hostingSub = await prisma.hostingSubscription.findUnique({
+      where: { stripeSubscriptionId: subscriptionId },
+    });
+
+    if (!hostingSub) return;
+
+    await prisma.deployedApp.update({
+      where: { id: hostingSub.deployedAppId },
+      data: { hostingStatus: 'SUSPENDED' },
+    });
+
+    console.log(`[Stripe Webhook] App suspended due to failed payment`);
+  } catch (error: any) {
+    console.error('[Stripe Webhook] Failed to handle invoice.payment_failed:', error);
+  }
+}
+
+/**
+ * Handle successful invoice payment — reactivate suspended app
+ */
+async function handleInvoicePaid(invoice: Stripe.Invoice) {
+  const sub = (invoice as any).subscription;
+  const subscriptionId = typeof sub === 'string' ? sub : sub?.id;
+
+  if (!subscriptionId) return;
+
+  try {
+    const hostingSub = await prisma.hostingSubscription.findUnique({
+      where: { stripeSubscriptionId: subscriptionId },
+      include: { deployedApp: true },
+    });
+
+    if (!hostingSub) return;
+
+    // Only reactivate if currently suspended
+    if (hostingSub.deployedApp.hostingStatus === 'SUSPENDED') {
+      await prisma.deployedApp.update({
+        where: { id: hostingSub.deployedAppId },
+        data: { hostingStatus: 'ACTIVE' },
+      });
+      console.log(`[Stripe Webhook] App reactivated after payment`);
+    }
+  } catch (error: any) {
+    console.error('[Stripe Webhook] Failed to handle invoice.paid:', error);
   }
 }

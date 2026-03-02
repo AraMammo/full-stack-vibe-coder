@@ -1,8 +1,8 @@
 /**
- * Pricing Page - Simplified
+ * Get Started Page - Single Offering
  *
- * Clean, focused pricing page with 3 clear options.
- * Part of UX overhaul for frictionless conversion.
+ * Clean, focused page with one clear call to action: Build My App — $497
+ * Free preview tier still available as a secondary option.
  */
 
 "use client";
@@ -12,106 +12,65 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-interface Tier {
-  id: "VALIDATION_PACK" | "LAUNCH_BLUEPRINT" | "TURNKEY_SYSTEM";
-  name: string;
-  price: number;
-  description: string;
-  features: string[];
-  highlight?: "popular" | "best";
-  cta: string;
-}
-
-const tiers: Tier[] = [
-  {
-    id: "VALIDATION_PACK",
-    name: "ShipKit Lite",
-    price: 0,
-    description: "See your idea validated in 60 seconds",
-    features: [
-      "3 business names with taglines",
-      "Target audience breakdown",
-      "Competitive positioning",
-      "Value proposition",
-      "Site preview mockup",
-    ],
-    cta: "Try It Free",
-  },
-  {
-    id: "LAUNCH_BLUEPRINT",
-    name: "ShipKit Pro",
-    price: 197,
-    description: "The full business-in-a-box, minus the code",
-    features: [
-      "Everything in Lite",
-      "5 logo concepts + brand guidelines",
-      "Marketing & launch strategy",
-      "Financial projections",
-      "Complete business plan",
-    ],
-    highlight: "popular",
-    cta: "Get ShipKit Pro",
-  },
-  {
-    id: "TURNKEY_SYSTEM",
-    name: "ShipKit Complete",
-    price: 497,
-    description: "You open for business today",
-    features: [
-      "Everything in Pro",
-      "Full Next.js codebase on GitHub",
-      "Live website, deployed and running",
-      "Your domain, your code, your business",
-      "30 days of support",
-    ],
-    highlight: "best",
-    cta: "Get ShipKit Complete",
-  },
+const features = [
+  { title: "Live Website", desc: "Deployed on your custom domain, SSL included" },
+  { title: "Real Database", desc: "PostgreSQL with migrations, backups, and row-level security" },
+  { title: "User Auth", desc: "Sign up, login, password reset — all wired up" },
+  { title: "Stripe Payments", desc: "Accept payments from day one with your own Stripe account" },
+  { title: "Transactional Email", desc: "Welcome emails, receipts, notifications on your domain" },
+  { title: "GitHub Repo", desc: "Full Next.js codebase — your code, transferable anytime" },
+  { title: "Admin Dashboard", desc: "Manage users, view analytics, monitor your app" },
+  { title: "30 Days Free Hosting", desc: "First month included, then $49/mo — cancel or eject anytime" },
 ];
 
 const faqs = [
   {
-    question: "30 minutes — seriously?",
+    question: "What kind of apps can ShipKit build?",
     answer:
-      "Seriously. Eight specialized AI agents work in parallel the moment you submit. Brand identity, market research, financial model, code — all building at the same time. You watch it happen in your dashboard.",
+      "Any business that needs a web app. SaaS tools, booking platforms, marketplaces, membership sites, directories, dashboards — if it runs on the web, ShipKit can build it. You describe it, we generate the full stack.",
   },
   {
-    question: "Do I own the code?",
+    question: "How is this different from v0, Bolt, or Lovable?",
     answer:
-      "100%. ShipKit Complete gives you a GitHub repo with the full Next.js codebase. Your repo, your code, your business. Modify it, extend it, hand it to a developer — it's yours.",
+      "Those tools generate frontend components. ShipKit generates the entire application — database schema, API routes, auth, payments, email — and deploys it live. You get a working app, not a UI prototype.",
   },
   {
-    question: "What if I don't like what I get?",
+    question: "What does 'eject' mean?",
     answer:
-      "30-day money back guarantee, no questions asked. But try the free tier first — you'll see the quality before you spend a dollar.",
+      "You own everything. At any time, you can download your code, export your database, and run it on your own infrastructure. We give you a migration guide, cancel your hosting, and you're free. No lock-in.",
+  },
+  {
+    question: "What if the generated app needs changes?",
+    answer:
+      "You have full access to the GitHub repo. Edit the code yourself, hire a developer, or use AI tools like Cursor or Claude. It's a standard Next.js app — no proprietary framework.",
   },
 ];
 
-export default function PricingPage() {
+export default function GetStartedPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
-  const [loading, setLoading] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Auto-trigger checkout when tier parameter is present
+  // Auto-trigger checkout if tier param is set
   useEffect(() => {
     const tier = searchParams.get("tier");
     if (tier && status !== "loading" && !loading) {
-      handleSelectTier(tier);
+      handleBuildApp(tier === "VALIDATION_PACK" ? "VALIDATION_PACK" : "TURNKEY_SYSTEM");
     }
   }, [status, searchParams]);
 
-  const handleSelectTier = async (tierId: string) => {
+  const handleBuildApp = async (tier: string = "TURNKEY_SYSTEM") => {
     if (status === "loading") return;
 
     if (!session) {
-      const callbackUrl = encodeURIComponent(`/get-started?tier=${tierId}`);
+      const callbackUrl = encodeURIComponent(`/get-started?tier=${tier}`);
       router.push(`/auth/signin?callbackUrl=${callbackUrl}`);
       return;
     }
 
-    setLoading(tierId);
+    setLoading(true);
     setError(null);
 
     try {
@@ -120,7 +79,7 @@ export default function PricingPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tier: tierId,
+          tier,
           userEmail: session.user?.email,
           ...(chatSessionId ? { sessionId: chatSessionId } : {}),
         }),
@@ -132,9 +91,8 @@ export default function PricingPage() {
         throw new Error(data.error || "Failed to create checkout session");
       }
 
-      // Handle free tier - redirect directly to upload
       if (data.free) {
-        sessionStorage.setItem('selectedTier', data.tier);
+        sessionStorage.setItem("selectedTier", data.tier);
         window.location.href = data.redirectUrl;
         return;
       }
@@ -146,13 +104,13 @@ export default function PricingPage() {
       }
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
-      setLoading(null);
+      setLoading(false);
     }
   };
 
   return (
     <main id="main-content" className="min-h-screen pt-24 pb-16">
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="px-4 sm:px-6 py-8 text-center">
         <h1
           className="text-3xl sm:text-4xl md:text-5xl font-black mb-4"
@@ -164,194 +122,106 @@ export default function PricingPage() {
             backgroundClip: "text",
           }}
         >
-          Pick Your Speed
+          Your App, Built and Deployed
         </h1>
         <p className="text-lg text-gray-300 mb-2">
-          Every tier starts the same way: you describe your idea, we build it
+          Describe your business. Get a full-stack app — live and accepting customers.
         </p>
         <p className="text-gray-400">
-          The only difference is how far we take it
+          Not a template. Not a mockup. A working application.
         </p>
       </section>
 
-      {/* Pricing Cards */}
+      {/* Single Pricing Card */}
       <section className="px-4 sm:px-6 py-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {tiers.map((tier) => (
-              <div
-                key={tier.id}
-                className={`
-                  relative p-6 rounded-2xl transition-all
-                  ${
-                    tier.highlight === "popular"
-                      ? "bg-gradient-to-b from-pink-500/10 to-cyan-500/10 border-2 border-pink-500/50 md:-translate-y-4"
-                      : tier.highlight === "best"
-                      ? "bg-gradient-to-b from-cyan-500/10 to-green-500/10 border-2 border-cyan-500/50"
-                      : "bg-black/50 border border-white/10"
-                  }
-                `}
-              >
-                {/* Badge */}
-                {tier.highlight && (
-                  <div
-                    className={`
-                      absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white
-                      ${
-                        tier.highlight === "popular"
-                          ? "bg-gradient-to-r from-pink-500 to-purple-500"
-                          : "bg-gradient-to-r from-cyan-500 to-green-500"
-                      }
-                    `}
-                  >
-                    {tier.highlight === "popular" ? "MOST POPULAR" : "BEST VALUE"}
-                  </div>
-                )}
-
-                {/* Header */}
-                <h2 className="text-xl font-bold text-white mb-1">{tier.name}</h2>
-                <div className="flex items-baseline gap-1 mb-2">
-                  {tier.price === 0 ? (
-                    <span className="text-4xl font-black text-green-400">Free</span>
-                  ) : (
-                    <>
-                      <span className="text-4xl font-black text-white">${tier.price}</span>
-                      <span className="text-gray-400 text-sm">one-time</span>
-                    </>
-                  )}
-                </div>
-                <p className="text-gray-400 text-sm mb-6">{tier.description}</p>
-
-                {/* Features */}
-                <ul className="space-y-3 mb-8">
-                  {tier.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm">
-                      <span className="text-cyan-400 mt-0.5 flex-shrink-0">
-                        &#10003;
-                      </span>
-                      <span className="text-gray-300">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA Button */}
-                <button
-                  onClick={() => handleSelectTier(tier.id)}
-                  disabled={loading !== null}
-                  className={`
-                    w-full py-3 px-4 rounded-lg font-semibold transition-all
-                    ${
-                      tier.highlight
-                        ? "bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:opacity-90"
-                        : "bg-white/10 text-white border border-white/20 hover:bg-white/20"
-                    }
-                    ${loading === tier.id ? "opacity-70 cursor-wait" : ""}
-                    ${loading !== null && loading !== tier.id ? "opacity-50" : ""}
-                  `}
-                >
-                  {loading === tier.id ? "Processing..." : tier.cta}
-                </button>
+        <div className="max-w-lg mx-auto">
+          <div className="relative p-8 rounded-2xl bg-gradient-to-b from-pink-500/10 to-cyan-500/10 border-2 border-pink-500/50">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-white mb-3">Build My App</h2>
+              <div className="flex items-baseline justify-center gap-2">
+                <span className="text-5xl font-black text-white">$497</span>
+                <span className="text-gray-400">one-time</span>
               </div>
-            ))}
+              <p className="text-sm text-gray-400 mt-2">
+                + $49/mo hosting after 30-day free trial
+              </p>
+            </div>
+
+            {/* Features */}
+            <ul className="space-y-3 mb-8">
+              {features.map((feature, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-sm">
+                  <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+                  <div>
+                    <span className="text-white font-medium">{feature.title}</span>
+                    <span className="text-gray-400"> &mdash; {feature.desc}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            {/* CTA */}
+            <button
+              onClick={() => handleBuildApp("TURNKEY_SYSTEM")}
+              disabled={loading}
+              className={`
+                w-full py-4 px-4 rounded-lg font-bold text-lg transition-all
+                bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:opacity-90
+                ${loading ? "opacity-70 cursor-wait" : ""}
+              `}
+            >
+              {loading ? "Processing..." : "Build My App \u2014 $497"}
+            </button>
+
+            <p className="text-center text-xs text-gray-500 mt-3">
+              30-day money back guarantee. Eject anytime.
+            </p>
           </div>
 
-          {/* Error Message */}
+          {/* Free Preview Link */}
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => handleBuildApp("VALIDATION_PACK")}
+              disabled={loading}
+              className="text-sm text-gray-400 hover:text-white transition-colors underline underline-offset-4"
+            >
+              Or try a free preview first
+            </button>
+          </div>
+
+          {/* Error */}
           {error && (
-            <div className="mt-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-center max-w-md mx-auto">
+            <div className="mt-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-center">
               {error}
             </div>
           )}
-
-          {/* Trust Badges */}
-          <div className="mt-12 flex flex-wrap justify-center gap-6 text-sm text-gray-400">
-            <span className="flex items-center gap-2">
-              <span className="text-green-400">&#10003;</span>
-              30-day money back guarantee
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="text-green-400">&#10003;</span>
-              Delivered in under 30 minutes
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="text-green-400">&#10003;</span>
-              Own everything forever
-            </span>
-          </div>
         </div>
       </section>
 
-      {/* How It Works - Condensed */}
-      <section className="px-4 sm:px-6 py-16 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center text-white mb-10">
-            How It Works
-          </h2>
-
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
-            {/* Step 1 */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-pink-500/20 border border-pink-500/50 flex items-center justify-center text-pink-400 font-bold">
-                1
-              </div>
-              <div>
-                <p className="font-medium text-white">You Talk</p>
-                <p className="text-xs text-gray-400">60-second voice note or text</p>
-              </div>
-            </div>
-
-            <div className="hidden md:block text-gray-600">&#8594;</div>
-
-            {/* Step 2 */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold">
-                2
-              </div>
-              <div>
-                <p className="font-medium text-white">We Build</p>
-                <p className="text-xs text-gray-400">8 agents, under 30 minutes</p>
-              </div>
-            </div>
-
-            <div className="hidden md:block text-gray-600">&#8594;</div>
-
-            {/* Step 3 */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-500/20 border border-green-500/50 flex items-center justify-center text-green-400 font-bold">
-                3
-              </div>
-              <div>
-                <p className="font-medium text-white">You Ship</p>
-                <p className="text-xs text-gray-400">Live site, your domain</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* What's Included - Turnkey Highlight */}
+      {/* What's Included Grid */}
       <section className="px-4 sm:px-6 py-16 border-t border-white/5">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-center text-white mb-2">
-            What Ships with ShipKit Complete
+            What Ships With Your App
           </h2>
           <p className="text-center text-gray-400 mb-10">
-            Everything a new business needs on day one
+            Everything you need to run a real business
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { icon: "&#127760;", title: "Live Website", desc: "Deployed on your domain" },
-              { icon: "&#127912;", title: "5 Logo Concepts", desc: "With full brand guidelines" },
-              { icon: "&#128200;", title: "Market Research", desc: "Audience, competitors, opportunity" },
-              { icon: "&#128196;", title: "Business Plan", desc: "Strategy, model, projections" },
-              { icon: "&#127919;", title: "Launch Strategy", desc: "Channels, timeline, first 90 days" },
-              { icon: "&#128640;", title: "GitHub Repo", desc: "Full Next.js codebase you own" },
+              { icon: "&#127760;", title: "Live Website", desc: "Custom domain, SSL, CDN" },
+              { icon: "&#128274;", title: "User Auth", desc: "Sign up, login, sessions" },
+              { icon: "&#128179;", title: "Stripe Payments", desc: "Your account, your revenue" },
+              { icon: "&#128232;", title: "Email", desc: "Transactional email on your domain" },
+              { icon: "&#128451;", title: "Database", desc: "PostgreSQL with auto-backups" },
+              { icon: "&#128640;", title: "GitHub Repo", desc: "Full codebase, transferable" },
             ].map((item, idx) => (
               <div
                 key={idx}
                 className="p-4 rounded-lg bg-white/5 border border-white/10 flex items-start gap-3"
               >
-                <span className="text-2xl">{item.icon}</span>
+                <span className="text-2xl" dangerouslySetInnerHTML={{ __html: item.icon }} />
                 <div>
                   <p className="font-medium text-white">{item.title}</p>
                   <p className="text-xs text-gray-400">{item.desc}</p>
@@ -362,7 +232,52 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* FAQ - Condensed */}
+      {/* How It Works */}
+      <section className="px-4 sm:px-6 py-16 border-t border-white/5">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-center text-white mb-10">
+            How It Works
+          </h2>
+
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-pink-500/20 border border-pink-500/50 flex items-center justify-center text-pink-400 font-bold">
+                1
+              </div>
+              <div>
+                <p className="font-medium text-white">Describe Your Business</p>
+                <p className="text-xs text-gray-400">Voice note or text</p>
+              </div>
+            </div>
+
+            <div className="hidden md:block text-gray-600">&#8594;</div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold">
+                2
+              </div>
+              <div>
+                <p className="font-medium text-white">AI Builds Everything</p>
+                <p className="text-xs text-gray-400">Code, database, integrations</p>
+              </div>
+            </div>
+
+            <div className="hidden md:block text-gray-600">&#8594;</div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-500/20 border border-green-500/50 flex items-center justify-center text-green-400 font-bold">
+                3
+              </div>
+              <div>
+                <p className="font-medium text-white">Your App Goes Live</p>
+                <p className="text-xs text-gray-400">Deployed, domain, payments</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
       <section className="px-4 sm:px-6 py-16 border-t border-white/5">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-2xl font-bold text-center text-white mb-10">
@@ -377,43 +292,29 @@ export default function PricingPage() {
               </div>
             ))}
           </div>
-
-          <div className="mt-8 text-center">
-            <Link
-              href="/faq"
-              className="text-sm text-pink-400 hover:text-pink-300 transition-colors"
-            >
-              View all FAQs &#8594;
-            </Link>
-          </div>
         </div>
       </section>
 
       {/* Final CTA */}
       <section className="px-4 sm:px-6 py-16 border-t border-white/5">
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-gray-400 mb-2 text-sm">
-            One idea. Eight agents. Thirty minutes.
-          </p>
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-            One business, ready to run.
+            Ready to ship?
           </h2>
-          <p className="text-gray-500 mb-8 text-sm">
-            One payment. No subscription. You own everything.
+          <p className="text-gray-400 mb-8 text-sm">
+            Describe your idea. Get a working app. Eject whenever you want.
           </p>
           <button
-            onClick={() => handleSelectTier("TURNKEY_SYSTEM")}
-            disabled={loading !== null}
+            onClick={() => handleBuildApp("TURNKEY_SYSTEM")}
+            disabled={loading}
             className={`
               inline-flex items-center gap-2 px-8 py-4 rounded-lg
               bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold
               hover:opacity-90 transition-opacity
-              ${loading === "TURNKEY_SYSTEM" ? "opacity-70 cursor-wait" : ""}
+              ${loading ? "opacity-70 cursor-wait" : ""}
             `}
           >
-            {loading === "TURNKEY_SYSTEM"
-              ? "Processing..."
-              : "Get ShipKit Complete — $497"}
+            {loading ? "Processing..." : "Build My App \u2014 $497"}
           </button>
         </div>
       </section>

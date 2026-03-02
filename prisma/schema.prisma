@@ -79,6 +79,7 @@ model Project {
   codegenStatus       String?
   githubRepoName      String?
   contextIds          String[]      @default([])
+  deployedApp         DeployedApp?
 
   @@index([userId])
   @@index([status])
@@ -302,5 +303,72 @@ enum ProjectStatus {
   PACKAGING
   COMPLETED
   FAILED
+}
+
+enum HostingStatus {
+  PROVISIONING
+  ACTIVE
+  SUSPENDED
+  CANCELLED
+  EJECTED
+}
+
+model DeployedApp {
+  id                     String          @id @default(uuid())
+  projectId              String          @unique
+  project                Project         @relation(fields: [projectId], references: [id])
+
+  // Supabase
+  supabaseProjectRef     String?
+  supabaseProjectUrl     String?
+  supabaseDatabaseUrl    String?         @db.Text
+  supabaseAnonKey        String?         @db.Text
+  supabaseServiceKey     String?         @db.Text
+
+  // Vercel
+  vercelProjectId        String?
+  vercelProjectName      String?
+  vercelProductionUrl    String?
+
+  // GitHub
+  githubRepoFullName     String?
+  githubRepoUrl          String?
+
+  // Stripe Connect
+  stripeConnectAccountId String?
+  stripeConnectOnboarded Boolean         @default(false)
+
+  // Custom Domain
+  customDomain           String?
+  domainVerified         Boolean         @default(false)
+
+  // Resend
+  resendDomainId         String?
+
+  // Hosting
+  hostingStatus          HostingStatus   @default(PROVISIONING)
+  provisioningLog        Json?
+
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+
+  subscription           HostingSubscription?
+
+  @@index([hostingStatus])
+  @@map("deployed_apps")
+}
+
+model HostingSubscription {
+  id                    String       @id @default(uuid())
+  deployedAppId         String       @unique
+  deployedApp           DeployedApp  @relation(fields: [deployedAppId], references: [id])
+  stripeSubscriptionId  String       @unique
+  stripeCustomerId      String
+  status                String       @default("active")
+  currentPeriodEnd      DateTime
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+
+  @@map("hosting_subscriptions")
 }
 

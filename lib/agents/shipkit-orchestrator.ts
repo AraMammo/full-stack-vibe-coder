@@ -10,6 +10,8 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import { PrismaClient, BIABTier } from '@/app/generated/prisma';
+import { generateCodebase, type CodegenInput } from '@/lib/services/claude-codegen';
+import { provisionInfrastructure, type ProvisioningInput } from '@/lib/services/provisioning-pipeline';
 
 // ============================================
 // TIER DISPLAY NAME MAPPING
@@ -243,6 +245,68 @@ export class ShipKitOrchestrator {
       console.log(`[ShipKit] Total tokens: ${totalTokensUsed.toLocaleString()}`);
       console.log(`[ShipKit] Total time: ${(totalExecutionTimeMs / 1000).toFixed(2)}s`);
 
+      // For TURNKEY_SYSTEM tier: generate code + provision infrastructure
+      let codegenResult: { githubRepoName?: string; deploymentUrl?: string } | undefined;
+
+      if (input.tier === 'TURNKEY_SYSTEM') {
+        console.log(`\n[ShipKit] Starting code generation + provisioning for Complete tier...`);
+
+        try {
+          // Gather inputs from prompt execution results
+          const brandIdentity = executionResults.get('sk_brand_identity_03')?.output || '';
+          const appArchitecture = executionResults.get('sk_app_architecture_07')?.output || '';
+          const codebaseSpec = executionResults.get('sk_nextjs_codebase_08')?.output || '';
+
+          // Generate the codebase
+          const codeResult = await generateCodebase({
+            projectName: input.businessConcept.substring(0, 100),
+            businessConcept: input.businessConcept,
+            brandIdentity,
+            appArchitecture,
+            codebaseSpec,
+          });
+
+          if (codeResult.success && codeResult.files && codeResult.files.size > 0) {
+            // Extract migration SQL from app architecture output
+            const migrationSql = extractMigrationSql(appArchitecture);
+
+            // Look up user email
+            const user = await this.prisma.user.findFirst({
+              where: { id: input.userId },
+              select: { email: true },
+            });
+
+            // Run provisioning pipeline
+            const provisionResult = await provisionInfrastructure({
+              projectId: input.projectId,
+              projectName: input.businessConcept.substring(0, 100),
+              userId: input.userId,
+              userEmail: user?.email || '',
+              codeFiles: codeResult.files,
+              migrationSql: migrationSql || undefined,
+            });
+
+            if (provisionResult.success) {
+              codegenResult = {
+                githubRepoName: provisionResult.githubRepoUrl,
+                deploymentUrl: provisionResult.productionUrl,
+              };
+              console.log(`[ShipKit] Provisioning complete! Live at: ${provisionResult.productionUrl}`);
+            } else {
+              console.error(`[ShipKit] Provisioning failed: ${provisionResult.error}`);
+              codegenResult = {
+                githubRepoName: codeResult.githubRepoName,
+                deploymentUrl: codeResult.vercelDeploymentUrl,
+              };
+            }
+          } else {
+            console.error('[ShipKit] Code generation produced no files');
+          }
+        } catch (codegenError) {
+          console.error('[ShipKit] Code generation/provisioning failed:', codegenError);
+        }
+      }
+
       return {
         success: true,
         projectId: input.projectId,
@@ -256,6 +320,7 @@ export class ShipKitOrchestrator {
           bySection: sectionCounts,
         },
         executionIds,
+        codegenResult,
       };
 
     } catch (error) {
@@ -446,4 +511,21 @@ CRITICAL: Keep responses concise and actionable. Use structured formats (bullet 
       })),
     };
   }
+}
+
+/**
+ * Extract SQL migration statements from the app architecture output.
+ * Looks for SQL code blocks in the output.
+ */
+function extractMigrationSql(architectureOutput: string): string | null {
+  const sqlBlockRegex = /```(?:sql|postgresql)\n([\s\S]*?)```/g;
+  const blocks: string[] = [];
+  let match;
+
+  while ((match = sqlBlockRegex.exec(architectureOutput)) !== null) {
+    blocks.push(match[1].trim());
+  }
+
+  if (blocks.length === 0) return null;
+  return blocks.join('\n\n');
 }
