@@ -16,6 +16,7 @@
  */
 
 import { prisma } from '@/lib/db';
+import { stripe } from '@/lib/stripe';
 import * as supabase from './supabase-provisioning';
 import * as vercel from './vercel-provisioning';
 import * as stripeConnect from './stripe-connect';
@@ -200,6 +201,7 @@ export async function provisionInfrastructure(
         githubRepoUrl: githubResult.repoUrl,
         stripeConnectAccountId: connectResult.accountId,
         stripeConnectOnboarded: false,
+        stripeConnectOnboardingUrl: connectResult.onboardingUrl,
         hostingStatus: 'ACTIVE',
         provisioningLog: JSON.parse(JSON.stringify(log)),
       },
@@ -218,6 +220,67 @@ export async function provisionInfrastructure(
     });
 
     logStep('save_record', 'completed');
+
+    // ========================================
+    // Step 9: Create $49/mo hosting subscription (30-day trial)
+    // ========================================
+    logStep('hosting_subscription', 'running');
+    try {
+      const hostingPriceId = process.env.STRIPE_HOSTING_PRICE_ID;
+      if (!hostingPriceId) {
+        throw new Error('STRIPE_HOSTING_PRICE_ID not set');
+      }
+
+      // Look up the Stripe customer ID from the Payment record
+      const payment = await prisma.payment.findFirst({
+        where: { projectId: input.projectId },
+        select: { stripeCustomerId: true },
+      });
+
+      let stripeCustomerId = payment?.stripeCustomerId;
+
+      // If no customer exists yet, create one
+      if (!stripeCustomerId) {
+        const customer = await stripe.customers.create({
+          email: input.userEmail,
+          metadata: { projectId: input.projectId, userId: input.userId },
+        });
+        stripeCustomerId = customer.id;
+      }
+
+      // Create subscription with 30-day free trial
+      const subscription = await stripe.subscriptions.create({
+        customer: stripeCustomerId,
+        items: [{ price: hostingPriceId }],
+        trial_period_days: 30,
+        metadata: {
+          projectId: input.projectId,
+          deployedAppId: deployedApp.id,
+        },
+      });
+
+      // Save HostingSubscription record
+      await prisma.hostingSubscription.create({
+        data: {
+          deployedAppId: deployedApp.id,
+          stripeSubscriptionId: subscription.id,
+          stripeCustomerId,
+          status: subscription.status,
+          currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
+        },
+      });
+
+      console.log(`[Provisioning] Hosting subscription created: ${subscription.id} (30-day trial)`);
+      logStep('hosting_subscription', 'completed', undefined, {
+        subscriptionId: subscription.id,
+        trialEnd: new Date(subscription.trial_end! * 1000).toISOString(),
+      });
+    } catch (subError) {
+      // Non-fatal — app is deployed, subscription can be created manually
+      const subErrorMsg = subError instanceof Error ? subError.message : 'Unknown error';
+      console.error('[Provisioning] Failed to create hosting subscription:', subErrorMsg);
+      logStep('hosting_subscription', 'failed', subErrorMsg);
+    }
 
     const totalTimeMs = Date.now() - startTime;
     console.log(`[Provisioning] Complete in ${(totalTimeMs / 1000).toFixed(1)}s: ${productionUrl}`);

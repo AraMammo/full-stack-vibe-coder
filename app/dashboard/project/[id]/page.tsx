@@ -70,6 +70,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           githubRepoFullName: true,
           stripeConnectAccountId: true,
           stripeConnectOnboarded: true,
+          stripeConnectOnboardingUrl: true,
           customDomain: true,
           domainVerified: true,
           provisioningLog: true,
@@ -187,6 +188,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             liveSiteUrl={deployedApp?.vercelProductionUrl || project.vercelDeploymentUrl || undefined}
             githubRepoUrl={deployedApp?.githubRepoUrl || project.githubRepoUrl || undefined}
             downloadUrl={`/api/delivery/${params.id}/download`}
+            stripeConnectOnboardingUrl={deployedApp?.stripeConnectOnboardingUrl || undefined}
             hostingStatus={deployedApp?.hostingStatus}
           />
         )}

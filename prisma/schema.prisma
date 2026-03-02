@@ -335,8 +335,9 @@ model DeployedApp {
   githubRepoUrl          String?
 
   // Stripe Connect
-  stripeConnectAccountId String?
-  stripeConnectOnboarded Boolean         @default(false)
+  stripeConnectAccountId     String?
+  stripeConnectOnboarded     Boolean         @default(false)
+  stripeConnectOnboardingUrl String?
 
   // Custom Domain
   customDomain           String?
