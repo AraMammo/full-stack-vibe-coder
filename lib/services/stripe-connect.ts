@@ -84,6 +84,14 @@ export async function createDashboardLink(accountId: string): Promise<string> {
 }
 
 /**
+ * Delete (close) a Stripe Connect account (for cleanup on provisioning failure).
+ */
+export async function deleteExpressAccount(accountId: string): Promise<void> {
+  await stripe.accounts.del(accountId);
+  console.log(`[Stripe Connect] Account deleted: ${accountId}`);
+}
+
+/**
  * Full flow: create account + generate onboarding link
  */
 export async function provisionConnectAccount(

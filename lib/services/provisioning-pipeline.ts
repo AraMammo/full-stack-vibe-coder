@@ -20,7 +20,7 @@ import { stripe } from '@/lib/stripe';
 import * as supabase from './supabase-provisioning';
 import * as vercel from './vercel-provisioning';
 import * as stripeConnect from './stripe-connect';
-import { pushToGitHubOrg } from './claude-codegen';
+import { pushToGitHubOrg, deleteGitHubRepo } from './claude-codegen';
 
 export interface ProvisioningInput {
   projectId: string;
@@ -71,10 +71,11 @@ export async function provisionInfrastructure(
     }
   };
 
-  // Track infrastructure state for cleanup on failure
+  // Track infrastructure state for compensating transactions on failure
   let supabaseRef: string | undefined;
   let vercelProjectId: string | undefined;
   let githubRepoFullName: string | undefined;
+  let stripeConnectAccountId: string | undefined;
 
   try {
     // ========================================
@@ -112,6 +113,7 @@ export async function provisionInfrastructure(
       input.projectName,
       returnUrl
     );
+    stripeConnectAccountId = connectResult.accountId;
     logStep('stripe_connect', 'completed', undefined, {
       accountId: connectResult.accountId,
     });
@@ -297,19 +299,70 @@ export async function provisionInfrastructure(
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('[Provisioning] Pipeline failed:', errorMessage);
 
-    // Save partial state
+    // ========================================
+    // Compensating Transactions — tear down orphaned infrastructure
+    // ========================================
+    logStep('cleanup', 'running');
+    const cleanupErrors: string[] = [];
+
+    // Tear down in reverse order of creation
+    if (vercelProjectId) {
+      try {
+        await vercel.deleteProject(vercelProjectId);
+        console.log(`[Provisioning] Cleanup: deleted Vercel project ${vercelProjectId}`);
+      } catch (e) {
+        const msg = `Vercel cleanup failed: ${e instanceof Error ? e.message : e}`;
+        console.error(`[Provisioning] ${msg}`);
+        cleanupErrors.push(msg);
+      }
+    }
+
+    if (githubRepoFullName) {
+      try {
+        await deleteGitHubRepo(githubRepoFullName);
+        console.log(`[Provisioning] Cleanup: deleted GitHub repo ${githubRepoFullName}`);
+      } catch (e) {
+        const msg = `GitHub cleanup failed: ${e instanceof Error ? e.message : e}`;
+        console.error(`[Provisioning] ${msg}`);
+        cleanupErrors.push(msg);
+      }
+    }
+
+    if (stripeConnectAccountId) {
+      try {
+        await stripeConnect.deleteExpressAccount(stripeConnectAccountId);
+        console.log(`[Provisioning] Cleanup: deleted Stripe Connect account ${stripeConnectAccountId}`);
+      } catch (e) {
+        const msg = `Stripe Connect cleanup failed: ${e instanceof Error ? e.message : e}`;
+        console.error(`[Provisioning] ${msg}`);
+        cleanupErrors.push(msg);
+      }
+    }
+
+    if (supabaseRef) {
+      try {
+        await supabase.deleteProject(supabaseRef);
+        console.log(`[Provisioning] Cleanup: deleted Supabase project ${supabaseRef}`);
+      } catch (e) {
+        const msg = `Supabase cleanup failed: ${e instanceof Error ? e.message : e}`;
+        console.error(`[Provisioning] ${msg}`);
+        cleanupErrors.push(msg);
+      }
+    }
+
+    logStep('cleanup', cleanupErrors.length > 0 ? 'failed' : 'completed', cleanupErrors.join('; ') || undefined);
+
+    // Save failure state to DB
     try {
       await prisma.deployedApp.upsert({
         where: { projectId: input.projectId },
         create: {
           projectId: input.projectId,
-          supabaseProjectRef: supabaseRef || null,
-          vercelProjectId: vercelProjectId || null,
-          githubRepoFullName: githubRepoFullName || null,
-          hostingStatus: 'PROVISIONING',
+          hostingStatus: 'CANCELLED',
           provisioningLog: JSON.parse(JSON.stringify(log)),
         },
         update: {
+          hostingStatus: 'CANCELLED',
           provisioningLog: JSON.parse(JSON.stringify(log)),
         },
       });

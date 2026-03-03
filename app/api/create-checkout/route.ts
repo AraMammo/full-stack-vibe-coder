@@ -84,7 +84,9 @@ export async function POST(request: NextRequest) {
       });
       console.log(`[Checkout] Free preview project created: ${project.id}`);
 
-      // Trigger orchestrator (fire and forget)
+      // Trigger orchestrator in a separate serverless invocation.
+      // The fetch() fires a request to /api/shipkit/execute which runs as its own
+      // Vercel function. We check the response to catch connection failures.
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
       fetch(`${baseUrl}/api/shipkit/execute`, {
         method: 'POST',
@@ -95,8 +97,20 @@ export async function POST(request: NextRequest) {
           userId: authSession.user.id,
           tier: 'VALIDATION_PACK',
         }),
-      }).catch((err) => {
-        console.error('[Checkout] Failed to trigger orchestrator for preview:', err);
+      }).then(async (res) => {
+        if (!res.ok) {
+          console.error(`[Checkout] Orchestrator returned HTTP ${res.status}`);
+          await prisma.project.update({
+            where: { id: project.id },
+            data: { status: 'FAILED' },
+          });
+        }
+      }).catch(async (err) => {
+        console.error('[Checkout] Failed to reach orchestrator:', err);
+        await prisma.project.update({
+          where: { id: project.id },
+          data: { status: 'FAILED' },
+        });
       });
 
       return NextResponse.json({

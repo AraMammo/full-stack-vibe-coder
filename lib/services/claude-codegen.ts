@@ -513,3 +513,15 @@ export async function pushToGitHubOrg(
     repoName: `${org}/${repoName}`,
   };
 }
+
+/**
+ * Delete a GitHub repository (for cleanup on provisioning failure).
+ * Takes a full name like "shipkit-apps/my-project".
+ */
+export async function deleteGitHubRepo(repoFullName: string): Promise<void> {
+  const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN || process.env.GITHUB_PAT });
+  const [owner, repo] = repoFullName.split('/');
+
+  await octokit.repos.delete({ owner, repo });
+  console.log(`[Codegen] Deleted GitHub repo: ${repoFullName}`);
+}

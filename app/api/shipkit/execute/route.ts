@@ -13,6 +13,9 @@ import { z } from 'zod';
 import { sendProjectStartedEmail, sendProjectCompleteEmail } from '@/lib/email/postmark-client';
 import { packageBIABDeliverables } from '@/lib/delivery/package-biab-deliverables';
 
+// Allow up to 5 minutes for the orchestrator to run (Vercel Pro plan)
+export const maxDuration = 300;
+
 // ============================================
 // REQUEST SCHEMA
 // ============================================
@@ -229,6 +232,20 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 }
       );
+    }
+
+    // Failsafe: mark project as FAILED so the user isn't stuck on "Pending" forever
+    try {
+      const body = await request.clone().json().catch(() => null);
+      if (body?.projectId) {
+        await prisma.project.update({
+          where: { id: body.projectId },
+          data: { status: 'FAILED' },
+        });
+        console.error(`[API] Marked project ${body.projectId} as FAILED`);
+      }
+    } catch {
+      // Best-effort — don't mask the original error
     }
 
     // Handle other errors
