@@ -13,9 +13,10 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { ProjectDetailClient } from './ProjectDetailClient';
 import { ShipKitReady } from '@/components/ShipKitReady';
 import { EjectButton } from './EjectButton';
+import { ChangeRequestPanel } from './ChangeRequestPanel';
 import Link from 'next/link';
 
-const tierConfig = {
+const tierConfig: Record<string, { name: string; color: string }> = {
   VALIDATION_PACK: {
     name: 'ShipKit Lite',
     color: 'bg-gray-100 text-gray-700 border-gray-300',
@@ -27,6 +28,10 @@ const tierConfig = {
   TURNKEY_SYSTEM: {
     name: 'ShipKit Complete',
     color: 'bg-pink-100 text-pink-700 border-pink-300',
+  },
+  PRESENCE: {
+    name: 'ShipKit Presence',
+    color: 'bg-cyan-100 text-cyan-700 border-cyan-300',
   },
 };
 
@@ -315,6 +320,13 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Change Request Panel (for completed projects with active hosting) */}
+        {isCompleted && deployedApp && deployedApp.hostingStatus === 'ACTIVE' && (
+          <div className="mb-8">
+            <ChangeRequestPanel projectId={params.id} />
           </div>
         )}
 

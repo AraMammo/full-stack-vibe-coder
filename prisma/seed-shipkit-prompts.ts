@@ -27,7 +27,7 @@ const SHIPKIT_PROMPTS = [
     estimatedTokens: 3000,
     dependencies: [],
     isRequired: true,
-    includedInTiers: [BIABTier.VALIDATION_PACK, BIABTier.LAUNCH_BLUEPRINT, BIABTier.TURNKEY_SYSTEM],
+    includedInTiers: [BIABTier.VALIDATION_PACK, BIABTier.LAUNCH_BLUEPRINT, BIABTier.TURNKEY_SYSTEM, BIABTier.PRESENCE],
     systemPrompt: `You are a senior business strategist and startup advisor. Your job is to transform a raw business idea into a structured, actionable business brief. Be specific, grounded, and realistic — avoid generic advice.
 
 Focus on:
@@ -108,10 +108,14 @@ Return ONLY the HTML snippet, no markdown wrapping.`,
     dependencies: ['sk_business_brief_01'],
     isRequired: true,
     includedInTiers: [BIABTier.LAUNCH_BLUEPRINT, BIABTier.TURNKEY_SYSTEM],
-    systemPrompt: `You are a brand identity designer and strategist. Create a complete brand identity system that can be immediately implemented. Be specific with hex codes, font names, and design rationale.`,
+    systemPrompt: `You are a brand identity designer and strategist. Create a complete brand identity system that can be immediately implemented. Be specific with hex codes, font names, and design rationale.
+
+If visual_dna is provided, use it as the primary signal for color, layout, and typography decisions. Override your own defaults where signals are present.`,
     userPrompt: `Create a complete brand identity for this business:
 
 {{business_concept}}
+
+{{visual_dna}}
 
 ## Brand Identity Guide
 
@@ -391,6 +395,82 @@ For each file, output as:
 
 IMPORTANT: Use the brand colors and fonts from the brand identity guide. Make the site look professional and polished.`,
   },
+
+  // ==========================================
+  // SHIPKIT PRESENCE ($97) - Static Site
+  // ==========================================
+  {
+    promptId: 'sk_landing_deploy_01',
+    promptName: 'Static Landing Site',
+    promptSection: 'Static Site Generation',
+    orderIndex: 10,
+    estimatedTokens: 8000,
+    dependencies: ['sk_business_brief_01'],
+    isRequired: true,
+    includedInTiers: [BIABTier.PRESENCE],
+    systemPrompt: `You are an expert Next.js developer specializing in static marketing websites. Generate a complete, production-ready static Next.js site using \`output: 'export'\` in next.config.js. The site must have zero server-side dependencies — no database, no auth, no Stripe, no API routes that require a server.
+
+Rules:
+- Framework: Next.js 14 (App Router) with \`output: 'export'\` in next.config.js
+- Styling: Tailwind CSS v3 only (no other CSS frameworks)
+- Contact form: Formspree integration using \`NEXT_PUBLIC_FORMSPREE_ID\` env var
+- Email capture: POST to \`/api/subscribe\` stub (static JSON response)
+- All pages must be fully static — no \`use server\`, no dynamic routes
+- Use TypeScript throughout
+- Make the design modern, professional, and responsive
+- Apply brand colors, fonts, and visual direction from the business brief
+
+Output each file as:
+\`\`\`filepath: path/to/file.tsx
+// file contents
+\`\`\``,
+    userPrompt: `Generate a complete static Next.js marketing website for this business:
+
+Business Name: {{business_name}}
+Value Proposition: {{value_prop}}
+Target Audience: {{target_audience}}
+Primary Color: {{primary_color}}
+Accent Color: {{accent_color}}
+Font Pair: {{font_pair}}
+Visual Direction: {{visual_dna}}
+
+Generate these pages and files:
+
+### Configuration
+1. package.json (Next.js 14, Tailwind CSS v3, TypeScript)
+2. tsconfig.json
+3. next.config.js (with \`output: 'export'\`)
+4. tailwind.config.ts (with brand colors and fonts)
+5. postcss.config.js
+6. .env.example (NEXT_PUBLIC_FORMSPREE_ID, NEXT_PUBLIC_SITE_NAME)
+
+### Pages
+7. app/layout.tsx (root layout with brand fonts, meta tags, navigation, footer)
+8. app/page.tsx (home — hero section, features/benefits, testimonials placeholder, CTA)
+9. app/about/page.tsx (about — mission, team placeholder, values)
+10. app/services/page.tsx (services — service cards with descriptions and pricing hints)
+11. app/contact/page.tsx (contact — Formspree form with name, email, message fields)
+
+### Components
+12. components/Navigation.tsx (responsive nav with mobile menu)
+13. components/Footer.tsx (footer with links, email capture form, social placeholders)
+14. components/Hero.tsx (hero section component)
+15. components/ServiceCard.tsx (reusable service card)
+16. components/ContactForm.tsx (Formspree-powered contact form)
+
+### Styles
+17. app/globals.css (Tailwind directives + custom styles)
+
+### Static
+18. README.md (setup instructions)
+
+For each file, output as:
+\`\`\`filepath: path/to/file.tsx
+// file contents here
+\`\`\`
+
+IMPORTANT: The site must work with \`next build && next export\`. No server components, no API routes requiring Node.js runtime. Make it visually stunning with the provided brand colors.`,
+  },
 ];
 
 async function seedShipKitPrompts() {
@@ -419,6 +499,7 @@ async function seedShipKitPrompts() {
   console.log('  Lite (Free): 2 prompts');
   console.log('  Pro ($197): +4 prompts (6 total)');
   console.log('  Complete ($497): +2 prompts (8 total)');
+  console.log('  Presence ($97): 2 prompts (brief + landing)');
 }
 
 seedShipKitPrompts()

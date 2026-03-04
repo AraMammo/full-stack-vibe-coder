@@ -66,6 +66,7 @@ model Project {
   projectName         String
   businessConcept     String
   biabTier            BIABTier
+  productType         ProductType   @default(BUILDER)
   status              ProjectStatus @default(PENDING)
   progress            Int           @default(0)
   totalPrompts        Int           @default(0)
@@ -78,8 +79,11 @@ model Project {
   completedAt         DateTime?
   codegenStatus       String?
   githubRepoName      String?
-  contextIds          String[]      @default([])
-  deployedApp         DeployedApp?
+  contextIds              String[]      @default([])
+  referenceScreenshotUrl  String?
+  visualDna               Json?
+  deployedApp             DeployedApp?
+  changeRequests          ChangeRequest[]
 
   @@index([userId])
   @@index([status])
@@ -271,6 +275,12 @@ enum BIABTier {
   VALIDATION_PACK
   LAUNCH_BLUEPRINT
   TURNKEY_SYSTEM
+  PRESENCE
+}
+
+enum ProductType {
+  BUILDER
+  PRESENCE
 }
 
 enum ContextFileType {
@@ -371,5 +381,37 @@ model HostingSubscription {
   updatedAt             DateTime     @updatedAt
 
   @@map("hosting_subscriptions")
+}
+
+model ChangeRequest {
+  id            String    @id @default(uuid())
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id])
+  userMessage   String
+  status        String    @default("PENDING") // PENDING | PROCESSING | COMPLETE | FAILED
+  affectedFiles String[]  @default([])
+  diffSummary   String?
+  deployUrl     String?
+  createdAt     DateTime  @default(now())
+  completedAt   DateTime?
+
+  @@index([projectId])
+  @@index([status])
+  @@map("change_requests")
+}
+
+model OpenClawSession {
+  id          String   @id @default(uuid())
+  chatId      String   @unique
+  state       String   @default("AWAITING_SCREENSHOTS") // AWAITING_SCREENSHOTS | AWAITING_DESCRIPTION | GENERATING | LIVE | ITERATING
+  projectId   String?
+  userId      String?
+  screenshots Json     @default("[]") // JSON array of screenshot URLs
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([chatId])
+  @@index([state])
+  @@map("openclaw_sessions")
 }
 

@@ -24,7 +24,7 @@ const ExecuteBIABSchema = z.object({
   projectId: z.string().min(1, 'Project ID is required'),
   businessConcept: z.string().min(10, 'Business concept must be at least 10 characters'),
   userId: z.string().min(1, 'User ID is required'),
-  tier: z.enum([BIABTier.VALIDATION_PACK, BIABTier.LAUNCH_BLUEPRINT, BIABTier.TURNKEY_SYSTEM]),
+  tier: z.enum([BIABTier.VALIDATION_PACK, BIABTier.LAUNCH_BLUEPRINT, BIABTier.TURNKEY_SYSTEM, BIABTier.PRESENCE]),
   contextIds: z.array(z.string()).optional(), // Optional: User context IDs for RAG enhancement
 });
 

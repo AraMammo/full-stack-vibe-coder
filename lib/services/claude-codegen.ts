@@ -123,7 +123,7 @@ export async function generateCodebase(input: CodegenInput): Promise<CodegenResu
  * Parse code files from the orchestrator's codebase spec output.
  * Expects format: ```filepath: path/to/file.tsx\n...content...\n```
  */
-function parseCodebaseOutput(codebaseSpec: string): Map<string, string> {
+export function parseCodebaseOutput(codebaseSpec: string): Map<string, string> {
   const files = new Map<string, string>();
 
   // Match code blocks with filepath markers

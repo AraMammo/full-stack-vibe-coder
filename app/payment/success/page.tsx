@@ -75,6 +75,7 @@ export default function PaymentSuccessPage() {
       VALIDATION_PACK: 'ShipKit Lite',
       LAUNCH_BLUEPRINT: 'ShipKit Pro',
       TURNKEY_SYSTEM: 'ShipKit Complete',
+      PRESENCE: 'ShipKit Presence',
     };
     return tierNames[tier] || tier;
   };

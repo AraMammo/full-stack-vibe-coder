@@ -10,8 +10,9 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import { PrismaClient, BIABTier } from '@/app/generated/prisma';
-import { generateCodebase, type CodegenInput } from '@/lib/services/claude-codegen';
+import { generateCodebase, type CodegenInput, parseCodebaseOutput } from '@/lib/services/claude-codegen';
 import { provisionInfrastructure, type ProvisioningInput } from '@/lib/services/provisioning-pipeline';
+import { deployStaticSite } from '@/lib/provisioning/staticDeploy';
 
 // ============================================
 // TIER DISPLAY NAME MAPPING
@@ -21,6 +22,7 @@ export const TIER_DISPLAY_NAMES: Record<string, string> = {
   VALIDATION_PACK: 'ShipKit Lite',
   LAUNCH_BLUEPRINT: 'ShipKit Pro',
   TURNKEY_SYSTEM: 'ShipKit Complete',
+  PRESENCE: 'ShipKit Presence',
 };
 
 // ============================================
@@ -151,10 +153,32 @@ export class ShipKitOrchestrator {
         const promptStartTime = Date.now();
 
         try {
+          // Extract variables for PRESENCE landing page prompt
+          let extraVars: Record<string, string> | undefined;
+          if (input.tier === 'PRESENCE' && prompt.promptId === 'sk_landing_deploy_01') {
+            extraVars = extractPresenceVariables(
+              input.businessConcept,
+              executionResults.get('sk_business_brief_01')?.output
+            );
+          }
+
+          // Inject visual_dna into brand identity prompt if available
+          if (prompt.promptId === 'sk_brand_identity_03') {
+            const visualDna = await this.loadVisualDna(input.projectId);
+            if (visualDna) {
+              extraVars = extraVars || {};
+              extraVars.visual_dna = `\n\n## Visual DNA (from reference screenshot)\n\n${visualDna}`;
+            } else {
+              extraVars = extraVars || {};
+              extraVars.visual_dna = '';
+            }
+          }
+
           const resolvedInput = this.resolvePromptInput(
             prompt,
             input.businessConcept,
-            executionResults
+            executionResults,
+            extraVars
           );
 
           const { output, tokensUsed } = await this.executePrompt(
@@ -307,6 +331,39 @@ export class ShipKitOrchestrator {
         }
       }
 
+      // For PRESENCE tier: parse landing page output and deploy static site
+      if (input.tier === 'PRESENCE') {
+        console.log(`\n[ShipKit] Starting static site deploy for Presence tier...`);
+
+        try {
+          const landingOutput = executionResults.get('sk_landing_deploy_01')?.output || '';
+          const codeFiles = parseCodebaseOutput(landingOutput);
+
+          if (codeFiles.size > 0) {
+            const staticResult = await deployStaticSite({
+              projectId: input.projectId,
+              projectName: input.businessConcept.substring(0, 100),
+              userId: input.userId,
+              codeFiles,
+            });
+
+            if (staticResult.success) {
+              codegenResult = {
+                githubRepoName: staticResult.githubRepoName,
+                deploymentUrl: staticResult.productionUrl,
+              };
+              console.log(`[ShipKit] Static site deployed: ${staticResult.productionUrl}`);
+            } else {
+              console.error(`[ShipKit] Static deploy failed: ${staticResult.error}`);
+            }
+          } else {
+            console.error('[ShipKit] No files parsed from landing page output');
+          }
+        } catch (staticError) {
+          console.error('[ShipKit] Static deploy error:', staticError);
+        }
+      }
+
       return {
         success: true,
         projectId: input.projectId,
@@ -340,9 +397,21 @@ export class ShipKitOrchestrator {
   private resolvePromptInput(
     prompt: any,
     businessConcept: string,
-    executionResults: Map<string, PromptExecutionResult>
+    executionResults: Map<string, PromptExecutionResult>,
+    extraVariables?: Record<string, string>
   ): string {
     let resolvedPrompt = prompt.userPrompt;
+
+    // Replace extra variables first (e.g. PRESENCE template variables)
+    if (extraVariables) {
+      for (const [key, value] of Object.entries(extraVariables)) {
+        resolvedPrompt = resolvedPrompt.replace(
+          new RegExp(`\\{\\{${key}\\}\\}`, 'g'),
+          value || ''
+        );
+      }
+    }
+
     resolvedPrompt = resolvedPrompt.replace(/\{\{business_concept\}\}/g, businessConcept);
 
     if (prompt.dependencies && prompt.dependencies.length > 0) {
@@ -482,6 +551,48 @@ CRITICAL: Keep responses concise and actionable. Use structured formats (bullet 
     }
   }
 
+  /**
+   * Load visual DNA from the project record if a reference screenshot was processed.
+   */
+  private async loadVisualDna(projectId: string): Promise<string | null> {
+    try {
+      const project = await this.prisma.project.findUnique({
+        where: { id: projectId },
+        select: { visualDna: true, referenceScreenshotUrl: true },
+      });
+
+      if (!project?.visualDna) {
+        // If screenshot URL exists but no visual DNA yet, extract it now
+        if (project?.referenceScreenshotUrl) {
+          try {
+            const { extractVisualDNA } = await import('@/lib/intake/visionAnalysis');
+            const response = await fetch(project.referenceScreenshotUrl);
+            const buffer = Buffer.from(await response.arrayBuffer());
+            const result = await extractVisualDNA(buffer);
+
+            await this.prisma.project.update({
+              where: { id: projectId },
+              data: { visualDna: result as any },
+            });
+
+            return result.raw;
+          } catch (err) {
+            console.error('[ShipKit] Visual DNA extraction failed:', err);
+            return null;
+          }
+        }
+        return null;
+      }
+
+      // visualDna is stored as JSON — extract the raw text
+      const dna = project.visualDna as any;
+      return dna.raw || JSON.stringify(dna);
+    } catch (err) {
+      console.error('[ShipKit] Failed to load visual DNA:', err);
+      return null;
+    }
+  }
+
   async getExecutionSummary(projectId: string) {
     const executions = await this.prisma.promptExecution.findMany({
       where: { projectId },
@@ -511,6 +622,53 @@ CRITICAL: Keep responses concise and actionable. Use structured formats (bullet 
       })),
     };
   }
+}
+
+/**
+ * Extract template variables for PRESENCE tier from the business brief output.
+ * Pulls business name, value prop, audience, colors, and font from brief analysis.
+ */
+function extractPresenceVariables(
+  businessConcept: string,
+  briefOutput?: string
+): Record<string, string> {
+  const vars: Record<string, string> = {
+    business_name: businessConcept.substring(0, 100),
+    value_prop: '',
+    target_audience: '',
+    primary_color: '#2563eb', // default blue
+    accent_color: '#f59e0b', // default amber
+    font_pair: 'Inter, system-ui, sans-serif',
+    visual_dna: '',
+  };
+
+  if (!briefOutput) return vars;
+
+  // Extract business name (first suggested name)
+  const nameMatch = briefOutput.match(/(?:^|\n)\s*(?:-\s*)?(?:Name:\s*)?(?:\*\*)?([A-Z][A-Za-z0-9\s&'.!-]{2,40})(?:\*\*)?/m);
+  if (nameMatch) {
+    vars.business_name = nameMatch[1].trim();
+  }
+
+  // Extract value proposition
+  const vpMatch = briefOutput.match(/(?:Value Proposition|Solution)[:\s]*\n?[-*]?\s*(?:Solution[^:]*:\s*)?(.+)/i);
+  if (vpMatch) {
+    vars.value_prop = vpMatch[1].trim().substring(0, 200);
+  }
+
+  // Extract target audience
+  const audienceMatch = briefOutput.match(/(?:Target Audience|Audience)[:\s]*\n?[-*]?\s*(?:Segment[^:]*:\s*)?(.+)/i);
+  if (audienceMatch) {
+    vars.target_audience = audienceMatch[1].trim().substring(0, 200);
+  }
+
+  // Extract color if mentioned
+  const colorMatch = briefOutput.match(/#([0-9a-fA-F]{6})/);
+  if (colorMatch) {
+    vars.primary_color = `#${colorMatch[1]}`;
+  }
+
+  return vars;
 }
 
 /**

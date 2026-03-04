@@ -42,10 +42,13 @@ export default function ChatInterface() {
   const [analysis, setAnalysis] = useState<ShipKitAnalysis | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [selectedName, setSelectedName] = useState<number | null>(null);
+  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+  const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const screenshotInputRef = useRef<HTMLInputElement>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   useEffect(() => {
@@ -124,10 +127,31 @@ export default function ChatInterface() {
       setInputText("");
       setInputType("text");
 
+      // Upload screenshot if present
+      let screenshotUrl: string | undefined;
+      if (screenshotFile) {
+        try {
+          const formData = new FormData();
+          formData.append("file", screenshotFile);
+          const uploadRes = await fetch("/api/upload-screenshot", {
+            method: "POST",
+            body: formData,
+          });
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            screenshotUrl = uploadData.url;
+          }
+        } catch (uploadErr) {
+          console.error("Screenshot upload failed:", uploadErr);
+        }
+        setScreenshotFile(null);
+        setScreenshotPreview(null);
+      }
+
       const res = await fetch("/api/shipkit/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: userInputCopy, inputType }),
+        body: JSON.stringify({ text: userInputCopy, inputType, screenshotUrl }),
       });
 
       if (!res.ok) throw new Error("Failed to analyze");
@@ -291,8 +315,63 @@ export default function ChatInterface() {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Screenshot Preview */}
+      {screenshotPreview && (
+        <div className="mb-2 flex items-center gap-2 px-2">
+          <img
+            src={screenshotPreview}
+            alt="Screenshot preview"
+            className="h-12 w-12 rounded object-cover border border-white/20"
+          />
+          <span className="text-xs text-gray-400 flex-1 truncate">
+            {screenshotFile?.name}
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              setScreenshotFile(null);
+              setScreenshotPreview(null);
+            }}
+            className="text-xs text-red-400 hover:text-red-300"
+          >
+            Remove
+          </button>
+        </div>
+      )}
+
       {/* Input */}
       <div className="flex gap-2 items-center">
+        {/* Hidden file input */}
+        <input
+          ref={screenshotInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              if (file.size > 5 * 1024 * 1024) {
+                alert("Screenshot must be under 5MB");
+                return;
+              }
+              setScreenshotFile(file);
+              setScreenshotPreview(URL.createObjectURL(file));
+            }
+            e.target.value = "";
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => screenshotInputRef.current?.click()}
+          disabled={isRecording || isTranscribing || isSubmitting}
+          className="w-10 h-10 flex items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Upload screenshot"
+          title="Upload a screenshot of a site you like (optional)"
+        >
+          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </button>
         <input
           type="text"
           value={inputText}

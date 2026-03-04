@@ -129,7 +129,7 @@ async function handleCheckoutCompleted(
     // Handle ShipKit purchase
     const tier = session.metadata.tier;
     const chatSessionId = session.metadata.sessionId; // From chat analysis
-    const validTiers = ['VALIDATION_PACK', 'LAUNCH_BLUEPRINT', 'TURNKEY_SYSTEM'] as const;
+    const validTiers = ['VALIDATION_PACK', 'LAUNCH_BLUEPRINT', 'TURNKEY_SYSTEM', 'PRESENCE'] as const;
 
     if (tier && !validTiers.includes(tier as typeof validTiers[number])) {
       console.error('[Stripe Webhook] Invalid tier:', tier);
@@ -144,7 +144,7 @@ async function handleCheckoutCompleted(
       throw new Error('Missing tier or userEmail in session metadata');
     }
 
-    const validatedTier = tier as 'VALIDATION_PACK' | 'LAUNCH_BLUEPRINT' | 'TURNKEY_SYSTEM';
+    const validatedTier = tier as 'VALIDATION_PACK' | 'LAUNCH_BLUEPRINT' | 'TURNKEY_SYSTEM' | 'PRESENCE';
 
     // Look up business concept from chat_submissions if sessionId provided
     let businessConcept = '';
@@ -166,6 +166,7 @@ async function handleCheckoutCompleted(
       VALIDATION_PACK: 'ShipKit Lite',
       LAUNCH_BLUEPRINT: 'ShipKit Pro',
       TURNKEY_SYSTEM: 'ShipKit Complete',
+      PRESENCE: 'ShipKit Presence',
     };
 
     // Use transaction to ensure atomic creation of user, project, and payment
@@ -205,6 +206,7 @@ async function handleCheckoutCompleted(
           userId: user.id,
           projectName: tierDisplayNames[validatedTier] || 'ShipKit',
           biabTier: validatedTier,
+          productType: validatedTier === 'PRESENCE' ? 'PRESENCE' : 'BUILDER',
           businessConcept,
           status: 'PENDING',
         },

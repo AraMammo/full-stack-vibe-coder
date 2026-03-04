@@ -23,7 +23,8 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 export const STORAGE_BUCKETS = {
   VOICE_NOTES: 'voice-notes',
   PROPOSALS: 'proposals',
-  BIAB_DELIVERABLES: 'biab-deliverables',  // Add this line
+  BIAB_DELIVERABLES: 'biab-deliverables',
+  INTAKE_SCREENSHOTS: 'intake-screenshots',
 } as const;
 
 /**
@@ -99,6 +100,51 @@ export async function uploadVoiceNote(
     };
   } catch (error) {
     console.error('Voice note upload exception:', error);
+    return {
+      error: error instanceof Error ? error.message : 'Upload failed',
+    };
+  }
+}
+
+/**
+ * Upload an intake screenshot
+ */
+export async function uploadScreenshot(
+  userId: string,
+  file: File | Blob,
+  fileName: string
+): Promise<{ url: string; path: string } | { error: string }> {
+  try {
+    const timestamp = Date.now();
+    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const filePath = `${userId}/${timestamp}-${sanitizedFileName}`;
+
+    const { data, error } = await supabaseAdmin.storage
+      .from(STORAGE_BUCKETS.INTAKE_SCREENSHOTS)
+      .upload(filePath, file, {
+        contentType: file.type || 'image/png',
+        upsert: false,
+      });
+
+    if (error) {
+      console.error('Screenshot upload error:', error);
+      return { error: error.message };
+    }
+
+    const { data: urlData } = supabaseAdmin.storage
+      .from(STORAGE_BUCKETS.INTAKE_SCREENSHOTS)
+      .getPublicUrl(data.path);
+
+    if (!urlData?.publicUrl) {
+      return { error: 'Failed to generate public URL' };
+    }
+
+    return {
+      url: urlData.publicUrl,
+      path: data.path,
+    };
+  } catch (error) {
+    console.error('Screenshot upload exception:', error);
     return {
       error: error instanceof Error ? error.message : 'Upload failed',
     };
