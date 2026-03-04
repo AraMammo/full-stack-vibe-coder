@@ -157,6 +157,13 @@ export async function provisionInfrastructure(
       envVars.push({ key: 'RESEND_API_KEY', value: process.env.RESEND_API_KEY, target: ['production', 'preview'], type: 'encrypted' });
     }
 
+    // Platform fee: inject ShipKit's Stripe key and fee percentage so generated apps
+    // route payments through Stripe Connect with a 2% application fee
+    if (process.env.STRIPE_SECRET_KEY) {
+      envVars.push({ key: 'STRIPE_SECRET_KEY', value: process.env.STRIPE_SECRET_KEY, target: ['production', 'preview'], type: 'encrypted' });
+    }
+    envVars.push({ key: 'NEXT_PUBLIC_PLATFORM_FEE_PERCENT', value: '2', target: ['production', 'preview'], type: 'plain' });
+
     await vercel.setEnvVars(vercelResult.projectId, envVars);
     logStep('vercel_create', 'completed', undefined, {
       projectId: vercelResult.projectId,
@@ -267,6 +274,7 @@ export async function provisionInfrastructure(
           deployedAppId: deployedApp.id,
           stripeSubscriptionId: subscription.id,
           stripeCustomerId,
+          plan: 'STARTER',
           status: subscription.status,
           currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
         },

@@ -32,6 +32,7 @@ const CheckoutSchema = z.object({
   tier: z.enum(['VALIDATION_PACK', 'LAUNCH_BLUEPRINT', 'TURNKEY_SYSTEM']).optional().default('TURNKEY_SYSTEM'),
   userEmail: z.string().email().optional(),
   sessionId: z.string().optional(), // From chat analysis
+  hostingAgreed: z.boolean().optional(), // Explicit hosting terms agreement
 });
 
 // ============================================
@@ -42,7 +43,15 @@ export async function POST(request: NextRequest) {
   try {
     // Parse and validate request
     const body = await request.json();
-    const { tier, userEmail, sessionId } = CheckoutSchema.parse(body);
+    const { tier, userEmail, sessionId, hostingAgreed } = CheckoutSchema.parse(body);
+
+    // Require explicit hosting terms agreement for paid tiers
+    if (tier === 'TURNKEY_SYSTEM' && hostingAgreed !== true) {
+      return NextResponse.json(
+        { error: 'You must agree to the hosting terms before proceeding' },
+        { status: 400 }
+      );
+    }
 
     // Auth required for all paths
     const authSession = await getServerSession(authOptions);
@@ -146,6 +155,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         tier: 'TURNKEY_SYSTEM',
         ...(sessionId ? { sessionId } : {}),
+        hostingAgreed: 'true',
       },
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/get-started`,

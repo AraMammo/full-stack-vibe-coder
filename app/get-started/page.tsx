@@ -52,6 +52,7 @@ export default function GetStartedPage() {
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hostingAgreed, setHostingAgreed] = useState(false);
 
   // Auto-trigger checkout if tier param is set
   useEffect(() => {
@@ -82,6 +83,7 @@ export default function GetStartedPage() {
           tier,
           userEmail: session.user?.email,
           ...(chatSessionId ? { sessionId: chatSessionId } : {}),
+          ...(tier === "TURNKEY_SYSTEM" ? { hostingAgreed } : {}),
         }),
       });
 
@@ -148,14 +150,28 @@ export default function GetStartedPage() {
               ))}
             </ul>
 
+            {/* Hosting Terms */}
+            <label className="flex items-start gap-3 mb-4 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={hostingAgreed}
+                onChange={(e) => setHostingAgreed(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-gray-600 bg-white/10 text-cyan-500 focus:ring-cyan-500/50"
+              />
+              <span className="text-xs text-gray-400 leading-relaxed">
+                I understand that hosting is $49/mo after a 30-day free trial.
+                Cancel or eject anytime.
+              </span>
+            </label>
+
             {/* CTA */}
             <button
               onClick={() => handleBuildApp("TURNKEY_SYSTEM")}
-              disabled={loading}
+              disabled={loading || !hostingAgreed}
               className={`
                 w-full py-4 px-4 rounded-lg font-bold text-lg transition-all
                 bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:opacity-90
-                ${loading ? "opacity-70 cursor-wait" : ""}
+                ${loading || !hostingAgreed ? "opacity-70 cursor-not-allowed" : ""}
               `}
             >
               {loading ? "Processing..." : "Build My App \u2014 $497"}
@@ -175,6 +191,20 @@ export default function GetStartedPage() {
             >
               Or try a free preview first
             </button>
+          </div>
+
+          {/* Enterprise */}
+          <div className="mt-8 p-6 rounded-xl border border-white/10 bg-white/5 text-center">
+            <h3 className="text-white font-semibold mb-1">Need more?</h3>
+            <p className="text-sm text-gray-400 mb-4">
+              Custom builds, dedicated infrastructure, SLA guarantees.
+            </p>
+            <a
+              href="mailto:ara@shipkit.io?subject=ShipKit Enterprise"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors"
+            >
+              Talk to us
+            </a>
           </div>
 
           {/* Error */}

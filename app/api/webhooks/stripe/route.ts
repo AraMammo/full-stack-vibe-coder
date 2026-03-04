@@ -460,15 +460,25 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       return;
     }
 
+    // Detect plan changes based on the current Stripe price
+    const currentPriceId = subscription.items.data[0]?.price?.id;
+    let plan: string | undefined;
+    if (currentPriceId) {
+      if (currentPriceId === process.env.STRIPE_HOSTING_PRICE_ID) plan = 'STARTER';
+      else if (currentPriceId === process.env.STRIPE_HOSTING_GROWTH_PRICE_ID) plan = 'GROWTH';
+      else if (currentPriceId === process.env.STRIPE_HOSTING_SCALE_PRICE_ID) plan = 'SCALE';
+    }
+
     await prisma.hostingSubscription.update({
       where: { id: hostingSub.id },
       data: {
         status: subscription.status,
         currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
+        ...(plan ? { plan: plan as any } : {}),
       },
     });
 
-    console.log(`[Stripe Webhook] Hosting subscription updated: ${subscription.status}`);
+    console.log(`[Stripe Webhook] Hosting subscription updated: ${subscription.status}${plan ? ` (plan: ${plan})` : ''}`);
   } catch (error: any) {
     console.error('[Stripe Webhook] Failed to update subscription:', error);
     throw error;

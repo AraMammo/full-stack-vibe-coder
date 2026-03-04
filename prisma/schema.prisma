@@ -323,6 +323,12 @@ enum HostingStatus {
   EJECTED
 }
 
+enum HostingPlan {
+  STARTER
+  GROWTH
+  SCALE
+}
+
 model DeployedApp {
   id                     String          @id @default(uuid())
   projectId              String          @unique
@@ -375,6 +381,7 @@ model HostingSubscription {
   deployedApp           DeployedApp  @relation(fields: [deployedAppId], references: [id])
   stripeSubscriptionId  String       @unique
   stripeCustomerId      String
+  plan                  HostingPlan  @default(STARTER)
   status                String       @default("active")
   currentPeriodEnd      DateTime
   createdAt             DateTime     @default(now())

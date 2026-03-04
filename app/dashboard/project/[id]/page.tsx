@@ -13,6 +13,8 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { ProjectDetailClient } from './ProjectDetailClient';
 import { ShipKitReady } from '@/components/ShipKitReady';
 import { EjectButton } from './EjectButton';
+import { BillingButton } from './BillingButton';
+import { UpgradeSection } from './UpgradeSection';
 import { ChangeRequestPanel } from './ChangeRequestPanel';
 import { OnboardingChecklist } from '@/components/OnboardingChecklist';
 import Link from 'next/link';
@@ -85,6 +87,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           subscription: {
             select: {
               status: true,
+              plan: true,
               currentPeriodEnd: true,
             },
           },
@@ -284,7 +287,12 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 <div className="p-4 rounded-lg bg-white/5 border border-white/10">
                   <p className="text-xs text-gray-400 font-medium mb-1">Hosting Plan</p>
                   <p className="text-sm text-white font-medium">
-                    $49/mo &mdash; {deployedApp.subscription.status}
+                    {deployedApp.subscription.plan === 'GROWTH' ? '$149/mo' :
+                     deployedApp.subscription.plan === 'SCALE' ? '$349/mo' : '$49/mo'}
+                    {' '}&mdash;{' '}
+                    {deployedApp.subscription.plan === 'GROWTH' ? 'Growth' :
+                     deployedApp.subscription.plan === 'SCALE' ? 'Scale' : 'Starter'}
+                    {' '}({deployedApp.subscription.status})
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
                     Renews {new Date(deployedApp.subscription.currentPeriodEnd).toLocaleDateString()}
@@ -305,10 +313,23 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                   Visit Live App
                 </a>
               )}
+              {deployedApp.subscription && (
+                <BillingButton projectId={params.id} />
+              )}
               {deployedApp.hostingStatus === 'ACTIVE' && (
                 <EjectButton projectId={params.id} />
               )}
             </div>
+
+            {/* Upgrade Plan Section */}
+            {deployedApp.subscription && (
+              <div className="mt-4">
+                <UpgradeSection
+                  projectId={params.id}
+                  currentPlan={deployedApp.subscription.plan}
+                />
+              </div>
+            )}
           </div>
         )}
 
