@@ -75,18 +75,24 @@ export default async function DashboardPage() {
       {/* Projects Grid */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {projects.length === 0 ? (
-          <div className="py-16 text-center">
-            <div className="text-5xl mb-4">&#128640;</div>
-            <h3 className="text-lg font-medium text-white mb-2">No ShipKits yet</h3>
-            <p className="text-gray-400 mb-6 max-w-sm mx-auto">
-              Describe your business idea on the homepage and we'll build everything for you.
+          <div className="py-16 text-center max-w-md mx-auto">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-pink-500/20 to-cyan-500/20 border border-white/10 flex items-center justify-center">
+              <svg className="w-10 h-10 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-white mb-3">No ShipKits yet</h3>
+            <p className="text-gray-400 mb-2">
+              Describe your business idea and we&apos;ll build a live, full-stack app in 30 minutes.
+            </p>
+            <p className="text-sm text-gray-500 mb-8">
+              Database, auth, payments, email — all wired up and deployed.
             </p>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-medium hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-bold text-lg hover:opacity-90 transition-opacity"
             >
-              Create Your First ShipKit
-              <span>&#8594;</span>
+              Start Building
             </Link>
           </div>
         ) : (

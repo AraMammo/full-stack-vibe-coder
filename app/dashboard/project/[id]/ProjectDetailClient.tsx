@@ -39,30 +39,30 @@ interface ProgressData {
 const statusConfig = {
   completed: {
     icon: '✓',
-    bgColor: 'bg-green-100',
-    borderColor: 'border-green-300',
-    textColor: 'text-green-700',
+    bgColor: 'bg-green-500/10',
+    borderColor: 'border-green-500/30',
+    textColor: 'text-green-400',
     iconBg: 'bg-green-500',
   },
   in_progress: {
     icon: '⏳',
-    bgColor: 'bg-blue-100',
-    borderColor: 'border-blue-300',
-    textColor: 'text-blue-700',
-    iconBg: 'bg-blue-500',
+    bgColor: 'bg-cyan-500/10',
+    borderColor: 'border-cyan-500/30',
+    textColor: 'text-cyan-400',
+    iconBg: 'bg-cyan-500',
   },
   pending: {
     icon: '○',
-    bgColor: 'bg-gray-100',
-    borderColor: 'border-gray-300',
-    textColor: 'text-gray-700',
-    iconBg: 'bg-gray-500',
+    bgColor: 'bg-white/5',
+    borderColor: 'border-white/10',
+    textColor: 'text-gray-400',
+    iconBg: 'bg-gray-600',
   },
   failed: {
     icon: '✗',
-    bgColor: 'bg-red-100',
-    borderColor: 'border-red-300',
-    textColor: 'text-red-700',
+    bgColor: 'bg-red-500/10',
+    borderColor: 'border-red-500/30',
+    textColor: 'text-red-400',
     iconBg: 'bg-red-500',
   },
 };
@@ -153,7 +153,7 @@ export function ProjectDetailClient({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">All Sections</h2>
+      <h2 className="text-xl font-semibold text-white mb-4">All Sections</h2>
 
       {/* Sections Grid */}
       <div className="space-y-3">
@@ -203,14 +203,14 @@ export function ProjectDetailClient({
                       <h3 className={`text-base font-semibold ${config.textColor} truncate`}>
                         {execution.prompt.promptName}
                       </h3>
-                      <p className="text-sm text-gray-600 mt-0.5">{execution.prompt.promptSection}</p>
+                      <p className="text-sm text-gray-500 mt-0.5">{execution.prompt.promptSection}</p>
                       {isComplete && execution.completedAt && (
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-600 mt-1">
                           Completed {new Date(execution.completedAt).toLocaleString()}
                         </p>
                       )}
                       {isInProgressNow && (
-                        <p className="text-xs text-blue-600 mt-1 font-medium animate-pulse">
+                        <p className="text-xs text-cyan-400 mt-1 font-medium animate-pulse">
                           Generating now...
                         </p>
                       )}
@@ -224,8 +224,8 @@ export function ProjectDetailClient({
                         onClick={() => toggleSection(execution.id)}
                         className={`px-4 py-2 text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
                           isExpanded
-                            ? 'bg-green-600 text-white hover:bg-green-700'
-                            : 'bg-white text-green-700 border border-green-300 hover:bg-green-50'
+                            ? 'bg-green-500 text-white hover:bg-green-600'
+                            : 'bg-white/10 text-green-400 border border-green-500/30 hover:bg-white/20'
                         }`}
                       >
                         {isExpanded ? 'Hide Output' : 'View Output'}
@@ -237,13 +237,12 @@ export function ProjectDetailClient({
 
               {/* Expanded Output */}
               {isExpanded && isComplete && execution.output && (
-                <div className="px-6 py-4 bg-white border-t border-gray-200">
+                <div className="px-6 py-4 bg-black/40 border-t border-white/10">
                   <div className="prose prose-sm max-w-none">
-                    <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono bg-gray-50 p-4 rounded border border-gray-200 max-h-96 overflow-y-auto">
+                    <pre className="whitespace-pre-wrap text-sm text-gray-300 font-mono bg-white/5 p-4 rounded border border-white/10 max-h-96 overflow-y-auto">
                       {execution.output}
                     </pre>
                   </div>
-                  {/* Download Individual Section */}
                   <div className="mt-4 flex gap-3">
                     <button
                       onClick={() => {
@@ -255,7 +254,7 @@ export function ProjectDetailClient({
                         a.click();
                         URL.revokeObjectURL(url);
                       }}
-                      className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                      className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-white/10 border border-white/20 rounded hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                     >
                       Download as TXT
                     </button>
@@ -269,8 +268,8 @@ export function ProjectDetailClient({
 
       {/* Empty State */}
       {displayExecutions.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-          <p className="text-gray-600">No sections found for this project.</p>
+        <div className="text-center py-12 bg-white/5 rounded-lg border border-white/10">
+          <p className="text-gray-400">No sections found for this project.</p>
         </div>
       )}
     </div>

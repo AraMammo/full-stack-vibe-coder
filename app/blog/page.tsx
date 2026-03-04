@@ -5,6 +5,14 @@ import { useState } from 'react';
 import { allBlogPosts, getBlogPosts, getAllCategories } from '@/lib/blog/blog-posts';
 import { categoryColors, type BlogCategory } from '@/lib/blog/blog-config';
 
+const categoryBorderColors: Record<string, string> = {
+  'Building in Public': '#06b6d4',
+  'Case Studies': '#10b981',
+  'Myths Debunked': '#ec4899',
+  'Scam Alerts': '#ef4444',
+  'Fundamentals': '#8b5cf6',
+};
+
 export default function BlogPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const categories = ['all', ...getAllCategories()];
@@ -16,7 +24,7 @@ export default function BlogPage() {
         <header className="blog-header">
           <h1 className="blog-title">Blog</h1>
           <p className="blog-subtitle">
-            No BS. Real results. Hard lessons. I got scammed so you don't have to.
+            No BS. Real results. Hard lessons. I got scammed so you don&apos;t have to.
           </p>
 
           {/* Category Filter */}
@@ -43,7 +51,11 @@ export default function BlogPage() {
         {/* Posts Grid */}
         <div className="blog-grid">
           {posts.map((post) => (
-            <article key={post.slug} className="blog-card group">
+            <article
+              key={post.slug}
+              className="blog-card group"
+              style={{ borderTop: `3px solid ${categoryBorderColors[post.category] || '#6b7280'}` }}
+            >
               {/* Category Badge */}
               <div className="flex items-center justify-between mb-4">
                 <span

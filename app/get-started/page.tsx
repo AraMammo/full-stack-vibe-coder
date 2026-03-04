@@ -110,25 +110,13 @@ export default function GetStartedPage() {
 
   return (
     <main id="main-content" className="min-h-screen pt-24 pb-16">
-      {/* Hero */}
+      {/* Hero — shorter, straight to checkout */}
       <section className="px-4 sm:px-6 py-8 text-center">
-        <h1
-          className="text-3xl sm:text-4xl md:text-5xl font-black mb-4"
-          style={{
-            background:
-              "linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          Your App, Built and Deployed
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+          Build My App
         </h1>
-        <p className="text-lg text-gray-300 mb-2">
-          Describe your business. Get a full-stack app — live and accepting customers.
-        </p>
         <p className="text-gray-400">
-          Not a template. Not a mockup. A working application.
+          One payment. One working app. Deployed and live.
         </p>
       </section>
 

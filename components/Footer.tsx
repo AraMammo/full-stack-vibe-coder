@@ -37,12 +37,11 @@ export function Footer() {
           </div>
 
           <div className="footer-section">
-            <h3 className="footer-heading">Products</h3>
+            <h3 className="footer-heading">Product</h3>
             <ul className="footer-links">
+              <li><Link href="/get-started" className="footer-link-item">Build My App — $497</Link></li>
+              <li><Link href="/" className="footer-link-item">Free Preview</Link></li>
               <li><Link href="/get-started" className="footer-link-item">Pricing</Link></li>
-              <li><Link href="/get-started?tier=VALIDATION_PACK" className="footer-link-item">ShipKit Lite (Free)</Link></li>
-              <li><Link href="/get-started?tier=LAUNCH_BLUEPRINT" className="footer-link-item">ShipKit Pro</Link></li>
-              <li><Link href="/get-started?tier=TURNKEY_SYSTEM" className="footer-link-item">ShipKit Complete</Link></li>
             </ul>
           </div>
 

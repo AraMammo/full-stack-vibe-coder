@@ -109,10 +109,10 @@ export function Navigation() {
               />
             </button>
 
-            {/* Logo - Center */}
+            {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black rounded-lg absolute left-1/2 -translate-x-1/2"
+              className="flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black rounded-lg"
             >
               <Image
                 src="/logo.svg"
@@ -134,6 +134,27 @@ export function Navigation() {
                 ShipKit
               </span>
             </Link>
+
+            {/* Desktop Nav Links */}
+            <div className="hidden md:flex items-center gap-6">
+              {[
+                { label: 'Pricing', href: '/get-started' },
+                { label: 'FAQ', href: '/faq' },
+                { label: 'Blog', href: '/blog' },
+              ].map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-sm font-medium transition-colors ${
+                    pathname === link.href
+                      ? 'text-white'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
 
             {/* Sign In / Dashboard - Right Side */}
             {status !== 'loading' && (

@@ -89,14 +89,16 @@ export default function FAQPage() {
       question: "What's included in ShipKit?",
       answer: (
         <div className="faq-answer-content">
-          <p>Everything you need to launch your business, delivered in under 30 minutes:</p>
+          <p>Everything you need to run a real business, delivered in under 30 minutes:</p>
           <ul>
-            <li><strong>Live Working Website:</strong> Deployed to a development link you can test immediately</li>
-            <li><strong>Brand Identity:</strong> 5 custom logo designs, color scheme, typography, and brand guidelines</li>
-            <li><strong>Business Analysis:</strong> Market research, competitor analysis, and business model validation</li>
-            <li><strong>Publishing Guide:</strong> Step-by-step instructions to connect your own domain and go live</li>
-            <li><strong>30-Minute Delivery:</strong> Complete package delivered in under 30 minutes</li>
-            <li><strong>Full Ownership:</strong> You own everything—all code, designs, and assets</li>
+            <li><strong>Live Website:</strong> Deployed on your custom domain with SSL</li>
+            <li><strong>PostgreSQL Database:</strong> With migrations, backups, and row-level security</li>
+            <li><strong>User Auth:</strong> Sign up, login, password reset — all wired up</li>
+            <li><strong>Stripe Payments:</strong> Accept money day one with your own Stripe account</li>
+            <li><strong>Transactional Email:</strong> Welcome emails, receipts, notifications on your domain</li>
+            <li><strong>GitHub Repo:</strong> Full Next.js codebase — your code, transferable anytime</li>
+            <li><strong>Admin Dashboard:</strong> Manage users, view analytics, monitor your app</li>
+            <li><strong>30 Days Free Hosting:</strong> Then $49/mo — cancel or eject anytime</li>
           </ul>
         </div>
       )
@@ -106,19 +108,17 @@ export default function FAQPage() {
       answer: (
         <div className="faq-answer-content">
           <p>
-            <strong>ShipKit:</strong> Start free, upgrade anytime
+            <strong>$497 one-time</strong> to build your app, plus <strong>$49/mo</strong> for hosting (first month free).
           </p>
           <p>
-            Three tiers available: Lite (Free), Pro ($197), and Complete ($497).
-            Each includes market research, brand identity, and everything you need to launch.
-            Delivered in under 30 minutes. You own everything.
+            That includes everything: live website on your domain, PostgreSQL database, user auth, Stripe payments,
+            transactional email, GitHub repo, and admin dashboard. All deployed and running.
           </p>
           <p>
-            <strong>Custom Development:</strong> Contact for pricing
+            You can also try a free preview first — describe your idea and see what ShipKit generates before you pay.
           </p>
           <p>
-            For companies needing custom software, automation, or integrations beyond the standard packages.
-            We build end-to-end solutions tailored to your specific needs.
+            Eject anytime. 30-day money back guarantee. No lock-in.
           </p>
         </div>
       )
@@ -160,15 +160,16 @@ export default function FAQPage() {
       answer: (
         <div className="faq-answer-content">
           <p>
-            ShipKit includes one round of revisions within the first week.
+            Your $49/mo hosting includes unlimited change requests. Type what you want updated in plain English
+            from your dashboard — we regenerate the affected files and redeploy automatically.
           </p>
           <p>
-            For enterprise projects, revisions are handled based on the scope outlined in your proposal. 
-            Most changes are simple with vibe coding—describe what you want changed, and it's done in minutes.
+            &ldquo;Make the background darker.&rdquo; &ldquo;Add a testimonials section.&rdquo;
+            &ldquo;Change the pricing to $29/mo.&rdquo; Done in minutes, not days.
           </p>
           <p>
-            If you need ongoing changes or maintenance, we can discuss a support arrangement. But most clients 
-            get exactly what they need from the initial delivery.
+            You also have full access to the GitHub repo. Edit the code yourself, hire a developer, or
+            use AI tools like Cursor. It&apos;s a standard Next.js app — no proprietary framework.
           </p>
         </div>
       )

@@ -189,7 +189,7 @@ export default function ChatInterface() {
   return (
     <div className="w-full">
       {/* Chat Messages */}
-      <div className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-3 mb-3 min-h-[80px] max-h-[400px] overflow-y-auto">
+      <div className="rounded-xl bg-white/5 p-3 mb-3 min-h-[80px] max-h-[400px] overflow-y-auto">
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -382,7 +382,7 @@ export default function ChatInterface() {
               ? "Transcribing..."
               : "Describe your business idea..."
           }
-          className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-pink-500/50 transition-colors"
+          className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white text-base placeholder-gray-400 focus:outline-none focus:border-pink-500/50 focus:bg-white/15 transition-colors"
           disabled={isRecording || isTranscribing || isSubmitting}
         />
         <button
@@ -402,7 +402,7 @@ export default function ChatInterface() {
           type="button"
           onClick={handleTextSubmit}
           disabled={!inputText.trim() || isRecording || isTranscribing || isSubmitting}
-          className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-3 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white text-base font-bold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? "..." : "Send"}
         </button>

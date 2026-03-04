@@ -14,10 +14,10 @@ interface ChangeRequest {
 }
 
 const statusBadge: Record<string, { label: string; color: string }> = {
-  PENDING: { label: 'Pending', color: 'bg-yellow-100 text-yellow-700' },
-  PROCESSING: { label: 'Processing', color: 'bg-blue-100 text-blue-700' },
-  COMPLETE: { label: 'Complete', color: 'bg-green-100 text-green-700' },
-  FAILED: { label: 'Failed', color: 'bg-red-100 text-red-700' },
+  PENDING: { label: 'Pending', color: 'bg-yellow-500/20 text-yellow-400' },
+  PROCESSING: { label: 'Processing', color: 'bg-cyan-500/20 text-cyan-400' },
+  COMPLETE: { label: 'Complete', color: 'bg-green-500/20 text-green-400' },
+  FAILED: { label: 'Failed', color: 'bg-red-500/20 text-red-400' },
 };
 
 export function ChangeRequestPanel({ projectId }: { projectId: string }) {
@@ -89,10 +89,10 @@ export function ChangeRequestPanel({ projectId }: { projectId: string }) {
   };
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-bold text-gray-900 mb-4">Request a Change</h2>
-      <p className="text-sm text-gray-500 mb-4">
-        Describe what you want updated — we'll regenerate the affected files and redeploy.
+    <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+      <h2 className="text-lg font-bold text-white mb-4">Request a Change</h2>
+      <p className="text-sm text-gray-400 mb-4">
+        Describe what you want updated — we&apos;ll regenerate the affected files and redeploy.
       </p>
 
       {/* Input */}
@@ -103,20 +103,20 @@ export function ChangeRequestPanel({ projectId }: { projectId: string }) {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSubmit()}
           placeholder='e.g. "Make the background darker" or "Add a testimonials section"'
-          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+          className="flex-1 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 transition-colors"
           disabled={isSubmitting}
         />
         <button
           onClick={handleSubmit}
           disabled={isSubmitting || !message.trim() || message.trim().length < 5}
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
         >
           {isSubmitting ? 'Submitting...' : 'Submit'}
         </button>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+        <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-sm text-red-400">
           {error}
         </div>
       )}
@@ -124,17 +124,17 @@ export function ChangeRequestPanel({ projectId }: { projectId: string }) {
       {/* Change Request History */}
       {requests.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Change History</h3>
+          <h3 className="text-sm font-semibold text-gray-300 mb-3">Change History</h3>
           <div className="space-y-3">
             {requests.map((req) => {
               const badge = statusBadge[req.status] || statusBadge.PENDING;
               return (
                 <div
                   key={req.id}
-                  className="p-3 rounded-lg border border-gray-100 bg-gray-50"
+                  className="p-3 rounded-lg border border-white/10 bg-white/5"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm text-gray-800 flex-1">
+                    <p className="text-sm text-gray-300 flex-1">
                       &ldquo;{req.userMessage}&rdquo;
                     </p>
                     <span
@@ -153,13 +153,13 @@ export function ChangeRequestPanel({ projectId }: { projectId: string }) {
                       href={req.deployUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-blue-600 hover:underline mt-1 inline-block"
+                      className="text-xs text-cyan-400 hover:underline mt-1 inline-block"
                     >
                       View updated site
                     </a>
                   )}
 
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-500 mt-1">
                     {new Date(req.createdAt).toLocaleString()}
                   </p>
                 </div>
