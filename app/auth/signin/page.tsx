@@ -18,6 +18,7 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [emailSending, setEmailSending] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -34,9 +35,11 @@ export default function SignInPage() {
     if (!email) return;
     setEmailSending(true);
     try {
-      await signIn('email', { email, callbackUrl });
+      await signIn('email', { email, callbackUrl, redirect: false });
+      setEmailSent(true);
     } catch (error) {
       console.error('Email sign-in error:', error);
+    } finally {
       setEmailSending(false);
     }
   };
@@ -143,38 +146,57 @@ export default function SignInPage() {
             </div>
 
             {/* Email Sign-In */}
-            <form onSubmit={handleEmailSignIn} className="space-y-3">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors text-sm"
-              />
-              <button
-                type="submit"
-                disabled={emailSending || !email}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/15 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-              >
-                {emailSending ? (
-                  <span className="flex items-center gap-2">
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Sending link...
-                  </span>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    Continue with email
-                  </>
-                )}
-              </button>
-            </form>
+            {emailSent ? (
+              <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-center">
+                <svg className="w-8 h-8 text-cyan-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <p className="text-white font-medium text-sm mb-1">Check your email</p>
+                <p className="text-gray-400 text-xs mb-3">
+                  We sent a sign-in link to <span className="text-white">{email}</span>
+                </p>
+                <button
+                  type="button"
+                  onClick={() => { setEmailSent(false); setEmail(''); }}
+                  className="text-xs text-cyan-400 hover:text-cyan-300 underline underline-offset-2"
+                >
+                  Try a different email
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleEmailSignIn} className="space-y-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors text-sm"
+                />
+                <button
+                  type="submit"
+                  disabled={emailSending || !email}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/15 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                >
+                  {emailSending ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Sending link...
+                    </span>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      Continue with email
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
 
             {/* Privacy Notice */}
             <div className="text-center pt-2">

@@ -54,11 +54,11 @@ export default function GetStartedPage() {
   const [error, setError] = useState<string | null>(null);
   const [hostingAgreed, setHostingAgreed] = useState(false);
 
-  // Auto-trigger checkout if tier param is set
+  // Auto-trigger checkout only for free preview (no hosting terms needed)
   useEffect(() => {
     const tier = searchParams.get("tier");
-    if (tier && status !== "loading" && !loading) {
-      handleBuildApp(tier === "VALIDATION_PACK" ? "VALIDATION_PACK" : "TURNKEY_SYSTEM");
+    if (tier === "VALIDATION_PACK" && status !== "loading" && !loading) {
+      handleBuildApp("VALIDATION_PACK");
     }
   }, [status, searchParams]);
 

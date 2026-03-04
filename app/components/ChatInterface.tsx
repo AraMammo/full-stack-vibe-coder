@@ -182,7 +182,6 @@ export default function ChatInterface() {
   const handleGetFullShipKit = () => {
     const params = new URLSearchParams();
     if (sessionId) params.set("sessionId", sessionId);
-    params.set("tier", "LAUNCH_BLUEPRINT");
     window.location.href = `/get-started?${params.toString()}`;
   };
 
@@ -307,7 +306,7 @@ export default function ChatInterface() {
               Get Your Full ShipKit →
             </button>
             <p className="text-center text-xs text-gray-500">
-              Branding, strategy, and deployable code — from $197
+              Full-stack app — $497, deployed and live
             </p>
           </div>
         )}

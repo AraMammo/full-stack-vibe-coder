@@ -61,8 +61,44 @@ export function DashboardEmptyState({ userName }: DashboardEmptyStateProps) {
     return () => clearInterval(interval);
   }, [pollForProject]);
 
-  if (!justPaid || timedOut) {
+  // Continue slow-polling after timeout
+  useEffect(() => {
+    if (!timedOut) return;
+
+    const interval = setInterval(async () => {
+      await pollForProject();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [timedOut, pollForProject]);
+
+  if (!justPaid) {
     return null; // Let the parent render the default empty state or WelcomeBanner
+  }
+
+  if (timedOut) {
+    return (
+      <div className="py-16 text-center max-w-md mx-auto">
+        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-yellow-500/20 to-cyan-500/20 border border-white/10 flex items-center justify-center">
+          <svg className="w-10 h-10 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-bold text-white mb-3">Still setting up...</h3>
+        <p className="text-gray-400 mb-2">
+          Your project is still being created. This can take a minute.
+        </p>
+        <p className="text-sm text-gray-500 mb-6">
+          We&apos;re checking automatically. You can also refresh manually.
+        </p>
+        <button
+          onClick={() => router.refresh()}
+          className="px-6 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white text-sm font-medium hover:bg-white/15 transition-colors"
+        >
+          Refresh now
+        </button>
+      </div>
+    );
   }
 
   return (
