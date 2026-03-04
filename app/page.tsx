@@ -243,42 +243,42 @@ export default function Home() {
               {/* Stack Details */}
               <div className="space-y-4">
                 <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full bg-pink-500" />
+                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#ec4899' }} />
                   <div>
                     <p className="text-sm font-semibold text-white">Frontend</p>
                     <p className="text-xs text-gray-400">Next.js 14 + Tailwind CSS</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full bg-cyan-500" />
+                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#06b6d4' }} />
                   <div>
                     <p className="text-sm font-semibold text-white">Database</p>
                     <p className="text-xs text-gray-400">Supabase PostgreSQL + Row-Level Security</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full bg-purple-500" />
+                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#a855f7' }} />
                   <div>
                     <p className="text-sm font-semibold text-white">Auth</p>
                     <p className="text-xs text-gray-400">NextAuth.js — Google, email, magic links</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full bg-green-500" />
+                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#22c55e' }} />
                   <div>
                     <p className="text-sm font-semibold text-white">Payments</p>
                     <p className="text-xs text-gray-400">Stripe Connect — your account, your revenue</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full bg-yellow-500" />
+                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#eab308' }} />
                   <div>
                     <p className="text-sm font-semibold text-white">Email</p>
                     <p className="text-xs text-gray-400">Transactional email on your domain</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full bg-blue-500" />
+                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#3b82f6' }} />
                   <div>
                     <p className="text-sm font-semibold text-white">Hosting</p>
                     <p className="text-xs text-gray-400">Vercel — auto-deploys from GitHub</p>
