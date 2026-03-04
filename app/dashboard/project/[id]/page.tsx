@@ -14,6 +14,7 @@ import { ProjectDetailClient } from './ProjectDetailClient';
 import { ShipKitReady } from '@/components/ShipKitReady';
 import { EjectButton } from './EjectButton';
 import { ChangeRequestPanel } from './ChangeRequestPanel';
+import { OnboardingChecklist } from '@/components/OnboardingChecklist';
 import Link from 'next/link';
 
 const tierConfig: Record<string, { name: string; color: string }> = {
@@ -115,6 +116,11 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     },
   });
 
+  // Check if any change requests exist for this project
+  const changeRequestCount = await prisma.changeRequest.count({
+    where: { projectId: params.id },
+  });
+
   const tierInfo = tierConfig[project.biabTier];
   const isCompleted = project.status === 'COMPLETED';
   const isInProgress = project.status === 'IN_PROGRESS' || project.status === 'PENDING';
@@ -196,6 +202,17 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             downloadUrl={`/api/delivery/${params.id}/download`}
             stripeConnectOnboardingUrl={deployedApp?.stripeConnectOnboardingUrl || undefined}
             hostingStatus={deployedApp?.hostingStatus}
+          />
+        )}
+
+        {/* Onboarding Checklist for completed projects */}
+        {isCompleted && (
+          <OnboardingChecklist
+            projectId={params.id}
+            liveSiteUrl={deployedApp?.vercelProductionUrl || project.vercelDeploymentUrl || undefined}
+            hasStripeConnect={!!deployedApp?.stripeConnectOnboarded}
+            hasCustomDomain={!!deployedApp?.customDomain}
+            hasChangeRequest={changeRequestCount > 0}
           />
         )}
 

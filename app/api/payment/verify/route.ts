@@ -21,6 +21,7 @@ const TIER_DISPLAY_NAMES: Record<string, string> = {
   VALIDATION_PACK: 'Validation Pack',
   LAUNCH_BLUEPRINT: 'Launch Blueprint',
   TURNKEY_SYSTEM: 'Turnkey System',
+  PRESENCE: 'ShipKit Presence',
 };
 
 // ============================================
@@ -113,7 +114,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate tier
-    const validTiers = ['VALIDATION_PACK', 'LAUNCH_BLUEPRINT', 'TURNKEY_SYSTEM'] as const;
+    const validTiers = ['VALIDATION_PACK', 'LAUNCH_BLUEPRINT', 'TURNKEY_SYSTEM', 'PRESENCE'] as const;
     if (!validTiers.includes(tier as typeof validTiers[number])) {
       console.error(`[Payment Verify] Invalid tier: ${tier}`);
       return NextResponse.json(
@@ -168,6 +169,7 @@ export async function GET(request: NextRequest) {
       paymentId: payment.id,
       projectId: project?.id || null,
       projectStatus: project?.status || null,
+      projectName: project?.projectName || null,
     });
 
   } catch (error: any) {

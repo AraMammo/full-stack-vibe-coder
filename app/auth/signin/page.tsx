@@ -1,7 +1,7 @@
 /**
  * Sign In Page
  *
- * Google OAuth authentication page
+ * Google OAuth + Email magic link authentication page
  */
 
 'use client';
@@ -16,6 +16,8 @@ export default function SignInPage() {
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
   const error = searchParams.get('error');
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emailSending, setEmailSending] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -25,6 +27,29 @@ export default function SignInPage() {
       console.error('Sign-in error:', error);
       setIsLoading(false);
     }
+  };
+
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setEmailSending(true);
+    try {
+      await signIn('email', { email, callbackUrl });
+    } catch (error) {
+      console.error('Email sign-in error:', error);
+      setEmailSending(false);
+    }
+  };
+
+  // Context-aware subtitle
+  const getSubtitle = () => {
+    if (callbackUrl.includes('/dashboard')) {
+      return 'Sign in to access your dashboard';
+    }
+    if (callbackUrl.includes('checkout') || callbackUrl.includes('get-started')) {
+      return 'Sign in to start your build';
+    }
+    return 'Sign in to access your dashboard';
   };
 
   return (
@@ -46,7 +71,7 @@ export default function SignInPage() {
               ShipKit
             </h1>
             <p className="text-gray-400 text-sm">
-              Sign in to access your dashboard
+              {getSubtitle()}
             </p>
           </div>
 
@@ -107,20 +132,52 @@ export default function SignInPage() {
               )}
             </button>
 
-            {/* Divider */}
+            {/* Or Divider */}
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-700"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-900 text-gray-500">
-                  Secure authentication
-                </span>
+                <span className="px-2 bg-gray-900 text-gray-500">or</span>
               </div>
             </div>
 
+            {/* Email Sign-In */}
+            <form onSubmit={handleEmailSignIn} className="space-y-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+                className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors text-sm"
+              />
+              <button
+                type="submit"
+                disabled={emailSending || !email}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/15 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                {emailSending ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Sending link...
+                  </span>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Continue with email
+                  </>
+                )}
+              </button>
+            </form>
+
             {/* Privacy Notice */}
-            <div className="text-center">
+            <div className="text-center pt-2">
               <p className="text-xs text-gray-500 leading-relaxed">
                 By signing in, you agree to our{' '}
                 <Link href="/terms-of-service" className="text-cyan-400 hover:text-cyan-300 underline">
@@ -140,7 +197,7 @@ export default function SignInPage() {
               href="/"
               className="text-sm text-gray-400 hover:text-gray-300 transition-colors"
             >
-              ← Back to Home
+              &larr; Back to Home
             </Link>
           </div>
         </div>
@@ -150,15 +207,27 @@ export default function SignInPage() {
           <p className="text-gray-500 text-sm mb-3">Why sign in?</p>
           <div className="flex justify-center gap-6">
             <div className="text-center">
-              <div className="text-2xl mb-1">📊</div>
+              <div className="w-10 h-10 mx-auto mb-1 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
               <p className="text-xs text-gray-400">Track<br/>Projects</p>
             </div>
             <div className="text-center">
-              <div className="text-2xl mb-1">📥</div>
+              <div className="w-10 h-10 mx-auto mb-1 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                <svg className="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </div>
               <p className="text-xs text-gray-400">Download<br/>Anytime</p>
             </div>
             <div className="text-center">
-              <div className="text-2xl mb-1">💳</div>
+              <div className="w-10 h-10 mx-auto mb-1 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+              </div>
               <p className="text-xs text-gray-400">Payment<br/>History</p>
             </div>
           </div>

@@ -15,6 +15,7 @@ interface PaymentInfo {
   tierName: string;
   amount: number;
   email: string;
+  projectName?: string;
 }
 
 export default function PaymentSuccessPage() {
@@ -131,9 +132,13 @@ export default function PaymentSuccessPage() {
           <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
             You&apos;re In.
           </h1>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-300 mb-2">
             Your ShipKit is already being built.
           </p>
+          {paymentInfo.projectName && (
+            <p className="text-sm text-gray-400 mb-6">{paymentInfo.projectName}</p>
+          )}
+          {!paymentInfo.projectName && <div className="mb-6" />}
 
           {/* Payment Details */}
           <div className="bg-black/50 rounded-lg p-6 mb-6">
@@ -175,20 +180,37 @@ export default function PaymentSuccessPage() {
         {/* What's Happening */}
         <div className="bg-white/5 border border-white/10 rounded-lg p-6">
           <h2 className="text-xl font-bold mb-4 text-cyan-400">What&apos;s happening right now:</h2>
-          <ol className="space-y-3 text-gray-300">
-            <li className="flex items-start">
-              <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">1</span>
-              <span>Eight AI agents are building your brand, strategy, and materials simultaneously</span>
-            </li>
-            <li className="flex items-start">
-              <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">2</span>
-              <span>You can watch progress live in your dashboard</span>
-            </li>
-            <li className="flex items-start">
-              <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">3</span>
-              <span>Everything will be ready to download in under 30 minutes</span>
-            </li>
-          </ol>
+          {paymentInfo.tier === 'PRESENCE' ? (
+            <ol className="space-y-3 text-gray-300">
+              <li className="flex items-start">
+                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">1</span>
+                <span>Your static site is being generated from your business description</span>
+              </li>
+              <li className="flex items-start">
+                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">2</span>
+                <span>Pages, styling, and content are being crafted for your brand</span>
+              </li>
+              <li className="flex items-start">
+                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">3</span>
+                <span>Your site will be live in about 10 minutes</span>
+              </li>
+            </ol>
+          ) : (
+            <ol className="space-y-3 text-gray-300">
+              <li className="flex items-start">
+                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">1</span>
+                <span>Your ShipKit is being built right now &mdash; brand, strategy, and full-stack app</span>
+              </li>
+              <li className="flex items-start">
+                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">2</span>
+                <span>You can watch progress live in your dashboard</span>
+              </li>
+              <li className="flex items-start">
+                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">3</span>
+                <span>Everything will be ready in about 20 minutes</span>
+              </li>
+            </ol>
+          )}
         </div>
       </div>
     </div>
