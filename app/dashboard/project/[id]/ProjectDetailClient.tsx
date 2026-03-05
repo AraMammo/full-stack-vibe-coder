@@ -38,7 +38,8 @@ interface ProgressData {
 }
 
 const PROVISIONING_STEP_LABELS: Record<string, string> = {
-  supabase_create: 'Creating database...',
+  neon_create: 'Creating database...',
+  supabase_create: 'Creating database...', // legacy compat
   database_migrate: 'Running migrations...',
   stripe_connect: 'Setting up payments...',
   github_push: 'Pushing code to GitHub...',

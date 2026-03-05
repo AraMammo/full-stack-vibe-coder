@@ -13,6 +13,7 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { ProjectDetailClient } from './ProjectDetailClient';
 import { ShipKitReady } from '@/components/ShipKitReady';
 import { EjectButton } from './EjectButton';
+import { TransferButton } from './TransferButton';
 import { BillingButton } from './BillingButton';
 import { UpgradeSection } from './UpgradeSection';
 import { ChangeRequestPanel } from './ChangeRequestPanel';
@@ -46,6 +47,7 @@ const hostingStatusConfig: Record<string, { label: string; color: string }> = {
   SUSPENDED: { label: 'Suspended', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
   CANCELLED: { label: 'Cancelled', color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
   EJECTED: { label: 'Ejected', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+  TRANSFERRED: { label: 'Transferred', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
 };
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
@@ -91,6 +93,24 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
               status: true,
               plan: true,
               currentPeriodEnd: true,
+            },
+          },
+          transfers: {
+            orderBy: { createdAt: 'desc' as const },
+            take: 1,
+            select: {
+              id: true,
+              status: true,
+              githubTransferred: true,
+              vercelTransferred: true,
+              neonTransferred: true,
+              stripeDisconnected: true,
+              githubTransferUrl: true,
+              neonClaimUrl: true,
+              vercelReimportUrl: true,
+              customerEmail: true,
+              createdAt: true,
+              completedAt: true,
             },
           },
         },
@@ -338,7 +358,10 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 <BillingButton projectId={params.id} />
               )}
               {deployedApp.hostingStatus === 'ACTIVE' && (
-                <EjectButton projectId={params.id} />
+                <>
+                  <TransferButton projectId={params.id} />
+                  <EjectButton projectId={params.id} />
+                </>
               )}
             </div>
 
@@ -349,6 +372,38 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                   projectId={params.id}
                   currentPlan={deployedApp.subscription.plan}
                 />
+              </div>
+            )}
+
+            {/* Transfer Status Panel */}
+            {deployedApp.hostingStatus === 'TRANSFERRED' && deployedApp.transfers?.[0] && (
+              <div className="mt-4 p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                <h3 className="text-sm font-bold text-purple-400 mb-3">Transfer Status</h3>
+                <p className="text-xs text-gray-400 mb-3">
+                  Transferred to {deployedApp.transfers[0].customerEmail} on{' '}
+                  {new Date(deployedApp.transfers[0].createdAt).toLocaleDateString()}
+                </p>
+                <div className="space-y-2">
+                  {[
+                    { label: 'GitHub Repository', done: deployedApp.transfers[0].githubTransferred, url: deployedApp.transfers[0].githubTransferUrl },
+                    { label: 'Database (Neon)', done: deployedApp.transfers[0].neonTransferred, url: deployedApp.transfers[0].neonClaimUrl },
+                    { label: 'Hosting (Vercel)', done: deployedApp.transfers[0].vercelTransferred, url: deployedApp.transfers[0].vercelReimportUrl },
+                    { label: 'Payments (Stripe)', done: deployedApp.transfers[0].stripeDisconnected },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center gap-2 text-sm">
+                      <span className={`w-2 h-2 rounded-full ${item.done ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} />
+                      <span className="text-gray-300">{item.label}</span>
+                      <span className={`text-xs ${item.done ? 'text-green-400' : 'text-yellow-400'}`}>
+                        {item.done ? 'Complete' : 'Pending'}
+                      </span>
+                      {item.url && !item.done && (
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-400 hover:underline ml-auto">
+                          Claim Link
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

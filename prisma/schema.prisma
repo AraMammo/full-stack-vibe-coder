@@ -322,6 +322,14 @@ enum HostingStatus {
   SUSPENDED
   CANCELLED
   EJECTED
+  TRANSFERRED
+}
+
+enum TransferStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
 }
 
 enum HostingPlan {
@@ -335,12 +343,18 @@ model DeployedApp {
   projectId              String          @unique
   project                Project         @relation(fields: [projectId], references: [id])
 
-  // Supabase
+  // Supabase (legacy — kept for existing deployed apps)
   supabaseProjectRef     String?
   supabaseProjectUrl     String?
   supabaseDatabaseUrl    String?         @db.Text
   supabaseAnonKey        String?         @db.Text
   supabaseServiceKey     String?         @db.Text
+
+  // Neon (new deployments)
+  neonProjectId          String?
+  neonBranchId           String?
+  neonDatabaseUrl        String?         @db.Text
+  neonPooledUrl          String?         @db.Text
 
   // Vercel
   vercelProjectId        String?
@@ -353,6 +367,7 @@ model DeployedApp {
 
   // Stripe Connect
   stripeConnectAccountId     String?
+  stripeConnectAccountType   String?         @default("standard")
   stripeConnectOnboarded     Boolean         @default(false)
   stripeConnectOnboardingUrl String?
 
@@ -371,9 +386,40 @@ model DeployedApp {
   updatedAt              DateTime        @updatedAt
 
   subscription           HostingSubscription?
+  transfers              TransferRequest[]
 
   @@index([hostingStatus])
   @@map("deployed_apps")
+}
+
+model TransferRequest {
+  id                     String         @id @default(uuid())
+  deployedAppId          String
+  deployedApp            DeployedApp    @relation(fields: [deployedAppId], references: [id])
+  status                 TransferStatus @default(PENDING)
+
+  // Per-service transfer status
+  githubTransferred      Boolean        @default(false)
+  vercelTransferred      Boolean        @default(false)
+  neonTransferred        Boolean        @default(false)
+  stripeDisconnected     Boolean        @default(false)
+
+  // Claim URLs / info
+  neonClaimUrl           String?
+  githubTransferUrl      String?
+  vercelReimportUrl      String?
+
+  // Customer info
+  customerGithubUsername String?
+  customerEmail          String
+
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  completedAt            DateTime?
+
+  @@index([deployedAppId])
+  @@index([status])
+  @@map("transfer_requests")
 }
 
 model HostingSubscription {

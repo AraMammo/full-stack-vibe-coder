@@ -5,9 +5,9 @@
  * Runs sequentially since each step depends on the previous.
  *
  * Flow:
- * 1. Create Supabase project → DATABASE_URL, keys
+ * 1. Create Neon project → DATABASE_URL
  * 2. Run database migrations → uses DATABASE_URL from step 1
- * 3. Create Stripe Connect account → STRIPE_CONNECT_ACCOUNT_ID
+ * 3. Create Stripe Connect Standard account → STRIPE_CONNECT_ACCOUNT_ID
  * 4. Push code to GitHub (ShipKit org) → GITHUB_REPO_URL
  * 5. Create Vercel project → inject all env vars from steps 1-3
  * 6. Trigger deployment → wait for READY
@@ -18,7 +18,7 @@
 import { prisma } from '@/lib/db';
 import { stripe } from '@/lib/stripe';
 import { assertPipelineEnv } from '@/lib/env-check';
-import * as supabase from './supabase-provisioning';
+import * as neon from './neon-provisioning';
 import * as vercel from './vercel-provisioning';
 import * as stripeConnect from './stripe-connect';
 import { pushToGitHubOrg, deleteGitHubRepo } from './claude-codegen';
@@ -76,23 +76,23 @@ export async function provisionInfrastructure(
   };
 
   // Track infrastructure state for compensating transactions on failure
-  let supabaseRef: string | undefined;
+  let neonProjectId: string | undefined;
   let vercelProjectId: string | undefined;
   let githubRepoFullName: string | undefined;
   let stripeConnectAccountId: string | undefined;
 
   try {
     // ========================================
-    // Step 1: Create Supabase project
+    // Step 1: Create Neon project
     // ========================================
-    logStep('supabase_create', 'running');
-    const supabaseResult = await supabase.provisionProject(
+    logStep('neon_create', 'running');
+    const neonResult = await neon.provisionProject(
       sanitizeName(input.projectName)
     );
-    supabaseRef = supabaseResult.projectRef;
-    logStep('supabase_create', 'completed', undefined, {
-      projectRef: supabaseResult.projectRef,
-      projectUrl: supabaseResult.projectUrl,
+    neonProjectId = neonResult.projectId;
+    logStep('neon_create', 'completed', undefined, {
+      projectId: neonResult.projectId,
+      branchId: neonResult.branchId,
     });
 
     // ========================================
@@ -100,14 +100,14 @@ export async function provisionInfrastructure(
     // ========================================
     if (input.migrationSql) {
       logStep('database_migrate', 'running');
-      await supabase.runMigration(supabaseResult.projectRef, input.migrationSql);
+      await neon.runMigration(neonResult.databaseUrl, input.migrationSql);
       logStep('database_migrate', 'completed');
     } else {
       logStep('database_migrate', 'completed', undefined, { skipped: true });
     }
 
     // ========================================
-    // Step 3: Create Stripe Connect account
+    // Step 3: Create Stripe Connect Standard account
     // ========================================
     logStep('stripe_connect', 'running');
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
@@ -120,6 +120,7 @@ export async function provisionInfrastructure(
     stripeConnectAccountId = connectResult.accountId;
     logStep('stripe_connect', 'completed', undefined, {
       accountId: connectResult.accountId,
+      accountType: connectResult.accountType,
     });
 
     // ========================================
@@ -146,12 +147,9 @@ export async function provisionInfrastructure(
     // Generate a unique NEXTAUTH_SECRET for this project
     const nextauthSecret = generateSecret();
 
-    // Inject all env vars
+    // Inject all env vars — Neon uses a single DATABASE_URL (pooled)
     const envVars: vercel.VercelEnvVar[] = [
-      { key: 'DATABASE_URL', value: supabaseResult.databaseUrl, target: ['production', 'preview'], type: 'encrypted' },
-      { key: 'NEXT_PUBLIC_SUPABASE_URL', value: supabaseResult.projectUrl, target: ['production', 'preview'], type: 'plain' },
-      { key: 'NEXT_PUBLIC_SUPABASE_ANON_KEY', value: supabaseResult.anonKey, target: ['production', 'preview'], type: 'plain' },
-      { key: 'SUPABASE_SERVICE_ROLE_KEY', value: supabaseResult.serviceRoleKey, target: ['production', 'preview'], type: 'encrypted' },
+      { key: 'DATABASE_URL', value: neonResult.pooledUrl, target: ['production', 'preview'], type: 'encrypted' },
       { key: 'NEXTAUTH_SECRET', value: nextauthSecret, target: ['production', 'preview'], type: 'encrypted' },
       { key: 'STRIPE_CONNECT_ACCOUNT_ID', value: connectResult.accountId, target: ['production', 'preview'], type: 'encrypted' },
     ];
@@ -202,17 +200,17 @@ export async function provisionInfrastructure(
     const deployedApp = await prisma.deployedApp.create({
       data: {
         projectId: input.projectId,
-        supabaseProjectRef: supabaseResult.projectRef,
-        supabaseProjectUrl: supabaseResult.projectUrl,
-        supabaseDatabaseUrl: supabaseResult.databaseUrl,
-        supabaseAnonKey: supabaseResult.anonKey,
-        supabaseServiceKey: supabaseResult.serviceRoleKey,
+        neonProjectId: neonResult.projectId,
+        neonBranchId: neonResult.branchId,
+        neonDatabaseUrl: neonResult.databaseUrl,
+        neonPooledUrl: neonResult.pooledUrl,
         vercelProjectId: vercelResult.projectId,
         vercelProjectName: vercelResult.projectName,
         vercelProductionUrl: productionUrl,
         githubRepoFullName: githubResult.repoName,
         githubRepoUrl: githubResult.repoUrl,
         stripeConnectAccountId: connectResult.accountId,
+        stripeConnectAccountType: connectResult.accountType,
         stripeConnectOnboarded: false,
         stripeConnectOnboardingUrl: connectResult.onboardingUrl,
         hostingStatus: 'ACTIVE',
@@ -342,8 +340,8 @@ export async function provisionInfrastructure(
 
     if (stripeConnectAccountId) {
       try {
-        await stripeConnect.deleteExpressAccount(stripeConnectAccountId);
-        console.log(`[Provisioning] Cleanup: deleted Stripe Connect account ${stripeConnectAccountId}`);
+        await stripeConnect.removeAccount(stripeConnectAccountId, 'standard');
+        console.log(`[Provisioning] Cleanup: removed Stripe Connect account ${stripeConnectAccountId}`);
       } catch (e) {
         const msg = `Stripe Connect cleanup failed: ${e instanceof Error ? e.message : e}`;
         console.error(`[Provisioning] ${msg}`);
@@ -351,12 +349,12 @@ export async function provisionInfrastructure(
       }
     }
 
-    if (supabaseRef) {
+    if (neonProjectId) {
       try {
-        await supabase.deleteProject(supabaseRef);
-        console.log(`[Provisioning] Cleanup: deleted Supabase project ${supabaseRef}`);
+        await neon.deleteProject(neonProjectId);
+        console.log(`[Provisioning] Cleanup: deleted Neon project ${neonProjectId}`);
       } catch (e) {
-        const msg = `Supabase cleanup failed: ${e instanceof Error ? e.message : e}`;
+        const msg = `Neon cleanup failed: ${e instanceof Error ? e.message : e}`;
         console.error(`[Provisioning] ${msg}`);
         cleanupErrors.push(msg);
       }

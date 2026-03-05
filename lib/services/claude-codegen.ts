@@ -296,7 +296,7 @@ npx vercel
 
   // Ensure .env.example exists
   if (!files.has('.env.example')) {
-    files.set('.env.example', `# Database
+    files.set('.env.example', `# Database (PostgreSQL — any provider)
 DATABASE_URL="postgresql://..."
 
 # NextAuth
