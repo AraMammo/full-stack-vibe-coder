@@ -117,13 +117,13 @@ export function Navigation() {
               <Image
                 src="/logo.svg"
                 alt="ShipKit Logo"
-                width={40}
-                height={40}
-                className="transition-transform group-hover:scale-110"
+                width={32}
+                height={32}
+                className="transition-transform group-hover:scale-110 rounded-lg"
                 priority
               />
               <span
-                className="hidden sm:block text-lg md:text-xl font-bold tracking-tight uppercase transition-transform group-hover:scale-105"
+                className="text-lg md:text-xl font-bold tracking-tight uppercase transition-transform group-hover:scale-105"
                 style={{
                   background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
                   WebkitBackgroundClip: 'text',
