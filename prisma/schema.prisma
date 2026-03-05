@@ -79,6 +79,7 @@ model Project {
   completedAt         DateTime?
   codegenStatus       String?
   githubRepoName      String?
+  errorMessage        String?
   contextIds              String[]      @default([])
   referenceScreenshotUrl  String?
   visualDna               Json?

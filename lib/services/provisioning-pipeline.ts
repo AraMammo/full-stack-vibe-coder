@@ -17,6 +17,7 @@
 
 import { prisma } from '@/lib/db';
 import { stripe } from '@/lib/stripe';
+import { assertPipelineEnv } from '@/lib/env-check';
 import * as supabase from './supabase-provisioning';
 import * as vercel from './vercel-provisioning';
 import * as stripeConnect from './stripe-connect';
@@ -61,6 +62,9 @@ export async function provisionInfrastructure(
   input: ProvisioningInput,
   onProgress?: ProvisioningProgressCallback
 ): Promise<ProvisioningResult> {
+  // Validate all required env vars before starting pipeline
+  assertPipelineEnv();
+
   const log: ProvisioningLogEntry[] = [];
   const startTime = Date.now();
 

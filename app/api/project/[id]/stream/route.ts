@@ -18,6 +18,7 @@ interface ProgressData {
   progress: number;
   currentSection: string | null;
   status: string;
+  codegenStatus: string | null;
   completedSections: {
     id: number;
     name: string;
@@ -81,6 +82,7 @@ export async function GET(
               progress: true,
               completedPrompts: true,
               totalPrompts: true,
+              codegenStatus: true,
             },
           });
 
@@ -95,6 +97,7 @@ export async function GET(
             progress: total > 0 ? Math.round((completed.length / total) * 100) : 0,
             currentSection: inProgress?.prompt.promptName || null,
             status: currentProject?.status || 'PENDING',
+            codegenStatus: currentProject?.codegenStatus || null,
             completedSections: completed.map((e) => ({
               id: e.id,
               name: e.prompt.promptName,

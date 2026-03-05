@@ -28,6 +28,7 @@ interface ProgressData {
   progress: number;
   currentSection: string | null;
   status: string;
+  codegenStatus: string | null;
   completedSections: {
     id: number;
     name: string;
@@ -35,6 +36,18 @@ interface ProgressData {
     completedAt: Date | null;
   }[];
 }
+
+const PROVISIONING_STEP_LABELS: Record<string, string> = {
+  supabase_create: 'Creating database...',
+  database_migrate: 'Running migrations...',
+  stripe_connect: 'Setting up payments...',
+  github_push: 'Pushing code to GitHub...',
+  vercel_create: 'Creating Vercel project...',
+  vercel_deploy: 'Deploying to Vercel...',
+  verify_live: 'Verifying site is live...',
+  save_record: 'Saving deployment record...',
+  hosting_subscription: 'Setting up hosting...',
+};
 
 const statusConfig = {
   completed: {
@@ -151,8 +164,27 @@ export function ProjectDetailClient({
     });
   };
 
+  // Parse provisioning step from codegenStatus
+  const provisioningLabel = (() => {
+    const cs = liveProgress?.codegenStatus;
+    if (!cs || !cs.startsWith('provisioning:')) return null;
+    const parts = cs.split(':');
+    const step = parts[1];
+    const status = parts[2];
+    if (status === 'failed') return `Deployment step failed: ${step}`;
+    return PROVISIONING_STEP_LABELS[step] || `Deploying: ${step}...`;
+  })();
+
   return (
     <div className="space-y-4">
+      {/* Provisioning Progress Banner */}
+      {provisioningLabel && (
+        <div className="p-4 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+          <p className="text-cyan-300 font-medium text-sm">{provisioningLabel}</p>
+        </div>
+      )}
+
       <h2 className="text-xl font-semibold text-white mb-4">All Sections</h2>
 
       {/* Sections Grid */}

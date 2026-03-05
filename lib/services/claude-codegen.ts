@@ -15,6 +15,7 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import { Octokit } from '@octokit/rest';
+import { validateCodeFiles } from './code-validator';
 
 // ============================================
 // TYPES
@@ -63,12 +64,14 @@ export async function generateCodebase(input: CodegenInput): Promise<CodegenResu
     // Step 1: Parse files from the codebase spec output
     const files = parseCodebaseOutput(input.codebaseSpec);
 
-    if (files.size === 0) {
-      // If parsing failed, generate scaffold from scratch
-      console.log('[Codegen] No files parsed from spec, generating scaffold...');
+    if (files.size < 3) {
+      // If parsing yielded too few files, supplement with scaffold
+      console.log(`[Codegen] Only ${files.size} files parsed from spec, supplementing with scaffold...`);
       const scaffoldFiles = await generateScaffold(input);
       scaffoldFiles.forEach((content, path) => {
-        files.set(path, content);
+        if (!files.has(path)) {
+          files.set(path, content);
+        }
       });
     }
 
@@ -76,6 +79,15 @@ export async function generateCodebase(input: CodegenInput): Promise<CodegenResu
 
     // Step 2: Ensure critical files exist
     await ensureCriticalFiles(files, input);
+
+    // Step 2.5: Validate files before deployment
+    const validation = validateCodeFiles(files);
+    if (validation.removedFiles.length > 0) {
+      console.warn(`[Codegen] Removed ${validation.removedFiles.length} invalid files: ${validation.removedFiles.join(', ')}`);
+    }
+    if (validation.warnings.length > 0) {
+      console.warn(`[Codegen] Validation warnings: ${validation.warnings.join('; ')}`);
+    }
 
     console.log(`[Codegen] Final file count: ${files.size}`);
 
@@ -120,34 +132,74 @@ export async function generateCodebase(input: CodegenInput): Promise<CodegenResu
 }
 
 /**
+ * Sanitize a filepath: reject path traversal, absolute paths, normalize separators
+ */
+function sanitizeFilepath(filepath: string): string | null {
+  const trimmed = filepath.trim();
+  // Reject absolute paths
+  if (trimmed.startsWith('/') || trimmed.startsWith('\\') || /^[A-Z]:/i.test(trimmed)) {
+    console.warn(`[Codegen] Rejected absolute path: ${trimmed}`);
+    return null;
+  }
+  // Reject path traversal
+  if (trimmed.includes('..')) {
+    console.warn(`[Codegen] Rejected path traversal: ${trimmed}`);
+    return null;
+  }
+  // Normalize backslashes to forward slashes
+  return trimmed.replace(/\\/g, '/');
+}
+
+/**
  * Parse code files from the orchestrator's codebase spec output.
- * Expects format: ```filepath: path/to/file.tsx\n...content...\n```
+ * Supports multiple formats:
+ * 1. ```filepath: path/to/file.tsx\n...content...\n```
+ * 2. ```path/to/file.tsx\n...content...\n```
+ * 3. // filepath: path/to/file.tsx\n...content...
  */
 export function parseCodebaseOutput(codebaseSpec: string): Map<string, string> {
   const files = new Map<string, string>();
 
-  // Match code blocks with filepath markers
+  // Pattern 1: Code blocks with "filepath:" marker (most common)
   const fileBlockRegex = /```(?:(?:typescript|tsx?|javascript|jsx?|json|css|prisma|env|text|markdown|md)\s+)?filepath:\s*(.+?)\n([\s\S]*?)```/g;
   let match;
 
   while ((match = fileBlockRegex.exec(codebaseSpec)) !== null) {
-    const filepath = match[1].trim();
+    const filepath = sanitizeFilepath(match[1]);
     const content = match[2].trim();
     if (filepath && content) {
       files.set(filepath, content);
     }
   }
 
-  // Also try simpler format: ```path/to/file\n...\n```
+  // Pattern 2: Simple format — ```path/to/file\n...\n```
   if (files.size === 0) {
     const simpleRegex = /```\s*([a-zA-Z][\w./\-]+\.[a-zA-Z]+)\n([\s\S]*?)```/g;
     while ((match = simpleRegex.exec(codebaseSpec)) !== null) {
-      const filepath = match[1].trim();
+      const filepath = sanitizeFilepath(match[1]);
       const content = match[2].trim();
       if (filepath && content && filepath.includes('/')) {
         files.set(filepath, content);
       }
     }
+  }
+
+  // Pattern 3: Comment-header style — // filepath: path/to/file.tsx
+  if (files.size === 0) {
+    const commentRegex = /\/\/\s*filepath:\s*(.+?)\n([\s\S]*?)(?=\/\/\s*filepath:|$)/g;
+    while ((match = commentRegex.exec(codebaseSpec)) !== null) {
+      const filepath = sanitizeFilepath(match[1]);
+      const content = match[2].trim();
+      if (filepath && content) {
+        files.set(filepath, content);
+      }
+    }
+  }
+
+  if (files.size === 0) {
+    console.error(`[Codegen] parseCodebaseOutput: 0 files parsed from ${codebaseSpec.length} chars of spec`);
+  } else {
+    console.log(`[Codegen] parseCodebaseOutput: parsed ${files.size} files`);
   }
 
   return files;

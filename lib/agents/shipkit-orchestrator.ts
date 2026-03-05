@@ -300,15 +300,27 @@ export class ShipKitOrchestrator {
               select: { email: true },
             });
 
-            // Run provisioning pipeline
-            const provisionResult = await provisionInfrastructure({
-              projectId: input.projectId,
-              projectName: input.businessConcept.substring(0, 100),
-              userId: input.userId,
-              userEmail: user?.email || '',
-              codeFiles: codeResult.files,
-              migrationSql: migrationSql || undefined,
-            });
+            // Run provisioning pipeline with progress updates
+            const provisionResult = await provisionInfrastructure(
+              {
+                projectId: input.projectId,
+                projectName: input.businessConcept.substring(0, 100),
+                userId: input.userId,
+                userEmail: user?.email || '',
+                codeFiles: codeResult.files,
+                migrationSql: migrationSql || undefined,
+              },
+              async (step, status) => {
+                try {
+                  await this.prisma.project.update({
+                    where: { id: input.projectId },
+                    data: { codegenStatus: `provisioning:${step}:${status}` },
+                  });
+                } catch (e) {
+                  console.warn(`[ShipKit] Failed to update provisioning progress: ${e}`);
+                }
+              }
+            );
 
             if (provisionResult.success) {
               codegenResult = {
@@ -673,17 +685,43 @@ function extractPresenceVariables(
 
 /**
  * Extract SQL migration statements from the app architecture output.
- * Looks for SQL code blocks in the output.
+ * Handles multiple code block formats and case-insensitive markers.
  */
 function extractMigrationSql(architectureOutput: string): string | null {
-  const sqlBlockRegex = /```(?:sql|postgresql)\n([\s\S]*?)```/g;
   const blocks: string[] = [];
   let match;
 
+  // Primary: case-insensitive match for sql/postgresql/pgsql code blocks
+  const sqlBlockRegex = /```(?:sql|postgresql|pgsql)\s*\n([\s\S]*?)```/gi;
   while ((match = sqlBlockRegex.exec(architectureOutput)) !== null) {
     blocks.push(match[1].trim());
   }
 
+  // Fallback: scan unlabeled code blocks for DDL keywords
+  if (blocks.length === 0) {
+    const unlabeledRegex = /```\s*\n([\s\S]*?)```/g;
+    const ddlKeywords = /\b(CREATE\s+TABLE|ALTER\s+TABLE|CREATE\s+INDEX|CREATE\s+TYPE|CREATE\s+EXTENSION|INSERT\s+INTO|CREATE\s+OR\s+REPLACE\s+FUNCTION|CREATE\s+POLICY|ENABLE\s+ROW\s+LEVEL\s+SECURITY)/i;
+    while ((match = unlabeledRegex.exec(architectureOutput)) !== null) {
+      const content = match[1].trim();
+      if (ddlKeywords.test(content)) {
+        blocks.push(content);
+      }
+    }
+  }
+
   if (blocks.length === 0) return null;
-  return blocks.join('\n\n');
+
+  // Safety: reject blocks containing destructive operations
+  const safeBlocks = blocks.filter(block => {
+    if (/\b(DROP\s+DATABASE|TRUNCATE\s+TABLE)\b/i.test(block)) {
+      console.warn('[Orchestrator] Rejected SQL block containing DROP DATABASE or TRUNCATE TABLE');
+      return false;
+    }
+    return true;
+  });
+
+  if (safeBlocks.length === 0) return null;
+
+  console.log(`[Orchestrator] Extracted ${safeBlocks.length} SQL migration block(s)`);
+  return safeBlocks.join('\n\n');
 }

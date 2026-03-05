@@ -10,6 +10,7 @@ import { ShipKitOrchestrator } from '@/lib/agents/shipkit-orchestrator';
 import { BIABTier } from '@/app/generated/prisma';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
+import { validateEnv } from '@/lib/env-check';
 import { sendProjectStartedEmail, sendProjectCompleteEmail } from '@/lib/email/postmark-client';
 import { packageBIABDeliverables } from '@/lib/delivery/package-biab-deliverables';
 
@@ -128,6 +129,22 @@ export async function POST(request: NextRequest) {
     }
 
     // ============================================
+    // VALIDATE ENVIRONMENT
+    // ============================================
+    if (validatedData.tier === BIABTier.TURNKEY_SYSTEM) {
+      const envCheck = validateEnv('pipeline');
+      if (!envCheck.valid) {
+        const errorMsg = `Missing required environment variables: ${envCheck.missing.join(', ')}`;
+        console.error(`[API] ${errorMsg}`);
+        await prisma.project.update({
+          where: { id: validatedData.projectId },
+          data: { status: 'FAILED', errorMessage: errorMsg },
+        });
+        return NextResponse.json({ success: false, error: errorMsg }, { status: 500 });
+      }
+    }
+
+    // ============================================
     // EXECUTE BIAB ORCHESTRATOR
     // ============================================
     const orchestrator = new ShipKitOrchestrator();
@@ -140,10 +157,15 @@ export async function POST(request: NextRequest) {
     });
 
     if (!result.success) {
+      const errorMsg = result.error || 'Execution failed';
+      await prisma.project.update({
+        where: { id: validatedData.projectId },
+        data: { status: 'FAILED', errorMessage: errorMsg },
+      });
       return NextResponse.json(
         {
           success: false,
-          error: result.error || 'Execution failed',
+          error: errorMsg,
         },
         { status: 500 }
       );

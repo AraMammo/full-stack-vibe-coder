@@ -17,6 +17,8 @@ import { BillingButton } from './BillingButton';
 import { UpgradeSection } from './UpgradeSection';
 import { ChangeRequestPanel } from './ChangeRequestPanel';
 import { OnboardingChecklist } from '@/components/OnboardingChecklist';
+import BuildProgressView from '@/components/BuildProgressView';
+import { RetryButton } from './RetryButton';
 import Link from 'next/link';
 
 const tierConfig: Record<string, { name: string; color: string }> = {
@@ -195,6 +197,25 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Build Progress View for in-progress projects */}
+        {isInProgress && (
+          <BuildProgressView
+            projectId={params.id}
+            projectName={project.projectName}
+          />
+        )}
+
+        {/* Failed Project — Retry Panel */}
+        {project.status === 'FAILED' && (
+          <div className="mb-8 rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center">
+            <h2 className="text-lg font-bold text-red-400 mb-2">Build Failed</h2>
+            <p className="text-sm text-gray-400 mb-4">
+              Something went wrong during the build. You can retry without being charged again.
+            </p>
+            <RetryButton projectId={params.id} />
+          </div>
+        )}
+
         {/* Celebration Banner for completed projects */}
         {isCompleted && (
           <ShipKitReady

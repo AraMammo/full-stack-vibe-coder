@@ -216,85 +216,6 @@ export default function GetStartedPage() {
         </div>
       </section>
 
-      {/* What's Included Grid */}
-      <section className="px-4 sm:px-6 py-16 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center text-white mb-2">
-            What Ships With Your App
-          </h2>
-          <p className="text-center text-gray-400 mb-10">
-            Everything you need to run a real business
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { icon: "&#127760;", title: "Live Website", desc: "Custom domain, SSL, CDN" },
-              { icon: "&#128274;", title: "User Auth", desc: "Sign up, login, sessions" },
-              { icon: "&#128179;", title: "Stripe Payments", desc: "Your account, your revenue" },
-              { icon: "&#128232;", title: "Email", desc: "Transactional email on your domain" },
-              { icon: "&#128451;", title: "Database", desc: "PostgreSQL with auto-backups" },
-              { icon: "&#128640;", title: "GitHub Repo", desc: "Full codebase, transferable" },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className="p-4 rounded-lg bg-white/5 border border-white/10 flex items-start gap-3"
-              >
-                <span className="text-2xl" dangerouslySetInnerHTML={{ __html: item.icon }} />
-                <div>
-                  <p className="font-medium text-white">{item.title}</p>
-                  <p className="text-xs text-gray-400">{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="px-4 sm:px-6 py-16 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center text-white mb-10">
-            How It Works
-          </h2>
-
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-pink-500/20 border border-pink-500/50 flex items-center justify-center text-pink-400 font-bold">
-                1
-              </div>
-              <div>
-                <p className="font-medium text-white">Describe Your Business</p>
-                <p className="text-xs text-gray-400">Voice note or text</p>
-              </div>
-            </div>
-
-            <div className="hidden md:block text-gray-600">&#8594;</div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold">
-                2
-              </div>
-              <div>
-                <p className="font-medium text-white">AI Builds Everything</p>
-                <p className="text-xs text-gray-400">Code, database, integrations</p>
-              </div>
-            </div>
-
-            <div className="hidden md:block text-gray-600">&#8594;</div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-500/20 border border-green-500/50 flex items-center justify-center text-green-400 font-bold">
-                3
-              </div>
-              <div>
-                <p className="font-medium text-white">Your App Goes Live</p>
-                <p className="text-xs text-gray-400">Deployed, domain, payments</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* FAQ */}
       <section className="px-4 sm:px-6 py-16 border-t border-white/5">
         <div className="max-w-2xl mx-auto">
@@ -313,29 +234,6 @@ export default function GetStartedPage() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="px-4 sm:px-6 py-16 border-t border-white/5">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-            Ready to ship?
-          </h2>
-          <p className="text-gray-400 mb-8 text-sm">
-            Describe your idea. Get a working app. Eject whenever you want.
-          </p>
-          <button
-            onClick={() => handleBuildApp("TURNKEY_SYSTEM")}
-            disabled={loading}
-            className={`
-              inline-flex items-center gap-2 px-8 py-4 rounded-lg
-              bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold
-              hover:opacity-90 transition-opacity
-              ${loading ? "opacity-70 cursor-wait" : ""}
-            `}
-          >
-            {loading ? "Processing..." : "Build My App \u2014 $497"}
-          </button>
-        </div>
-      </section>
     </main>
   );
 }

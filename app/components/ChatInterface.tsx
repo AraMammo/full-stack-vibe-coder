@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useSession, signIn } from "next-auth/react";
 
 interface BusinessName {
   name: string;
@@ -27,11 +28,12 @@ interface Message {
 }
 
 export default function ChatInterface() {
+  const { data: session, status: authStatus } = useSession();
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
       content:
-        "Tell me your business idea — type it out or hit the mic. In 60 seconds, you'll have business names, a target audience, competitive positioning, and a site mockup. Free, no signup.",
+        "What does your business do? Describe it in a few sentences — or hit the mic.",
     },
   ]);
   const [inputText, setInputText] = useState("");
@@ -44,6 +46,9 @@ export default function ChatInterface() {
   const [selectedName, setSelectedName] = useState<number | null>(null);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
+  const [hostingAgreed, setHostingAgreed] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -179,10 +184,38 @@ export default function ChatInterface() {
     }
   };
 
-  const handleGetFullShipKit = () => {
-    const params = new URLSearchParams();
-    if (sessionId) params.set("sessionId", sessionId);
-    window.location.href = `/get-started?${params.toString()}`;
+  const handleCheckout = async (tier: string = "TURNKEY_SYSTEM") => {
+    if (!session) {
+      signIn("google");
+      return;
+    }
+    setCheckoutLoading(true);
+    setCheckoutError(null);
+    try {
+      const response = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tier,
+          userEmail: session.user?.email,
+          ...(sessionId ? { sessionId } : {}),
+          ...(tier === "TURNKEY_SYSTEM" ? { hostingAgreed } : {}),
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Checkout failed");
+      if (data.free) {
+        sessionStorage.setItem("selectedTier", data.tier);
+        window.location.href = data.redirectUrl;
+        return;
+      }
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err: unknown) {
+      setCheckoutError(err instanceof Error ? err.message : "Something went wrong");
+      setCheckoutLoading(false);
+    }
   };
 
   return (
@@ -297,17 +330,61 @@ export default function ChatInterface() {
               />
             </div>
 
-            {/* CTA */}
-            <button
-              type="button"
-              onClick={handleGetFullShipKit}
-              className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold text-sm hover:opacity-90 transition-opacity"
-            >
-              Get Your Full ShipKit →
-            </button>
-            <p className="text-center text-xs text-gray-500">
-              Full-stack app — $497, deployed and live
-            </p>
+            {/* Inline Checkout Panel */}
+            <div className="p-4 rounded-lg bg-gradient-to-b from-pink-500/10 to-cyan-500/10 border border-pink-500/30 space-y-3">
+              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">
+                This is your free business brief
+              </p>
+              <p className="text-sm text-gray-300 leading-relaxed">
+                Full build adds: live website, database, auth, payments, email, GitHub repo — all deployed and running.
+              </p>
+
+              {checkoutError && (
+                <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded p-2">
+                  {checkoutError}
+                </p>
+              )}
+
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={hostingAgreed}
+                  onChange={(e) => setHostingAgreed(e.target.checked)}
+                  className="mt-0.5 rounded border-gray-600"
+                />
+                <span className="text-xs text-gray-400">
+                  I agree to $49/mo hosting after 30-day free trial. Cancel anytime.
+                </span>
+              </label>
+
+              {authStatus !== "loading" && !session ? (
+                <button
+                  type="button"
+                  onClick={() => signIn("google")}
+                  className="w-full py-3 px-4 rounded-lg bg-white/10 border border-white/20 text-white font-semibold text-sm hover:bg-white/20 transition-colors"
+                >
+                  Sign in with Google to continue
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => handleCheckout("TURNKEY_SYSTEM")}
+                  disabled={!hostingAgreed || checkoutLoading}
+                  className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {checkoutLoading ? "Processing..." : "Build & Deploy My App — $497"}
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => handleCheckout("VALIDATION_PACK")}
+                disabled={checkoutLoading}
+                className="w-full text-center text-xs text-gray-500 hover:text-gray-300 transition-colors py-1"
+              >
+                Or try a free preview first
+              </button>
+            </div>
           </div>
         )}
 

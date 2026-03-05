@@ -1,122 +1,30 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import ChatInterface from "./components/ChatInterface";
+import ShowcaseSection from "@/components/ShowcaseSection";
 import Link from "next/link";
 
 export default function Home() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [appsDeployed, setAppsDeployed] = useState<number | null>(null);
 
   // Ensure page loads at top
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Simplified particle animation (reduced density)
+  // Fetch live stats
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    class Particle {
-      x: number;
-      y: number;
-      size: number;
-      speedX: number;
-      speedY: number;
-      opacity: number;
-
-      constructor() {
-        this.x = Math.random() * canvas!.width;
-        this.y = Math.random() * canvas!.height;
-        this.size = Math.random() * 1.5 + 0.5;
-        this.speedX = Math.random() * 0.3 - 0.15;
-        this.speedY = Math.random() * 0.3 - 0.15;
-        this.opacity = Math.random() * 0.3 + 0.1;
-      }
-
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-
-        if (this.x > canvas!.width) this.x = 0;
-        if (this.x < 0) this.x = canvas!.width;
-        if (this.y > canvas!.height) this.y = 0;
-        if (this.y < 0) this.y = canvas!.height;
-      }
-
-      draw() {
-        if (!ctx) return;
-        ctx.fillStyle = `rgba(236, 72, 153, ${this.opacity})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    const particles: Particle[] = [];
-    for (let i = 0; i < 40; i++) {
-      particles.push(new Particle());
-    }
-
-    function connectParticles() {
-      if (!ctx) return;
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 100) {
-            ctx.strokeStyle = `rgba(236, 72, 153, ${0.1 * (1 - distance / 100)})`;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-    }
-
-    function animate() {
-      if (!ctx || !canvas) return;
-      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      particles.forEach((particle) => {
-        particle.update();
-        particle.draw();
-      });
-
-      connectParticles();
-      requestAnimationFrame(animate);
-    }
-
-    animate();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    fetch('/api/stats')
+      .then(r => r.json())
+      .then(d => setAppsDeployed(d.projectsDeployed))
+      .catch(() => {});
   }, []);
 
   return (
     <>
       {/* Subtle background effects */}
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black -z-20" />
-      <canvas ref={canvasRef} className="fixed inset-0 -z-10 opacity-50" />
 
       <main id="main-content" className="min-h-screen pt-20 pb-16">
         {/* Hero Section - Chat Front and Center */}
@@ -205,130 +113,44 @@ export default function Home() {
           </div>
         </section>
 
-        {/* What You Get — Visual Preview Section (P0) */}
-        <section className="px-4 sm:px-6 py-20 border-t border-white/5">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-400 uppercase tracking-wider mb-4">
-              What You Get
-            </h2>
-            <p className="text-center text-gray-500 mb-12 max-w-2xl mx-auto">
-              A real, deployed application — not a mockup. Here&apos;s what ships with every ShipKit build.
-            </p>
+        {/* Showcase Section — replaces wireframe mockup */}
+        <ShowcaseSection />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* App Screenshot Placeholder — Dashboard */}
-              <div className="rounded-xl border border-white/10 bg-white/5 p-1 overflow-hidden">
-                <div className="rounded-lg bg-gradient-to-br from-gray-900 to-black p-6 h-64 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-3 h-3 rounded-full bg-red-500/60" />
-                      <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-                      <div className="w-3 h-3 rounded-full bg-green-500/60" />
-                      <span className="text-xs text-gray-600 ml-2">yourapp.com/dashboard</span>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="h-3 w-32 bg-white/10 rounded" />
-                      <div className="grid grid-cols-3 gap-3">
-                        <div className="h-16 bg-gradient-to-br from-pink-500/20 to-pink-500/5 border border-pink-500/20 rounded-lg" />
-                        <div className="h-16 bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 border border-cyan-500/20 rounded-lg" />
-                        <div className="h-16 bg-gradient-to-br from-green-500/20 to-green-500/5 border border-green-500/20 rounded-lg" />
-                      </div>
-                      <div className="h-20 bg-white/5 border border-white/10 rounded-lg" />
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-600 text-center">Admin dashboard with analytics</p>
-                </div>
-              </div>
-
-              {/* Stack Details */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#ec4899' }} />
-                  <div>
-                    <p className="text-sm font-semibold text-white">Frontend</p>
-                    <p className="text-xs text-gray-400">Next.js 14 + Tailwind CSS</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#06b6d4' }} />
-                  <div>
-                    <p className="text-sm font-semibold text-white">Database</p>
-                    <p className="text-xs text-gray-400">Supabase PostgreSQL + Row-Level Security</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#a855f7' }} />
-                  <div>
-                    <p className="text-sm font-semibold text-white">Auth</p>
-                    <p className="text-xs text-gray-400">NextAuth.js — Google, email, magic links</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#22c55e' }} />
-                  <div>
-                    <p className="text-sm font-semibold text-white">Payments</p>
-                    <p className="text-xs text-gray-400">Stripe Connect — your account, your revenue</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#eab308' }} />
-                  <div>
-                    <p className="text-sm font-semibold text-white">Email</p>
-                    <p className="text-xs text-gray-400">Transactional email on your domain</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="w-2 h-8 rounded-full" style={{ backgroundColor: '#3b82f6' }} />
-                  <div>
-                    <p className="text-sm font-semibold text-white">Hosting</p>
-                    <p className="text-xs text-gray-400">Vercel — auto-deploys from GitHub</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Social Proof Section (P0) */}
+        {/* Transparency / Credibility Section */}
         <section className="px-4 sm:px-6 py-20 border-t border-white/5">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-400 uppercase tracking-wider mb-12">
-              Real Results
+              Built Different
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-6 rounded-xl bg-gradient-to-b from-pink-500/10 to-transparent border border-pink-500/20">
-                <p className="text-3xl font-black text-white mb-1">$847</p>
-                <p className="text-sm text-gray-400 mb-4">First month revenue</p>
+              <div className="p-6 rounded-xl bg-gradient-to-b from-pink-500/10 to-transparent border border-pink-500/20 text-center">
+                {appsDeployed !== null && appsDeployed > 0 ? (
+                  <p className="text-3xl font-black text-white mb-1">{appsDeployed}</p>
+                ) : (
+                  <p className="text-3xl font-black text-white mb-1">Live</p>
+                )}
+                <p className="text-sm text-gray-400 mb-4">Apps deployed</p>
                 <p className="text-sm text-gray-300 leading-relaxed">
-                  &ldquo;I built an AI dev agency with ShipKit. Month one: $847 in revenue, three paying clients, zero lines of code written by hand.&rdquo;
+                  Real Supabase databases, real Vercel deployments, real Stripe Connect accounts. Not demos.
                 </p>
-                <p className="text-xs text-pink-400 mt-4 font-medium">Ara M. — Founder, ShipKit</p>
               </div>
 
-              <div className="p-6 rounded-xl bg-gradient-to-b from-cyan-500/10 to-transparent border border-cyan-500/20">
-                <p className="text-3xl font-black text-white mb-1">$3K MRR</p>
-                <p className="text-sm text-gray-400 mb-4">In one week</p>
+              <div className="p-6 rounded-xl bg-gradient-to-b from-cyan-500/10 to-transparent border border-cyan-500/20 text-center">
+                <p className="text-3xl font-black text-white mb-1">Open</p>
+                <p className="text-sm text-gray-400 mb-4">Architecture</p>
                 <p className="text-sm text-gray-300 leading-relaxed">
-                  &ldquo;Client went from idea to $3K MRR in one week. SaaS MVP built in 3 days, launched, paying customers by day 7.&rdquo;
+                  Eject anytime. Your code lives in your GitHub repo. Your database is yours. No lock-in, ever.
                 </p>
-                <p className="text-xs text-cyan-400 mt-4 font-medium">Case Study — SaaS MVP</p>
               </div>
 
-              <div className="p-6 rounded-xl bg-gradient-to-b from-green-500/10 to-transparent border border-green-500/20">
-                <p className="text-3xl font-black text-white mb-1">48 Hours</p>
-                <p className="text-sm text-gray-400 mb-4">Entire platform built</p>
+              <div className="p-6 rounded-xl bg-gradient-to-b from-green-500/10 to-transparent border border-green-500/20 text-center">
+                <p className="text-3xl font-black text-white mb-1">~30 min</p>
+                <p className="text-sm text-gray-400 mb-4">Idea to production</p>
                 <p className="text-sm text-gray-300 leading-relaxed">
-                  &ldquo;I built this entire platform in 48 hours. What worked, what broke, and how AI did 90% of the heavy lifting.&rdquo;
+                  8 AI-generated sections, full provisioning pipeline, deployed and live. Not a wireframe — a running app.
                 </p>
-                <p className="text-xs text-green-400 mt-4 font-medium">Building in Public</p>
               </div>
-            </div>
-
-            <div className="mt-8 text-center">
-              <Link href="/blog" className="text-sm text-gray-400 hover:text-white transition-colors underline underline-offset-4">
-                Read more case studies on the blog
-              </Link>
             </div>
           </div>
         </section>
