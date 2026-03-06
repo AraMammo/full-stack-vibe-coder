@@ -58,7 +58,7 @@ export function Footer() {
           <div className="footer-section">
             <h3 className="footer-heading">Company</h3>
             <p className="footer-description">
-              <strong>ShipKit</strong> — AI-powered business launch platform.
+              <strong>ShipKit</strong> by <a href="https://bottlenecklabs.ai" target="_blank" rel="noopener noreferrer" className="footer-link-item">BottleneckLabs.ai</a> — AI-powered business launch platform.
               We turn business ideas into complete, deployable products in under 30 minutes.
             </p>
           </div>
@@ -92,7 +92,7 @@ export function Footer() {
             &copy; {currentYear} ShipKit. All rights reserved.
           </p>
           <p className="footer-tech">
-            Built with Next.js | TypeScript | AI-Powered
+            A <a href="https://bottlenecklabs.ai" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ textDecoration: 'underline' }}>BottleneckLabs.ai</a> product
           </p>
         </div>
       </div>
