@@ -13,6 +13,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import { CLAUDE_MODEL } from '@/lib/ai-config';
 
 // ============================================
 // TYPES
@@ -112,7 +113,7 @@ export async function extractVisualDNA(imageBuffer: Buffer): Promise<VisualDNABl
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   const claudeResponse = await anthropic.messages.create({
-    model: 'claude-sonnet-4-5-20250514',
+    model: CLAUDE_MODEL,
     max_tokens: 1000,
     messages: [
       {

@@ -234,7 +234,7 @@ export interface ProposalDocument {
 
 export interface AgentConfig {
   name: string;
-  model: string; // e.g., 'claude-sonnet-4.5-20250929'
+  model: string; // Use CLAUDE_MODEL from @/lib/ai-config
   temperature: number;
   maxTokens: number;
 }

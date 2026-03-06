@@ -9,6 +9,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import { CLAUDE_MODEL } from '@/lib/ai-config';
 import { prisma } from '@/lib/db';
 import { AgentConfig, AgentResult, WorkflowState } from './types';
 import { z } from 'zod';
@@ -20,7 +21,7 @@ export abstract class BaseAgent<TInput = any, TOutput = any> {
   constructor(config: Partial<AgentConfig> = {}) {
     this.config = {
       name: config.name || 'base-agent',
-      model: config.model || 'claude-sonnet-4.5-20250929',
+      model: config.model || CLAUDE_MODEL,
       temperature: config.temperature ?? 0.7,
       maxTokens: config.maxTokens || 4096,
     };

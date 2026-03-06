@@ -9,6 +9,7 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import { Octokit } from '@octokit/rest';
+import { CLAUDE_MODEL } from '@/lib/ai-config';
 import { prisma } from '@/lib/db';
 
 // ============================================
@@ -123,7 +124,7 @@ export async function processChangeRequest(
     // Step 2: Call Claude with project context + user message
     console.log('[ChangeHandler] Asking Claude to generate changes...');
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250514',
+      model: CLAUDE_MODEL,
       max_tokens: 8192,
       system: `You are an expert Next.js developer. The user has a deployed website and wants to make changes. Given the current file tree and the user's request, identify which files need to change and output ONLY those files regenerated.
 

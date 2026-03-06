@@ -9,6 +9,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import { CLAUDE_MODEL } from '@/lib/ai-config';
 import { PrismaClient, BIABTier } from '@/app/generated/prisma';
 import { generateCodebase, type CodegenInput, parseCodebaseOutput } from '@/lib/services/claude-codegen';
 import { provisionInfrastructure, type ProvisioningInput } from '@/lib/services/provisioning-pipeline';
@@ -83,7 +84,7 @@ interface PromptExecutionResult {
 export class ShipKitOrchestrator {
   private anthropic: Anthropic;
   private prisma: PrismaClient;
-  private model: string = 'claude-sonnet-4-5-20250514';
+  private model: string = CLAUDE_MODEL;
   private maxTokens: number = 4096;
   private progressCallback?: ProgressCallback;
   private userContextFormatted?: string;
@@ -520,7 +521,7 @@ CRITICAL: Keep responses concise and actionable. Use structured formats (bullet 
 
   private async createLogoPromptFromBrandStrategy(brandOutput: string): Promise<string> {
     const response = await this.anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250514',
+      model: CLAUDE_MODEL,
       max_tokens: 500,
       messages: [{
         role: 'user',

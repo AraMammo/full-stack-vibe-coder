@@ -9,6 +9,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import { CLAUDE_MODEL } from '@/lib/ai-config';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
 
@@ -94,7 +95,7 @@ export abstract class BaseSpecialistAgent {
   constructor(config: SpecialistAgentConfig) {
     this.config = {
       name: config.name,
-      model: config.model || 'claude-sonnet-4.5-20250929',
+      model: config.model || CLAUDE_MODEL,
       temperature: config.temperature ?? 0.7,
       maxTokens: config.maxTokens || 8192,
     };

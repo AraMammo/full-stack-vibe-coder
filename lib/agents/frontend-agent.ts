@@ -5,6 +5,7 @@
  * Generates React/Next.js components with TypeScript and Tailwind CSS
  */
 
+import { CLAUDE_MODEL } from '@/lib/ai-config';
 import {
   BaseSpecialistAgent,
   TaskExecutionContext,
@@ -16,7 +17,7 @@ export class FrontendAgent extends BaseSpecialistAgent {
   constructor() {
     super({
       name: 'frontend',
-      model: 'claude-sonnet-4.5-20250929',
+      model: CLAUDE_MODEL,
       temperature: 0.6, // Balanced - creative but consistent code
       maxTokens: 16384, // Large output for component code
     });

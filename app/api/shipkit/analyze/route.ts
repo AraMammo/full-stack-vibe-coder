@@ -9,6 +9,7 @@
 
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { CLAUDE_MODEL } from '@/lib/ai-config';
 import { prisma } from '@/lib/db';
 import { nanoid } from 'nanoid';
 import { checkRateLimit, getClientIP, rateLimiters } from '@/lib/rate-limit';
@@ -90,7 +91,7 @@ export async function POST(request: Request) {
 
     // Call Claude
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250514',
+      model: CLAUDE_MODEL,
       max_tokens: 2048,
       system: SYSTEM_PROMPT,
       messages: [

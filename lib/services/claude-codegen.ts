@@ -51,7 +51,9 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const MODEL = 'claude-sonnet-4-5-20250514';
+import { CLAUDE_MODEL } from '@/lib/ai-config';
+
+const MODEL = CLAUDE_MODEL;
 const MAX_TOKENS = 8192;
 
 /**

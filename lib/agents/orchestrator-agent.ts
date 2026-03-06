@@ -9,6 +9,7 @@
  */
 
 import { BaseAgent } from './base';
+import { CLAUDE_MODEL } from '@/lib/ai-config';
 import {
   AgentResult,
   OrchestratorInput,
@@ -23,7 +24,7 @@ export class OrchestratorAgent extends BaseAgent<OrchestratorInput, ExecutionPla
   constructor() {
     super({
       name: 'orchestrator',
-      model: 'claude-sonnet-4.5-20250929',
+      model: CLAUDE_MODEL,
       temperature: 0.4, // Balanced - need creativity for decomposition but consistency for structure
       maxTokens: 8192, // Large output for detailed task breakdown
     });
