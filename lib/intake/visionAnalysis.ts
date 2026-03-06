@@ -53,9 +53,9 @@ interface VisionApiResponse {
  * Uses Google Cloud Vision API for raw signals, then Claude for structured analysis.
  */
 export async function extractVisualDNA(imageBuffer: Buffer): Promise<VisualDNABlock> {
-  const apiKey = process.env.GOOGLE_CLOUD_VISION_API_KEY;
+  const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) {
-    throw new Error('GOOGLE_CLOUD_VISION_API_KEY not set');
+    throw new Error('GOOGLE_API_KEY not set');
   }
 
   console.log('[VisualDNA] Analyzing image with Google Vision API...');
