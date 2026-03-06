@@ -115,19 +115,12 @@ export async function createDashboardLink(
 }
 
 /**
- * Disconnect a Standard account (customer keeps everything — customers, subscriptions, etc.)
+ * Disconnect a Standard account created via API.
+ * Deletes the account link — customer's Stripe data (customers, subscriptions, etc.)
+ * remains in their own Stripe account if they had one.
  */
 export async function disconnectAccount(accountId: string): Promise<void> {
-  const clientId = process.env.STRIPE_CLIENT_ID;
-  if (!clientId) {
-    throw new Error('STRIPE_CLIENT_ID not set — required for OAuth deauthorization');
-  }
-
-  await stripe.oauth.deauthorize({
-    client_id: clientId,
-    stripe_user_id: accountId,
-  });
-
+  await stripe.accounts.del(accountId);
   console.log(`[Stripe Connect] Standard account disconnected: ${accountId}`);
 }
 
