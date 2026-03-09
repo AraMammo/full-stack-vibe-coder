@@ -69,11 +69,35 @@ const SignInIcon = () => (
   </svg>
 );
 
+const EchoMeIcon = () => (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+  </svg>
+);
+
+const AuditIcon = () => (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.25 2.25 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
+  </svg>
+);
+
 const navItems: NavItem[] = [
   { label: 'Home', href: '/', icon: <HomeIcon />, showWhenAuth: 'always' },
   { label: 'Pricing', href: '/get-started', icon: <PricingIcon />, showWhenAuth: 'always' },
   { label: 'Blog', href: '/blog', icon: <BlogIcon />, showWhenAuth: 'always' },
   { label: 'FAQ', href: '/faq', icon: <FAQIcon />, showWhenAuth: 'always' },
+];
+
+const offeringsItems: NavItem[] = [
+  { label: 'EchoMe', href: '/echome', icon: <EchoMeIcon />, showWhenAuth: 'always' },
+  { label: 'Pre-Flight Audit', href: '/pre-flight', icon: <AuditIcon />, showWhenAuth: 'always' },
+];
+
+const freeToolsItems: NavItem[] = [
+  { label: 'Diagnostic Quiz', href: '/assessment', icon: <ToolsIcon />, showWhenAuth: 'always' },
+  { label: 'ROI Calculator', href: '/roi-calculator', icon: <ToolsIcon />, showWhenAuth: 'always' },
+  { label: 'Bottleneck Worksheet', href: '/bottleneck-worksheet', icon: <ToolsIcon />, showWhenAuth: 'always' },
+  { label: 'Readiness Checklist', href: '/readiness-checklist', icon: <ToolsIcon />, showWhenAuth: 'always' },
 ];
 
 export function SideMenu({ isOpen, onClose, currentPath, isAuthenticated, authLoading }: SideMenuProps) {
@@ -188,6 +212,71 @@ export function SideMenu({ isOpen, onClose, currentPath, isAuthenticated, authLo
                         }
                       : { color: 'white' }
                   }
+                >
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+
+          {/* Offerings Section */}
+          <div className="my-4 h-px bg-gradient-to-r from-transparent via-pink-500/30 to-transparent" />
+          <p className="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Offerings</p>
+          {offeringsItems.filter(shouldShowItem).map((item) => {
+            const isActive = currentPath === item.href ||
+              (item.href !== '/' && currentPath.startsWith(item.href));
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`
+                  flex items-center gap-3 px-4 py-3 rounded-lg
+                  transition-all duration-200
+                  ${isActive
+                    ? 'bg-gradient-to-r from-pink-500/20 to-cyan-500/20 border border-pink-500/30'
+                    : 'hover:bg-white/5'
+                  }
+                  focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black
+                `}
+                aria-current={isActive ? 'page' : undefined}
+                onClick={onClose}
+              >
+                <span className={isActive ? 'text-pink-400' : 'text-gray-400'}>{item.icon}</span>
+                <span
+                  className="font-medium"
+                  style={isActive ? { background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } : { color: 'white' }}
+                >
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+
+          {/* Free Tools Section */}
+          <div className="my-4 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
+          <p className="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Free Tools</p>
+          {freeToolsItems.filter(shouldShowItem).map((item) => {
+            const isActive = currentPath === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`
+                  flex items-center gap-3 px-4 py-2.5 rounded-lg
+                  transition-all duration-200
+                  ${isActive
+                    ? 'bg-gradient-to-r from-pink-500/20 to-cyan-500/20 border border-pink-500/30'
+                    : 'hover:bg-white/5'
+                  }
+                  focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black
+                `}
+                aria-current={isActive ? 'page' : undefined}
+                onClick={onClose}
+              >
+                <span className={isActive ? 'text-pink-400' : 'text-gray-400'}>{item.icon}</span>
+                <span
+                  className="font-medium text-sm"
+                  style={isActive ? { background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } : { color: 'white' }}
                 >
                   {item.label}
                 </span>

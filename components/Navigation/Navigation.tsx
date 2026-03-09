@@ -139,6 +139,8 @@ export function Navigation() {
             <div className="hidden md:flex items-center gap-6">
               {[
                 { label: 'Pricing', href: '/get-started' },
+                { label: 'EchoMe', href: '/echome' },
+                { label: 'Pre-Flight', href: '/pre-flight' },
                 { label: 'FAQ', href: '/faq' },
                 { label: 'Blog', href: '/blog' },
               ].map((link) => (
