@@ -14,6 +14,7 @@ import { PrismaClient, BIABTier } from '@/app/generated/prisma';
 import { generateCodebase, type CodegenInput, parseCodebaseOutput } from '@/lib/services/claude-codegen';
 import { provisionInfrastructure, type ProvisioningInput } from '@/lib/services/provisioning-pipeline';
 import { deployStaticSite } from '@/lib/provisioning/staticDeploy';
+import { runRefinementPipeline } from '@/lib/openclaw';
 
 // ============================================
 // TIER DISPLAY NAME MAPPING
@@ -292,6 +293,32 @@ export class ShipKitOrchestrator {
           });
 
           if (codeResult.success && codeResult.files && codeResult.files.size > 0) {
+            // Run OpenClaw refinement pipeline (3 cycles, 4 agents each)
+            let refinedFiles = codeResult.files;
+            try {
+              console.log(`[ShipKit] Running OpenClaw refinement (3 cycles)...`);
+              const orchestratorOutputs: Record<string, string> = {};
+              Array.from(executionResults.entries()).forEach(([key, result]) => {
+                orchestratorOutputs[key] = result.output;
+              });
+
+              refinedFiles = await runRefinementPipeline(
+                input.projectId,
+                codeResult.files,
+                orchestratorOutputs,
+                (update) => {
+                  this.prisma.project.update({
+                    where: { id: input.projectId },
+                    data: { codegenStatus: `refinement:cycle${update.cycle}:${update.phase}` },
+                  }).catch((e: unknown) => console.warn(`[ShipKit] Failed to update refinement progress: ${e}`));
+                },
+              );
+              console.log(`[ShipKit] OpenClaw refinement complete. ${refinedFiles.size} files refined.`);
+            } catch (refinementError) {
+              console.warn(`[ShipKit] OpenClaw refinement failed, proceeding with original files:`, refinementError);
+              // Graceful fallback — use unrefined files
+            }
+
             // Extract migration SQL from app architecture output
             const migrationSql = extractMigrationSql(appArchitecture);
 
@@ -308,7 +335,7 @@ export class ShipKitOrchestrator {
                 projectName: input.businessConcept.substring(0, 100),
                 userId: input.userId,
                 userEmail: user?.email || '',
-                codeFiles: codeResult.files,
+                codeFiles: refinedFiles,
                 migrationSql: migrationSql || undefined,
               },
               async (step, status) => {
@@ -353,11 +380,36 @@ export class ShipKitOrchestrator {
           const codeFiles = parseCodebaseOutput(landingOutput);
 
           if (codeFiles.size > 0) {
+            // Run OpenClaw refinement pipeline for static sites too
+            let refinedStaticFiles = codeFiles;
+            try {
+              console.log(`[ShipKit] Running OpenClaw refinement for Presence (3 cycles)...`);
+              const orchestratorOutputs: Record<string, string> = {};
+              Array.from(executionResults.entries()).forEach(([key, result]) => {
+                orchestratorOutputs[key] = result.output;
+              });
+
+              refinedStaticFiles = await runRefinementPipeline(
+                input.projectId,
+                codeFiles,
+                orchestratorOutputs,
+                (update) => {
+                  this.prisma.project.update({
+                    where: { id: input.projectId },
+                    data: { codegenStatus: `refinement:cycle${update.cycle}:${update.phase}` },
+                  }).catch((e: unknown) => console.warn(`[ShipKit] Failed to update refinement progress: ${e}`));
+                },
+              );
+              console.log(`[ShipKit] OpenClaw refinement complete for Presence.`);
+            } catch (refinementError) {
+              console.warn(`[ShipKit] OpenClaw refinement failed for Presence, proceeding with original files:`, refinementError);
+            }
+
             const staticResult = await deployStaticSite({
               projectId: input.projectId,
               projectName: input.businessConcept.substring(0, 100),
               userId: input.userId,
-              codeFiles,
+              codeFiles: refinedStaticFiles,
             });
 
             if (staticResult.success) {

@@ -85,6 +85,7 @@ model Project {
   visualDna               Json?
   deployedApp             DeployedApp?
   changeRequests          ChangeRequest[]
+  refinementCycles        RefinementCycle[]
 
   @@index([userId])
   @@index([status])
@@ -452,6 +453,42 @@ model ChangeRequest {
   @@index([projectId])
   @@index([status])
   @@map("change_requests")
+}
+
+model RefinementCycle {
+  id                  String            @id @default(uuid())
+  projectId           String
+  project             Project           @relation(fields: [projectId], references: [id])
+  cycleNumber         Int
+  status              String            @default("PENDING") // PENDING | EVALUATING | SYNTHESIZING | REGENERATING | COMPLETE | FAILED
+  synthesizedFeedback String?           @db.Text
+  filesRegenerated    String[]          @default([])
+  tokensUsed          Int               @default(0)
+  executionTimeMs     Int?
+  createdAt           DateTime          @default(now())
+  completedAt         DateTime?
+  evaluations         AgentEvaluation[]
+
+  @@unique([projectId, cycleNumber])
+  @@index([projectId])
+  @@map("refinement_cycles")
+}
+
+model AgentEvaluation {
+  id              String          @id @default(uuid())
+  cycleId         String
+  cycle           RefinementCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  skill           String          // structure | brand_visual | copy_conversion | code_quality
+  findings        Json            // Array of { severity, file, issue, suggestion }
+  score           Int?
+  rawOutput       String          @db.Text
+  tokensUsed      Int             @default(0)
+  executionTimeMs Int?
+  createdAt       DateTime        @default(now())
+
+  @@index([cycleId])
+  @@index([skill])
+  @@map("agent_evaluations")
 }
 
 model OpenClawSession {

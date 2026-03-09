@@ -17,6 +17,7 @@ import { TransferButton } from './TransferButton';
 import { BillingButton } from './BillingButton';
 import { UpgradeSection } from './UpgradeSection';
 import { ChangeRequestPanel } from './ChangeRequestPanel';
+import { RefinementPanel } from './RefinementPanel';
 import { OnboardingChecklist } from '@/components/OnboardingChecklist';
 import BuildProgressView from '@/components/BuildProgressView';
 import { RetryButton } from './RetryButton';
@@ -434,6 +435,13 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* OpenClaw Refinement Panel (for completed projects) */}
+        {isCompleted && deployedApp && (
+          <div className="mb-8">
+            <RefinementPanel projectId={params.id} />
           </div>
         )}
 
