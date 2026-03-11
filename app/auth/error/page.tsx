@@ -75,7 +75,7 @@ function ErrorContent() {
   const errorInfo = errorMessages[error || 'Default'] || errorMessages.Default;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black px-4">
+    <div className="min-h-screen flex items-center justify-center bg-base px-4">
       <div className="max-w-md w-full">
         {/* Error Card */}
         <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-red-500/30 rounded-2xl p-8 shadow-2xl">
@@ -104,14 +104,14 @@ function ErrorContent() {
           </h1>
 
           {/* Error Description */}
-          <p className="text-gray-400 text-center mb-6">
+          <p className="text-fsvc-text-secondary text-center mb-6">
             {errorInfo.description}
           </p>
 
           {/* Error Code */}
           {error && (
             <div className="mb-6 p-3 bg-black/50 rounded-lg border border-gray-800">
-              <p className="text-xs text-gray-500 mb-1">Error Code:</p>
+              <p className="text-xs text-fsvc-text-disabled mb-1">Error Code:</p>
               <p className="text-sm text-red-400 font-mono">{error}</p>
             </div>
           )}
@@ -127,14 +127,14 @@ function ErrorContent() {
           <div className="space-y-3">
             <Link
               href="/auth/signin"
-              className="block w-full text-center py-3 px-4 bg-gradient-to-r from-pink-500 to-cyan-500 hover:from-pink-600 hover:to-cyan-600 text-white font-semibold rounded-lg transition-all duration-200"
+              className="block w-full text-center py-3 px-4 bg-accent hover:opacity-90 text-white font-semibold rounded-lg transition-all duration-200"
             >
               Try Again
             </Link>
 
             <Link
               href="/"
-              className="block w-full text-center py-3 px-4 border border-gray-700 hover:border-gray-600 text-gray-400 hover:text-gray-300 font-semibold rounded-lg transition-all duration-200"
+              className="block w-full text-center py-3 px-4 border border-gray-700 hover:border-gray-600 text-fsvc-text-secondary hover:text-fsvc-text-secondary font-semibold rounded-lg transition-all duration-200"
             >
               Back to Home
             </Link>
@@ -142,11 +142,11 @@ function ErrorContent() {
 
           {/* Support Link */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-fsvc-text-disabled">
               Still having issues?{' '}
               <Link
                 href="/contact"
-                className="text-cyan-400 hover:text-cyan-300 underline"
+                className="text-accent-2 hover:text-accent-2/80 underline"
               >
                 Contact Support
               </Link>
@@ -156,9 +156,9 @@ function ErrorContent() {
 
         {/* Debug Info (Development Only) */}
         {process.env.NODE_ENV === 'development' && (
-          <div className="mt-6 p-4 bg-gray-900 border border-gray-800 rounded-lg">
-            <p className="text-xs text-gray-500 mb-2">Debug Info:</p>
-            <pre className="text-xs text-gray-400 overflow-x-auto">
+          <div className="mt-6 p-4 bg-base border border-gray-800 rounded-lg">
+            <p className="text-xs text-fsvc-text-disabled mb-2">Debug Info:</p>
+            <pre className="text-xs text-fsvc-text-secondary overflow-x-auto">
               {JSON.stringify(
                 {
                   error,
@@ -178,7 +178,7 @@ function ErrorContent() {
 
 export default function ErrorPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><p className="text-white">Loading...</p></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-base flex items-center justify-center"><p className="text-white">Loading...</p></div>}>
       <ErrorContent />
     </Suspense>
   );

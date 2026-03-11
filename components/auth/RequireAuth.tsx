@@ -33,10 +33,10 @@ export default function RequireAuth({ children, loadingComponent }: RequireAuthP
     return (
       <>
         {loadingComponent || (
-          <div className="min-h-screen bg-black flex items-center justify-center">
+          <div className="min-h-screen bg-base flex items-center justify-center">
             <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500 mb-4"></div>
-              <p className="text-gray-400">Loading...</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent-2 mb-4"></div>
+              <p className="text-fsvc-text-secondary">Loading...</p>
             </div>
           </div>
         )}
@@ -46,9 +46,9 @@ export default function RequireAuth({ children, loadingComponent }: RequireAuthP
 
   if (status === 'unauthenticated') {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-base flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400">Redirecting to sign in...</p>
+          <p className="text-fsvc-text-secondary">Redirecting to sign in...</p>
         </div>
       </div>
     );

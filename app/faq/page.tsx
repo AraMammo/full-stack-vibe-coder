@@ -73,7 +73,7 @@ export default function FAQPage() {
       answer: (
         <div className="faq-answer-content">
           <p>
-            ShipKit packages are delivered in under 30 minutes. Most complete in 10-20 minutes.
+            Full Stack Vibe Coder packages are delivered in under 30 minutes. Most complete in 10-20 minutes.
           </p>
           <p>
             Record a voice note describing your business idea. Our AI generates everything—market research,
@@ -86,7 +86,7 @@ export default function FAQPage() {
       )
     },
     {
-      question: "What's included in ShipKit?",
+      question: "What's included?",
       answer: (
         <div className="faq-answer-content">
           <p>Everything you need to run a real business, delivered in under 30 minutes:</p>
@@ -115,7 +115,7 @@ export default function FAQPage() {
             transactional email, GitHub repo, and admin dashboard. All deployed and running.
           </p>
           <p>
-            You can also try a free preview first — describe your idea and see what ShipKit generates before you pay.
+            You can also try a free preview first — describe your idea and see what Full Stack Vibe Coder generates before you pay.
           </p>
           <p>
             Eject anytime. 30-day money back guarantee. No lock-in.

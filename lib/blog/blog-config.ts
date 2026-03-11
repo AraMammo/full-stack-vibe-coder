@@ -10,7 +10,8 @@ export type BlogCategory =
   | 'Case Studies'
   | 'Myths Debunked'
   | 'Scam Alerts'
-  | 'Fundamentals';
+  | 'Fundamentals'
+  | 'Culture & Craft';
 
 export interface BlogPost {
   slug: string;
@@ -27,7 +28,8 @@ export const categoryDescriptions: Record<BlogCategory, string> = {
   'Case Studies': 'Actual client results with real numbers. Not fake testimonials.',
   'Myths Debunked': 'Calling out AI development BS. What actually works.',
   'Scam Alerts': 'Red flags I learned the hard way so you don\'t have to.',
-  'Fundamentals': 'Core concepts explained clearly. No jargon.'
+  'Fundamentals': 'Core concepts explained clearly. No jargon.',
+  'Culture & Craft': 'The people, philosophy, and history behind the code.'
 };
 
 export const categoryColors: Record<BlogCategory, string> = {
@@ -35,5 +37,6 @@ export const categoryColors: Record<BlogCategory, string> = {
   'Case Studies': 'from-green-500 to-emerald-500',
   'Myths Debunked': 'from-pink-500 to-rose-500',
   'Scam Alerts': 'from-red-500 to-orange-500',
-  'Fundamentals': 'from-purple-500 to-indigo-500'
+  'Fundamentals': 'from-purple-500 to-indigo-500',
+  'Culture & Craft': 'from-amber-500 to-pink-500'
 };

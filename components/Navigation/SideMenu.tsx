@@ -3,7 +3,6 @@
  *
  * Slide-out navigation drawer from the left.
  * Works on both mobile and desktop for a unified experience.
- * Part of UX overhaul - cleaner navigation, more screen real estate.
  */
 
 'use client';
@@ -127,6 +126,19 @@ export function SideMenu({ isOpen, onClose, currentPath, isAuthenticated, authLo
     return true;
   };
 
+  const linkClasses = (isActive: boolean) =>
+    `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-base ${
+      isActive
+        ? 'bg-accent/10 border border-accent/30'
+        : 'hover:bg-raised'
+    }`;
+
+  const iconColor = (isActive: boolean) =>
+    isActive ? 'text-accent' : 'text-fsvc-text-disabled';
+
+  const labelStyle = (isActive: boolean) =>
+    isActive ? 'font-medium text-accent' : 'font-medium text-fsvc-text';
+
   return (
     <div
       className="fixed inset-0 z-[999998]"
@@ -136,7 +148,7 @@ export function SideMenu({ isOpen, onClose, currentPath, isAuthenticated, authLo
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
+        className="absolute inset-0 bg-base/80 backdrop-blur-sm transition-opacity duration-300"
         onClick={handleBackdropClick}
         aria-hidden="true"
         style={{ animation: 'fadeIn 0.2s ease-out' }}
@@ -146,29 +158,21 @@ export function SideMenu({ isOpen, onClose, currentPath, isAuthenticated, authLo
       <div
         ref={drawerRef}
         id="side-menu"
-        className="absolute top-0 left-0 bottom-0 w-[280px] max-w-[85vw] bg-black/95 backdrop-blur-xl border-r border-pink-500/30 shadow-[8px_0_32px_rgba(0,0,0,0.6)]"
+        className="absolute top-0 left-0 bottom-0 w-[280px] max-w-[85vw] bg-surface/95 backdrop-blur-xl border-r border-border shadow-[8px_0_32px_rgba(0,0,0,0.6)]"
         style={{ animation: 'slideInLeft 0.3s ease-out' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <span
-            className="text-lg font-bold tracking-tight uppercase"
-            style={{
-              background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <span className="text-lg font-heading font-bold tracking-tight uppercase text-accent">
             Menu
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500"
+            className="w-10 h-10 flex items-center justify-center bg-raised hover:bg-border rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-accent"
             aria-label="Close menu"
           >
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 text-fsvc-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -185,43 +189,19 @@ export function SideMenu({ isOpen, onClose, currentPath, isAuthenticated, authLo
                 key={item.href}
                 ref={index === 0 ? firstLinkRef : undefined}
                 href={item.href}
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg
-                  transition-all duration-200
-                  ${isActive
-                    ? 'bg-gradient-to-r from-pink-500/20 to-cyan-500/20 border border-pink-500/30'
-                    : 'hover:bg-white/5'
-                  }
-                  focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black
-                `}
+                className={linkClasses(isActive)}
                 aria-current={isActive ? 'page' : undefined}
                 onClick={onClose}
               >
-                <span className={isActive ? 'text-pink-400' : 'text-gray-400'}>
-                  {item.icon}
-                </span>
-                <span
-                  className="font-medium"
-                  style={
-                    isActive
-                      ? {
-                          background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text',
-                        }
-                      : { color: 'white' }
-                  }
-                >
-                  {item.label}
-                </span>
+                <span className={iconColor(isActive)}>{item.icon}</span>
+                <span className={labelStyle(isActive)}>{item.label}</span>
               </Link>
             );
           })}
 
           {/* Offerings Section */}
-          <div className="my-4 h-px bg-gradient-to-r from-transparent via-pink-500/30 to-transparent" />
-          <p className="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Offerings</p>
+          <div className="my-4 h-px bg-border" />
+          <p className="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-fsvc-text-disabled">Offerings</p>
           {offeringsItems.filter(shouldShowItem).map((item) => {
             const isActive = currentPath === item.href ||
               (item.href !== '/' && currentPath.startsWith(item.href));
@@ -229,142 +209,74 @@ export function SideMenu({ isOpen, onClose, currentPath, isAuthenticated, authLo
               <Link
                 key={item.href}
                 href={item.href}
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg
-                  transition-all duration-200
-                  ${isActive
-                    ? 'bg-gradient-to-r from-pink-500/20 to-cyan-500/20 border border-pink-500/30'
-                    : 'hover:bg-white/5'
-                  }
-                  focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black
-                `}
+                className={linkClasses(isActive)}
                 aria-current={isActive ? 'page' : undefined}
                 onClick={onClose}
               >
-                <span className={isActive ? 'text-pink-400' : 'text-gray-400'}>{item.icon}</span>
-                <span
-                  className="font-medium"
-                  style={isActive ? { background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } : { color: 'white' }}
-                >
-                  {item.label}
-                </span>
+                <span className={iconColor(isActive)}>{item.icon}</span>
+                <span className={labelStyle(isActive)}>{item.label}</span>
               </Link>
             );
           })}
 
           {/* Free Tools Section */}
-          <div className="my-4 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
-          <p className="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Free Tools</p>
+          <div className="my-4 h-px bg-border" />
+          <p className="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-fsvc-text-disabled">Free Tools</p>
           {freeToolsItems.filter(shouldShowItem).map((item) => {
             const isActive = currentPath === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`
-                  flex items-center gap-3 px-4 py-2.5 rounded-lg
-                  transition-all duration-200
-                  ${isActive
-                    ? 'bg-gradient-to-r from-pink-500/20 to-cyan-500/20 border border-pink-500/30'
-                    : 'hover:bg-white/5'
-                  }
-                  focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black
-                `}
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-base ${
+                  isActive ? 'bg-accent/10 border border-accent/30' : 'hover:bg-raised'
+                }`}
                 aria-current={isActive ? 'page' : undefined}
                 onClick={onClose}
               >
-                <span className={isActive ? 'text-pink-400' : 'text-gray-400'}>{item.icon}</span>
-                <span
-                  className="font-medium text-sm"
-                  style={isActive ? { background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } : { color: 'white' }}
-                >
-                  {item.label}
-                </span>
+                <span className={iconColor(isActive)}>{item.icon}</span>
+                <span className={`text-sm ${isActive ? 'font-medium text-accent' : 'font-medium text-fsvc-text'}`}>{item.label}</span>
               </Link>
             );
           })}
 
           {/* Divider */}
-          <div className="my-4 h-px bg-gradient-to-r from-transparent via-pink-500/30 to-transparent" />
+          <div className="my-4 h-px bg-border" />
 
           {/* Auth-aware links */}
           {!authLoading && (
             isAuthenticated ? (
               <Link
                 href="/dashboard"
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg
-                  transition-all duration-200
-                  ${currentPath === '/dashboard' || currentPath.startsWith('/dashboard/')
-                    ? 'bg-gradient-to-r from-pink-500/20 to-cyan-500/20 border border-pink-500/30'
-                    : 'hover:bg-white/5'
-                  }
-                  focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black
-                `}
+                className={linkClasses(currentPath.startsWith('/dashboard'))}
                 aria-current={currentPath.startsWith('/dashboard') ? 'page' : undefined}
                 onClick={onClose}
               >
-                <span className={currentPath.startsWith('/dashboard') ? 'text-pink-400' : 'text-gray-400'}>
+                <span className={iconColor(currentPath.startsWith('/dashboard'))}>
                   <DashboardIcon />
                 </span>
-                <span
-                  className="font-medium"
-                  style={
-                    currentPath.startsWith('/dashboard')
-                      ? {
-                          background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text',
-                        }
-                      : { color: 'white' }
-                  }
-                >
-                  Dashboard
-                </span>
+                <span className={labelStyle(currentPath.startsWith('/dashboard'))}>Dashboard</span>
               </Link>
             ) : (
               <Link
                 href="/auth/signin"
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg
-                  transition-all duration-200
-                  ${currentPath === '/auth/signin'
-                    ? 'bg-gradient-to-r from-pink-500/20 to-cyan-500/20 border border-pink-500/30'
-                    : 'hover:bg-white/5'
-                  }
-                  focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black
-                `}
+                className={linkClasses(currentPath === '/auth/signin')}
                 aria-current={currentPath === '/auth/signin' ? 'page' : undefined}
                 onClick={onClose}
               >
-                <span className={currentPath === '/auth/signin' ? 'text-pink-400' : 'text-gray-400'}>
+                <span className={iconColor(currentPath === '/auth/signin')}>
                   <SignInIcon />
                 </span>
-                <span
-                  className="font-medium"
-                  style={
-                    currentPath === '/auth/signin'
-                      ? {
-                          background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text',
-                        }
-                      : { color: 'white' }
-                  }
-                >
-                  Sign In
-                </span>
+                <span className={labelStyle(currentPath === '/auth/signin')}>Sign In</span>
               </Link>
             )
           )}
         </nav>
 
         {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-white/10">
-          <p className="text-xs text-gray-500 text-center">
-            ShipKit
+        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-border">
+          <p className="text-xs text-fsvc-text-disabled text-center">
+            Full Stack Vibe Coder
           </p>
         </div>
       </div>

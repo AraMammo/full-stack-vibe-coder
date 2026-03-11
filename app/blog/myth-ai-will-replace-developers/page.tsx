@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { BlogPostLayout, BlogSection, BlogHighlight, BlogQuote, BlogWarning } from '@/components/BlogPostLayout';
 
 export const metadata: Metadata = {
-  title: "Myth: 'AI Will Replace Developers' | ShipKit",
+  title: "Myth: 'AI Will Replace Developers' | Full Stack Vibe Coder",
   description: "Why this narrative is complete BS. AI makes good developers unstoppable. It makes bad developers unemployable. Here's the difference.",
   keywords: "AI replacing developers, future of coding, AI development myth",
   openGraph: {
@@ -54,8 +54,8 @@ export default function MythAIWillReplaceDevelopers() {
         </p>
 
         <div className="space-y-4 mt-6">
-          <div className="bg-black/40 border border-pink-500/30 rounded-lg p-5">
-            <h4 className="text-pink-400 font-semibold mb-2">1. Understanding Requirements</h4>
+          <div className="bg-black/40 border border-accent/30 rounded-lg p-5">
+            <h4 className="text-accent font-semibold mb-2">1. Understanding Requirements</h4>
             <p className="text-white/80">
               Client says: "I need an app for my business."<br />
               Developer asks: "What problem are you solving? Who are the users? What actions do they need
@@ -66,8 +66,8 @@ export default function MythAIWillReplaceDevelopers() {
             </p>
           </div>
 
-          <div className="bg-black/40 border border-pink-500/30 rounded-lg p-5">
-            <h4 className="text-pink-400 font-semibold mb-2">2. System Architecture</h4>
+          <div className="bg-black/40 border border-accent/30 rounded-lg p-5">
+            <h4 className="text-accent font-semibold mb-2">2. System Architecture</h4>
             <p className="text-white/80">
               How do components interact? What's the data flow? What happens when service X goes down?
               How do we scale to 10,000 users? 100,000?
@@ -78,8 +78,8 @@ export default function MythAIWillReplaceDevelopers() {
             </p>
           </div>
 
-          <div className="bg-black/40 border border-pink-500/30 rounded-lg p-5">
-            <h4 className="text-pink-400 font-semibold mb-2">3. Code Review</h4>
+          <div className="bg-black/40 border border-accent/30 rounded-lg p-5">
+            <h4 className="text-accent font-semibold mb-2">3. Code Review</h4>
             <p className="text-white/80">
               Does this create a security vulnerability? Will this scale? Is this maintainable? Are there
               edge cases we're not handling?
@@ -90,8 +90,8 @@ export default function MythAIWillReplaceDevelopers() {
             </p>
           </div>
 
-          <div className="bg-black/40 border border-pink-500/30 rounded-lg p-5">
-            <h4 className="text-pink-400 font-semibold mb-2">4. Debugging Production Issues</h4>
+          <div className="bg-black/40 border border-accent/30 rounded-lg p-5">
+            <h4 className="text-accent font-semibold mb-2">4. Debugging Production Issues</h4>
             <p className="text-white/80">
               Site's down. Users can't check out. Revenue is bleeding. The error logs show a database
               connection timeout. What's the root cause? How do we fix it fast?
@@ -102,8 +102,8 @@ export default function MythAIWillReplaceDevelopers() {
             </p>
           </div>
 
-          <div className="bg-black/40 border border-pink-500/30 rounded-lg p-5">
-            <h4 className="text-pink-400 font-semibold mb-2">5. Technical Decision Making</h4>
+          <div className="bg-black/40 border border-accent/30 rounded-lg p-5">
+            <h4 className="text-accent font-semibold mb-2">5. Technical Decision Making</h4>
             <p className="text-white/80">
               Should we use microservices or monolith? SQL or NoSQL? Which payment processor? Which hosting
               platform? What's the cost-benefit analysis?
@@ -116,7 +116,7 @@ export default function MythAIWillReplaceDevelopers() {
         </div>
 
         <p className="mt-6">
-          Notice a pattern? <strong className="text-pink-400">Judgment. Context. Experience.</strong>
+          Notice a pattern? <strong className="text-accent">Judgment. Context. Experience.</strong>
         </p>
         <p className="mt-2">
           AI is a tool. Tools don't replace craftspeople. They make craftspeople more effective.
@@ -166,8 +166,8 @@ export default function MythAIWillReplaceDevelopers() {
           The job isn't disappearing. It's evolving. Here's what's changing:
         </p>
 
-        <div className="bg-gradient-to-br from-cyan-500/10 to-green-500/10 border border-cyan-500/30 rounded-lg p-6 my-6">
-          <h4 className="text-cyan-400 font-bold text-lg mb-4">Skills That Matter Now:</h4>
+        <div className="bg-gradient-to-br from-accent-2/10 to-green-500/10 border border-accent-2/30 rounded-lg p-6 my-6">
+          <h4 className="text-accent-2 font-bold text-lg mb-4">Skills That Matter Now:</h4>
           <ol className="space-y-4 text-white/90">
             <li>
               <strong>1. Clear Communication</strong>
@@ -293,7 +293,7 @@ export default function MythAIWillReplaceDevelopers() {
           If you're a developer worried about AI:
         </p>
 
-        <div className="bg-black/40 border border-white/10 rounded-lg p-6 my-6">
+        <div className="bg-black/40 border border-border rounded-lg p-6 my-6">
           <h4 className="text-green-400 font-bold mb-4">Action Plan:</h4>
           <ol className="space-y-3 text-white/90">
             <li>

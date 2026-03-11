@@ -128,13 +128,13 @@ export async function deployStaticSite(
       },
     });
 
-    // Step 8: Update Project status → COMPLETED
+    // Step 8: Update Project status → LIVE
     console.log('[StaticDeploy] Step 8: Updating project status...');
     await prisma.project.update({
       where: { id: input.projectId },
       data: {
-        status: 'COMPLETED',
-        vercelDeploymentUrl: productionUrl,
+        status: 'LIVE',
+        productionUrl: productionUrl,
         githubRepoUrl: githubRepoUrl,
         githubRepoName: githubRepoName,
         completedAt: new Date(),

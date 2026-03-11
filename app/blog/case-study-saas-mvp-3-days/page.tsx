@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { BlogPostLayout, BlogSection, BlogHighlight, BlogQuote } from '@/components/BlogPostLayout';
 
 export const metadata: Metadata = {
-  title: "Case Study: SaaS MVP in 3 Days for $2,500 | ShipKit",
+  title: "Case Study: SaaS MVP in 3 Days for $2,500 | Full Stack Vibe Coder",
   description: "How we built a complete appointment booking SaaS from zero to paying customers in 72 hours. Tech stack, timeline, and exact costs.",
   keywords: "SaaS case study, MVP development, vibe coding, AI development",
   openGraph: {
@@ -48,7 +48,7 @@ export default function CaseStudySaasMVP3Days() {
         </p>
 
         <p className="mt-4">
-          She found ShipKit through a therapist Facebook group. Recorded a 4-minute voice note
+          She found Full Stack Vibe Coder through a therapist Facebook group. Recorded a 4-minute voice note
           explaining what she needed. We sent a proposal in 5 hours.
         </p>
 
@@ -128,7 +128,7 @@ export default function CaseStudySaasMVP3Days() {
 
         <div className="space-y-4 mt-6">
           <div>
-            <h4 className="text-cyan-400 font-semibold">Hours 1-3: Database Schema</h4>
+            <h4 className="text-accent-2 font-semibold">Hours 1-3: Database Schema</h4>
             <p className="text-white/80 mt-2">
               Designed Prisma schema for Users, Appointments, AppointmentTypes, Availability, Clients.
               AI generated the initial schema. I reviewed, added indexes and constraints, ran migrations.
@@ -136,7 +136,7 @@ export default function CaseStudySaasMVP3Days() {
           </div>
 
           <div>
-            <h4 className="text-cyan-400 font-semibold">Hours 3-5: Booking UI</h4>
+            <h4 className="text-accent-2 font-semibold">Hours 3-5: Booking UI</h4>
             <p className="text-white/80 mt-2">
               Built the client-facing booking flow: Select appointment type → Pick date → Choose time →
               Enter details → Pay → Confirm. Used AI to generate the UI components, I adjusted styling
@@ -145,7 +145,7 @@ export default function CaseStudySaasMVP3Days() {
           </div>
 
           <div>
-            <h4 className="text-cyan-400 font-semibold">Hours 5-8: Availability Logic</h4>
+            <h4 className="text-accent-2 font-semibold">Hours 5-8: Availability Logic</h4>
             <p className="text-white/80 mt-2">
               The complex part. Sarah's availability changes by day and appointment type. AI helped implement
               the logic: check provider availability → filter by appointment type rules → exclude booked slots →
@@ -176,7 +176,7 @@ export default function CaseStudySaasMVP3Days() {
 
         <div className="space-y-4 mt-6">
           <div>
-            <h4 className="text-cyan-400 font-semibold">Hours 1-3: Stripe Integration</h4>
+            <h4 className="text-accent-2 font-semibold">Hours 1-3: Stripe Integration</h4>
             <p className="text-white/80 mt-2">
               Stripe Checkout for payments. Webhook handler for successful payments (creates appointment,
               sends confirmation email, triggers calendar event). Tested with Stripe test mode. Handled
@@ -185,7 +185,7 @@ export default function CaseStudySaasMVP3Days() {
           </div>
 
           <div>
-            <h4 className="text-cyan-400 font-semibold">Hours 3-6: Google Calendar API</h4>
+            <h4 className="text-accent-2 font-semibold">Hours 3-6: Google Calendar API</h4>
             <p className="text-white/80 mt-2">
               OAuth setup so Sarah could connect her Google Calendar. When appointment is booked, create
               event on her calendar with client details. When client cancels, delete event. Syncing was
@@ -194,7 +194,7 @@ export default function CaseStudySaasMVP3Days() {
           </div>
 
           <div>
-            <h4 className="text-cyan-400 font-semibold">Hours 6-8: TherapyNotes Integration</h4>
+            <h4 className="text-accent-2 font-semibold">Hours 6-8: TherapyNotes Integration</h4>
             <p className="text-white/80 mt-2">
               TherapyNotes has a REST API (documentation is rough). After appointment booked, create client
               record in TherapyNotes with basic info. Sarah can then complete intake in their system. Had
@@ -203,7 +203,7 @@ export default function CaseStudySaasMVP3Days() {
           </div>
 
           <div>
-            <h4 className="text-cyan-400 font-semibold">Hours 8-10: Email System</h4>
+            <h4 className="text-accent-2 font-semibold">Hours 8-10: Email System</h4>
             <p className="text-white/80 mt-2">
               Set up Postmark for transactional emails. Templates for booking confirmation, cancellation,
               rescheduling, reminders. Sarah reviewed copy, I made adjustments. Added intake form link to
@@ -226,7 +226,7 @@ export default function CaseStudySaasMVP3Days() {
 
         <div className="space-y-4 mt-6">
           <div>
-            <h4 className="text-cyan-400 font-semibold">Hours 1-4: Admin Dashboard</h4>
+            <h4 className="text-accent-2 font-semibold">Hours 1-4: Admin Dashboard</h4>
             <p className="text-white/80 mt-2">
               Built dashboard for Sarah: view upcoming appointments, manage availability, configure appointment
               types (name, duration, price, availability rules), view revenue stats, export data to CSV. Clean
@@ -235,7 +235,7 @@ export default function CaseStudySaasMVP3Days() {
           </div>
 
           <div>
-            <h4 className="text-cyan-400 font-semibold">Hours 4-6: Client Portal</h4>
+            <h4 className="text-accent-2 font-semibold">Hours 4-6: Client Portal</h4>
             <p className="text-white/80 mt-2">
               Clients can log in (magic link auth) to view their appointments, cancel/reschedule, update
               contact info. Simple, mobile-friendly.
@@ -243,7 +243,7 @@ export default function CaseStudySaasMVP3Days() {
           </div>
 
           <div>
-            <h4 className="text-cyan-400 font-semibold">Hours 6-8: Final Testing and Deployment</h4>
+            <h4 className="text-accent-2 font-semibold">Hours 6-8: Final Testing and Deployment</h4>
             <p className="text-white/80 mt-2">
               Tested every flow. Found and fixed bugs (timezone edge case, calendar sync race condition,
               email template typo). Set up custom domain (booking.sarahtherapy.com). Deployed to Vercel
@@ -276,14 +276,14 @@ export default function CaseStudySaasMVP3Days() {
           Complete breakdown of what we spent:
         </p>
 
-        <div className="bg-black/40 border border-white/10 rounded-lg p-6 my-6">
+        <div className="bg-black/40 border border-border rounded-lg p-6 my-6">
           <h4 className="text-white font-bold mb-4">Development Costs:</h4>
           <div className="space-y-3 text-white/80">
             <div className="flex justify-between">
               <span>Client charged:</span>
               <span className="font-semibold text-green-400">$2,500</span>
             </div>
-            <div className="border-t border-white/10 my-3"></div>
+            <div className="border-t border-border my-3"></div>
             <div className="flex justify-between">
               <span>Development time (26 hours × $50/hr):</span>
               <span className="font-semibold">$1,300</span>
@@ -292,7 +292,7 @@ export default function CaseStudySaasMVP3Days() {
               <span>AI API costs (Claude Sonnet):</span>
               <span className="font-semibold">$4.20</span>
             </div>
-            <div className="border-t border-white/10 my-3"></div>
+            <div className="border-t border-border my-3"></div>
             <div className="flex justify-between">
               <span className="font-bold text-white">Profit:</span>
               <span className="font-bold text-green-400">$1,195.80</span>
@@ -300,7 +300,7 @@ export default function CaseStudySaasMVP3Days() {
           </div>
         </div>
 
-        <div className="bg-black/40 border border-white/10 rounded-lg p-6 my-6">
+        <div className="bg-black/40 border border-border rounded-lg p-6 my-6">
           <h4 className="text-white font-bold mb-4">Ongoing Costs (Sarah pays):</h4>
           <div className="space-y-3 text-white/80 text-sm">
             <div className="flex justify-between">
@@ -327,7 +327,7 @@ export default function CaseStudySaasMVP3Days() {
               <span>Stripe fees:</span>
               <span>2.9% + $0.30 per transaction</span>
             </div>
-            <div className="border-t border-white/10 my-3"></div>
+            <div className="border-t border-border my-3"></div>
             <div className="flex justify-between">
               <span className="font-bold text-white">Total:</span>
               <span className="font-bold text-white">~$71/month + Stripe fees</span>
@@ -347,7 +347,7 @@ export default function CaseStudySaasMVP3Days() {
           We launched on a Monday. Here's what happened in the first week:
         </p>
 
-        <div className="bg-gradient-to-br from-green-500/10 to-cyan-500/10 border border-green-500/30 rounded-lg p-6 my-6">
+        <div className="bg-gradient-to-br from-green-500/10 to-accent-2/10 border border-green-500/30 rounded-lg p-6 my-6">
           <h4 className="text-green-400 font-bold text-lg mb-4">First Week Metrics:</h4>
           <div className="space-y-3 text-white/90">
             <div className="flex justify-between text-lg">
@@ -437,8 +437,8 @@ export default function CaseStudySaasMVP3Days() {
 
       <BlogSection>
         <h2>Key Takeaways</h2>
-        <div className="bg-black/40 border border-cyan-500/30 rounded-lg p-6 my-6">
-          <h4 className="text-cyan-400 font-bold text-lg mb-4">What Made This Work:</h4>
+        <div className="bg-black/40 border border-accent-2/30 rounded-lg p-6 my-6">
+          <h4 className="text-accent-2 font-bold text-lg mb-4">What Made This Work:</h4>
           <ol className="space-y-3 text-white/90">
             <li>
               <strong>1. Clear requirements from the start.</strong> Sarah's 4-minute voice note was detailed.

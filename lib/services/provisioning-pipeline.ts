@@ -224,8 +224,8 @@ export async function provisionInfrastructure(
       data: {
         githubRepoUrl: githubResult.repoUrl,
         githubRepoName: githubResult.repoName,
-        vercelDeploymentUrl: productionUrl,
-        status: 'COMPLETED',
+        productionUrl: productionUrl,
+        status: 'LIVE',
         completedAt: new Date(),
       },
     });

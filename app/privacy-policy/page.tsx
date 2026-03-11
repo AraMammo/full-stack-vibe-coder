@@ -1,13 +1,13 @@
 /**
  * Privacy Policy Page
  *
- * GDPR-compliant privacy policy for ShipKit.
+ * GDPR-compliant privacy policy for Full Stack Vibe Coder.
  */
 
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Privacy Policy | ShipKit',
+  title: 'Privacy Policy | Full Stack Vibe Coder',
   description: 'How we collect, use, and protect your personal information.',
 };
 
@@ -36,7 +36,7 @@ export default function PrivacyPolicyPage() {
         {/* Introduction */}
         <section className="mb-12">
           <p className="text-gray-700 mb-4">
-            ShipKit ("we," "our," or "us") is committed to protecting your privacy. This
+            Full Stack Vibe Coder ("we," "our," or "us") is committed to protecting your privacy. This
             Privacy Policy explains how we collect, use, disclose, and safeguard your information
             when you use our website and services.
           </p>
@@ -219,10 +219,10 @@ export default function PrivacyPolicyPage() {
           <p className="text-gray-700 mt-4">
             To exercise these rights, contact us at{' '}
             <a
-              href="mailto:privacy@shipkit.io"
+              href="mailto:privacy@fullstackvibecoder.com"
               className="text-gray-900 underline hover:text-gray-700"
             >
-              privacy@shipkit.io
+              privacy@fullstackvibecoder.com
             </a>
           </p>
         </section>
@@ -274,10 +274,10 @@ export default function PrivacyPolicyPage() {
           <p className="text-gray-700">
             Email:{' '}
             <a
-              href="mailto:privacy@shipkit.io"
+              href="mailto:privacy@fullstackvibecoder.com"
               className="text-gray-900 underline hover:text-gray-700"
             >
-              privacy@shipkit.io
+              privacy@fullstackvibecoder.com
             </a>
           </p>
         </section>

@@ -8,7 +8,76 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// NextAuth.js Models
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ProjectStatus {
+  INTAKE
+  CUSTOMIZING
+  PREVIEWING
+  PROVISIONING
+  LIVE
+  FAILED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentType {
+  BUILD
+  HOSTING
+  REFUND
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+enum ConversationStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum HostingStatus {
+  PROVISIONING
+  ACTIVE
+  SUSPENDED
+  CANCELLED
+  EJECTED
+  TRANSFERRED
+}
+
+enum HostingPlan {
+  STARTER
+  GROWTH
+  SCALE
+}
+
+enum TransferStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+// ============================================================================
+// NEXTAUTH MODELS
+// ============================================================================
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -39,18 +108,6 @@ model Session {
   @@map("sessions")
 }
 
-model User {
-  id            String    @id @default(cuid())
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  name          String?
-  accounts      Account[]
-  sessions      Session[]
-
-  @@map("users")
-}
-
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -60,302 +117,136 @@ model VerificationToken {
   @@map("verificationtokens")
 }
 
+// ============================================================================
+// USER
+// ============================================================================
+
+model User {
+  id               String    @id @default(cuid())
+  name             String?
+  email            String?   @unique
+  emailVerified    DateTime?
+  image            String?
+  stripeCustomerId String?   @unique
+  role             UserRole  @default(USER)
+
+  accounts      Account[]
+  sessions      Session[]
+  projects      Project[]
+  conversations Conversation[]
+  payments      Payment[]
+
+  @@map("users")
+}
+
+// ============================================================================
+// INDUSTRY TEMPLATE
+// ============================================================================
+
+model IndustryTemplate {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  description   String?  @db.Text
+  isActive      Boolean  @default(true)
+  version       Int      @default(1)
+  templatePath  String   // path to template source files
+  features      Json     // what this template includes
+  defaultConfig Json     // default brand colors, fonts, etc.
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  projects Project[]
+
+  @@map("industry_templates")
+}
+
+// ============================================================================
+// PROJECT
+// ============================================================================
+
 model Project {
-  id                  String        @id @default(uuid())
-  userId              String
-  projectName         String
-  businessConcept     String
-  biabTier            BIABTier
-  productType         ProductType   @default(BUILDER)
-  status              ProjectStatus @default(PENDING)
-  progress            Int           @default(0)
-  totalPrompts        Int           @default(0)
-  completedPrompts    Int           @default(0)
-  githubRepoUrl       String?
-  vercelDeploymentUrl String?
-  supabaseProjectId   String?
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
-  completedAt         DateTime?
-  codegenStatus       String?
-  githubRepoName      String?
-  errorMessage        String?
-  contextIds              String[]      @default([])
-  referenceScreenshotUrl  String?
-  visualDna               Json?
-  deployedApp             DeployedApp?
-  changeRequests          ChangeRequest[]
-  refinementCycles        RefinementCycle[]
+  id             String        @id @default(uuid())
+  userId         String
+  templateId     String?
+  name           String        // business name
+  status         ProjectStatus @default(INTAKE)
+  industryProfile Json?        // extracted profile (services, packages, timezone, brand)
+  customizations  Json?        // overrides applied during preview
+  previewUrl     String?       // Vercel preview URL
+  productionUrl  String?       // live URL after deploy
+  githubRepoUrl  String?
+  githubRepoName String?
+  errorMessage   String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  completedAt    DateTime?
+
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template         IndustryTemplate? @relation(fields: [templateId], references: [id])
+  deployedApp      DeployedApp?
+  changeRequests   ChangeRequest[]
+  refinementCycles RefinementCycle[]
+  conversations    Conversation[]
+  payments         Payment[]
 
   @@index([userId])
   @@index([status])
-  @@index([biabTier])
   @@map("projects")
 }
 
-model chat_submissions {
-  id                  Int      @id @default(autoincrement())
-  session_id          String?  @unique
-  name                String
-  email               String
-  user_input          String
-  input_type          String
-  ai_recommendation   String?
-  recommended_product String?
-  analysis_json       Json?
-  created_at          DateTime @default(now()) @db.Timestamp(6)
-}
+// ============================================================================
+// CONVERSATION + MESSAGES
+// ============================================================================
 
-model contact_submissions {
-  id         Int      @id @default(autoincrement())
-  name       String
-  email      String
-  subject    String
-  message    String
-  created_at DateTime @default(now()) @db.Timestamp(6)
-}
+model Conversation {
+  id                     String             @id @default(cuid())
+  projectId              String?
+  userId                 String
+  sessionId              String             @unique
+  status                 ConversationStatus @default(ACTIVE)
+  industryClassification String?            // e.g., "coaching", "home_services"
+  extractedProfile       Json?              // structured data from conversation
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
 
-model deliverables {
-  id            Int      @id @default(autoincrement())
-  submission_id Int?
-  email         String
-  tool_name     String
-  file_name     String
-  file_url      String
-  file_type     String?
-  created_at    DateTime @default(now()) @db.Timestamp(6)
-}
-
-model promo_codes {
-  id               Int      @id @default(autoincrement())
-  code             String   @unique(map: "promo_codes_code_unique")
-  discount_percent Int
-  max_uses         Int?
-  uses_count       Int      @default(0)
-  active           Boolean  @default(true)
-  created_at       DateTime @default(now()) @db.Timestamp(6)
-}
-
-model tool_purchases {
-  id                       Int       @id @default(autoincrement())
-  email                    String
-  tool_name                String
-  access_type              String
-  stripe_customer_id       String?
-  stripe_subscription_id   String?
-  stripe_payment_intent_id String?
-  status                   String    @default("active")
-  expires_at               DateTime? @db.Timestamp(6)
-  created_at               DateTime  @default(now()) @db.Timestamp(6)
-}
-
-model tool_submissions {
-  id                     Int      @id @default(autoincrement())
-  email                  String
-  tool_name              String
-  form_data              String
-  make_webhook_triggered Boolean  @default(false)
-  created_at             DateTime @default(now()) @db.Timestamp(6)
-}
-
-model PromptTemplate {
-  id              Int               @id @default(autoincrement())
-  promptId        String            @unique
-  promptName      String
-  promptSection   String
-  systemPrompt    String
-  userPrompt      String
-  isRequired      Boolean           @default(true)
-  orderIndex      Int
-  estimatedTokens Int
-  dependencies    String[]
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  includedInTiers BIABTier[]
-  executions      PromptExecution[]
-
-  @@map("prompt_templates")
-}
-
-model PromptExecution {
-  id              Int            @id @default(autoincrement())
-  promptId        Int
-  projectId       String
-  input           String
-  output          String
-  tokensUsed      Int
-  executionTimeMs Int?
-  executedAt      DateTime       @default(now())
-  createdAt       DateTime       @default(now())
-  completedAt     DateTime?
-  status          String         @default("completed")
-  prompt          PromptTemplate @relation(fields: [promptId], references: [id], onDelete: Cascade)
-
-  @@index([projectId])
-  @@index([promptId])
-  @@index([status])
-  @@map("prompt_executions")
-}
-
-model DeliveryPackage {
-  id          Int      @id @default(autoincrement())
-  packageId   String   @unique
-  projectId   String
-  userId      String
-  downloadUrl String
-  storagePath String
-  fileSize    Int
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
-
-  @@index([projectId])
-  @@index([userId])
-  @@index([expiresAt])
-  @@map("delivery_packages")
-}
-
-model UserContext {
-  id          String            @id @default(uuid())
-  userId      String
-  fileName    String
-  fileType    ContextFileType
-  fileSize    Int
-  storagePath String
-  downloadUrl String?
-  uploadedAt  DateTime          @default(now())
-  processedAt DateTime?
-  status      ContextStatus     @default(PENDING)
-  metadata    Json?
-  chunks      ContextChunk[]
+  project  Project?              @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  user     User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages ConversationMessage[]
 
   @@index([userId])
-  @@index([status])
-  @@index([userId, status])
-  @@map("user_contexts")
+  @@index([sessionId])
+  @@map("conversations")
 }
 
-model ContextChunk {
-  id          String      @id @default(uuid())
-  contextId   String
-  chunkIndex  Int
-  text        String      @db.Text
-  embedding   Json
-  metadata    Json?
-  createdAt   DateTime    @default(now())
-  context     UserContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
+model ConversationMessage {
+  id             String      @id @default(cuid())
+  conversationId String
+  role           MessageRole
+  content        String      @db.Text
+  metadata       Json?       // structured data like extracted fields
+  createdAt      DateTime    @default(now())
 
-  @@index([contextId])
-  @@index([contextId, chunkIndex])
-  @@map("context_chunks")
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@map("conversation_messages")
 }
 
-model Payment {
-  id                    String        @id @default(uuid())
-  userId                String
-  userEmail             String
-  tier                  BIABTier
-  amount                Int           // in cents
-  currency              String        @default("usd")
-  status                PaymentStatus @default(PENDING)
-  stripeSessionId       String        @unique
-  stripePaymentIntentId String?
-  stripeCustomerId      String?
-  projectId             String?
-  metadata              Json?
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
-  completedAt           DateTime?
-
-  @@index([userId])
-  @@index([userEmail])
-  @@index([stripeSessionId])
-  @@index([status])
-  @@map("payments")
-}
-
-enum BIABTier {
-  VALIDATION_PACK
-  LAUNCH_BLUEPRINT
-  TURNKEY_SYSTEM
-  PRESENCE
-}
-
-enum ProductType {
-  BUILDER
-  PRESENCE
-}
-
-enum ContextFileType {
-  PDF
-  TEXT
-  MARKDOWN
-  DOCX
-  URL
-  IMAGE
-}
-
-enum ContextStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-}
-
-enum PaymentStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-  REFUNDED
-}
-
-enum ProjectStatus {
-  PENDING
-  IN_PROGRESS
-  PACKAGING
-  COMPLETED
-  FAILED
-}
-
-enum HostingStatus {
-  PROVISIONING
-  ACTIVE
-  SUSPENDED
-  CANCELLED
-  EJECTED
-  TRANSFERRED
-}
-
-enum TransferStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-  FAILED
-}
-
-enum HostingPlan {
-  STARTER
-  GROWTH
-  SCALE
-}
+// ============================================================================
+// DEPLOYED APP — tracks all provisioned infrastructure
+// ============================================================================
 
 model DeployedApp {
-  id                     String          @id @default(uuid())
-  projectId              String          @unique
-  project                Project         @relation(fields: [projectId], references: [id])
+  id                     String        @id @default(uuid())
+  projectId              String        @unique
+  project                Project       @relation(fields: [projectId], references: [id])
 
-  // Supabase (legacy — kept for existing deployed apps)
-  supabaseProjectRef     String?
-  supabaseProjectUrl     String?
-  supabaseDatabaseUrl    String?         @db.Text
-  supabaseAnonKey        String?         @db.Text
-  supabaseServiceKey     String?         @db.Text
-
-  // Neon (new deployments)
+  // Neon
   neonProjectId          String?
   neonBranchId           String?
-  neonDatabaseUrl        String?         @db.Text
-  neonPooledUrl          String?         @db.Text
+  neonDatabaseUrl        String?       @db.Text
+  neonPooledUrl          String?       @db.Text
 
   // Vercel
   vercelProjectId        String?
@@ -368,23 +259,23 @@ model DeployedApp {
 
   // Stripe Connect
   stripeConnectAccountId     String?
-  stripeConnectAccountType   String?         @default("standard")
-  stripeConnectOnboarded     Boolean         @default(false)
+  stripeConnectAccountType   String?   @default("standard")
+  stripeConnectOnboarded     Boolean   @default(false)
   stripeConnectOnboardingUrl String?
 
   // Custom Domain
   customDomain           String?
-  domainVerified         Boolean         @default(false)
+  domainVerified         Boolean       @default(false)
 
   // Resend
   resendDomainId         String?
 
   // Hosting
-  hostingStatus          HostingStatus   @default(PROVISIONING)
+  hostingStatus          HostingStatus @default(PROVISIONING)
   provisioningLog        Json?
 
-  createdAt              DateTime        @default(now())
-  updatedAt              DateTime        @updatedAt
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
 
   subscription           HostingSubscription?
   transfers              TransferRequest[]
@@ -393,50 +284,62 @@ model DeployedApp {
   @@map("deployed_apps")
 }
 
+// ============================================================================
+// HOSTING SUBSCRIPTION
+// ============================================================================
+
+model HostingSubscription {
+  id                   String      @id @default(uuid())
+  deployedAppId        String      @unique
+  deployedApp          DeployedApp @relation(fields: [deployedAppId], references: [id])
+  stripeSubscriptionId String      @unique
+  stripeCustomerId     String
+  plan                 HostingPlan @default(STARTER)
+  status               String      @default("active")
+  currentPeriodEnd     DateTime
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  @@map("hosting_subscriptions")
+}
+
+// ============================================================================
+// TRANSFER REQUEST — eject / ownership transfer
+// ============================================================================
+
 model TransferRequest {
-  id                     String         @id @default(uuid())
-  deployedAppId          String
-  deployedApp            DeployedApp    @relation(fields: [deployedAppId], references: [id])
-  status                 TransferStatus @default(PENDING)
+  id                    String         @id @default(uuid())
+  deployedAppId         String
+  deployedApp           DeployedApp    @relation(fields: [deployedAppId], references: [id])
+  status                TransferStatus @default(PENDING)
 
   // Per-service transfer status
-  githubTransferred      Boolean        @default(false)
-  vercelTransferred      Boolean        @default(false)
-  neonTransferred        Boolean        @default(false)
-  stripeDisconnected     Boolean        @default(false)
+  githubTransferred     Boolean        @default(false)
+  vercelTransferred     Boolean        @default(false)
+  neonTransferred       Boolean        @default(false)
+  stripeDisconnected    Boolean        @default(false)
 
-  // Claim URLs / info
-  neonClaimUrl           String?
-  githubTransferUrl      String?
-  vercelReimportUrl      String?
+  // Claim URLs
+  neonClaimUrl          String?
+  githubTransferUrl     String?
+  vercelReimportUrl     String?
 
   // Customer info
   customerGithubUsername String?
   customerEmail          String
 
-  createdAt              DateTime       @default(now())
-  updatedAt              DateTime       @updatedAt
-  completedAt            DateTime?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  completedAt           DateTime?
 
   @@index([deployedAppId])
   @@index([status])
   @@map("transfer_requests")
 }
 
-model HostingSubscription {
-  id                    String       @id @default(uuid())
-  deployedAppId         String       @unique
-  deployedApp           DeployedApp  @relation(fields: [deployedAppId], references: [id])
-  stripeSubscriptionId  String       @unique
-  stripeCustomerId      String
-  plan                  HostingPlan  @default(STARTER)
-  status                String       @default("active")
-  currentPeriodEnd      DateTime
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
-
-  @@map("hosting_subscriptions")
-}
+// ============================================================================
+// CHANGE REQUEST — iteration loop
+// ============================================================================
 
 model ChangeRequest {
   id            String    @id @default(uuid())
@@ -455,12 +358,16 @@ model ChangeRequest {
   @@map("change_requests")
 }
 
+// ============================================================================
+// OPENCLAW — refinement cycles + agent evaluations
+// ============================================================================
+
 model RefinementCycle {
   id                  String            @id @default(uuid())
   projectId           String
   project             Project           @relation(fields: [projectId], references: [id])
   cycleNumber         Int
-  status              String            @default("PENDING") // PENDING | EVALUATING | SYNTHESIZING | REGENERATING | COMPLETE | FAILED
+  status              String            @default("PENDING")
   synthesizedFeedback String?           @db.Text
   filesRegenerated    String[]          @default([])
   tokensUsed          Int               @default(0)
@@ -478,8 +385,8 @@ model AgentEvaluation {
   id              String          @id @default(uuid())
   cycleId         String
   cycle           RefinementCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
-  skill           String          // structure | brand_visual | copy_conversion | code_quality
-  findings        Json            // Array of { severity, file, issue, suggestion }
+  skill           String
+  findings        Json
   score           Int?
   rawOutput       String          @db.Text
   tokensUsed      Int             @default(0)
@@ -491,18 +398,46 @@ model AgentEvaluation {
   @@map("agent_evaluations")
 }
 
-model OpenClawSession {
-  id          String   @id @default(uuid())
-  chatId      String   @unique
-  state       String   @default("AWAITING_SCREENSHOTS") // AWAITING_SCREENSHOTS | AWAITING_DESCRIPTION | GENERATING | LIVE | ITERATING
-  projectId   String?
-  userId      String?
-  screenshots Json     @default("[]") // JSON array of screenshot URLs
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+// ============================================================================
+// PAYMENT
+// ============================================================================
 
-  @@index([chatId])
-  @@index([state])
-  @@map("openclaw_sessions")
+model Payment {
+  id                    String        @id @default(uuid())
+  userId                String
+  projectId             String?
+  type                  PaymentType
+  amount                Int           // in cents
+  currency              String        @default("usd")
+  status                PaymentStatus @default(PENDING)
+  stripeSessionId       String?       @unique
+  stripePaymentIntentId String?
+  stripeCustomerId      String?
+  metadata              Json?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  completedAt           DateTime?
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([stripeSessionId])
+  @@index([status])
+  @@map("payments")
 }
 
+// ============================================================================
+// CONTACT SUBMISSIONS — FSVC marketing site
+// ============================================================================
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("contact_submissions")
+}

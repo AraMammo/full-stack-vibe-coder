@@ -50,7 +50,7 @@ export async function initiateTransfer(input: TransferInput): Promise<TransferRe
     where: { id: input.deployedAppId },
     include: {
       subscription: true,
-      project: { select: { projectName: true, userId: true } },
+      project: { select: { name: true, userId: true } },
     },
   });
 

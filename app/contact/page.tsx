@@ -1,6 +1,6 @@
 /**
  * Contact Page
- * Simple contact form for reaching ShipKit team
+ * Simple contact form for reaching Full Stack Vibe Coder team
  */
 
 'use client';
@@ -56,7 +56,7 @@ export default function ContactPage() {
           <h1 
             className="text-5xl md:text-7xl font-black mb-4"
             style={{
-              background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
+              background: '#FF5C35',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -64,15 +64,15 @@ export default function ContactPage() {
           >
             Contact Us
           </h1>
-          <p className="text-xl text-gray-300">
+          <p className="text-xl text-fsvc-text-secondary">
             Got a project in mind? Let&apos;s build something incredible together.
           </p>
         </div>
 
-        <div className="bg-black/80 backdrop-blur-xl border-2 border-pink-500/30 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-base/80 backdrop-blur-xl border-2 border-accent/30 rounded-2xl p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-bold text-pink-400 uppercase tracking-wider mb-2">
+              <label htmlFor="name" className="block text-sm font-bold text-accent uppercase tracking-wider mb-2">
                 Your Name
               </label>
               <input
@@ -81,13 +81,13 @@ export default function ContactPage() {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border-2 border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:bg-white/10 transition-all"
+                className="w-full px-4 py-3 bg-surface border-2 border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent-2 focus:bg-white/10 transition-all"
                 placeholder="John Doe"
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-bold text-pink-400 uppercase tracking-wider mb-2">
+              <label htmlFor="email" className="block text-sm font-bold text-accent uppercase tracking-wider mb-2">
                 Email Address
               </label>
               <input
@@ -96,13 +96,13 @@ export default function ContactPage() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border-2 border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:bg-white/10 transition-all"
+                className="w-full px-4 py-3 bg-surface border-2 border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent-2 focus:bg-white/10 transition-all"
                 placeholder="john@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="message" className="block text-sm font-bold text-pink-400 uppercase tracking-wider mb-2">
+              <label htmlFor="message" className="block text-sm font-bold text-accent uppercase tracking-wider mb-2">
                 Your Message
               </label>
               <textarea
@@ -111,7 +111,7 @@ export default function ContactPage() {
                 rows={5}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border-2 border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:bg-white/10 transition-all resize-none"
+                className="w-full px-4 py-3 bg-surface border-2 border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent-2 focus:bg-white/10 transition-all resize-none"
                 placeholder="Tell us about your project..."
               />
             </div>
@@ -136,7 +136,7 @@ export default function ContactPage() {
                 transition-all duration-300 transform
                 ${isSubmitting 
                   ? 'bg-gray-600 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-pink-500 to-cyan-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(236,72,153,0.5)]'
+                  : 'bg-accent hover:scale-105 hover:shadow-[0_0_30px_rgba(255,92,53,0.5)]'
                 }
                 text-white
               `}
@@ -145,12 +145,12 @@ export default function ContactPage() {
             </button>
           </form>
 
-          <div className="mt-8 pt-8 border-t border-white/10 text-center">
-            <p className="text-gray-400 text-sm">
+          <div className="mt-8 pt-8 border-t border-border text-center">
+            <p className="text-fsvc-text-secondary text-sm">
               Or email us directly at{' '}
               <a 
                 href="mailto:hello@shipkit.io" 
-                className="text-cyan-400 hover:text-cyan-300 underline"
+                className="text-accent-2 hover:text-accent-2 underline"
               >
                 hello@shipkit.io
               </a>

@@ -1,196 +1,119 @@
-/**
- * Dashboard Page - ShipKit
- *
- * Single "Your ShipKits" view with project cards.
- * Shows real-time progress and interactive previews.
- */
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import Link from "next/link";
 
-import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/db';
-import Link from 'next/link';
-import { DashboardEmptyState } from '@/components/DashboardEmptyState';
-import { WelcomeBanner } from '@/components/WelcomeBanner';
+export const dynamic = "force-dynamic";
 
-const TIER_DISPLAY: Record<string, { name: string; color: string }> = {
-  VALIDATION_PACK: { name: 'Lite', color: 'bg-gray-500' },
-  LAUNCH_BLUEPRINT: { name: 'Pro', color: 'bg-purple-500' },
-  TURNKEY_SYSTEM: { name: 'Complete', color: 'bg-gradient-to-r from-pink-500 to-cyan-500' },
-};
-
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  PENDING: { label: 'Pending', color: 'text-yellow-400 bg-yellow-400/10' },
-  IN_PROGRESS: { label: 'Building...', color: 'text-cyan-400 bg-cyan-400/10' },
-  PACKAGING: { label: 'Packaging...', color: 'text-purple-400 bg-purple-400/10' },
-  COMPLETED: { label: 'Ready', color: 'text-green-400 bg-green-400/10' },
-  FAILED: { label: 'Failed', color: 'text-red-400 bg-red-400/10' },
+const statusColors: Record<string, string> = {
+  INTAKE: "bg-blue-500/20 text-blue-400",
+  CUSTOMIZING: "bg-purple-500/20 text-purple-400",
+  PREVIEWING: "bg-amber-500/20 text-amber-400",
+  PROVISIONING: "bg-accent-2/20 text-accent-2",
+  LIVE: "bg-green-500/20 text-green-400",
+  FAILED: "bg-red-500/20 text-red-400",
 };
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-
-  if (!session?.user) {
-    redirect('/auth/signin');
-  }
+  if (!session?.user?.id) return null;
 
   const projects = await prisma.project.findMany({
     where: { userId: session.user.id },
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      projectName: true,
-      biabTier: true,
-      status: true,
-      progress: true,
-      completedPrompts: true,
-      totalPrompts: true,
-      createdAt: true,
-      completedAt: true,
-      githubRepoUrl: true,
-      vercelDeploymentUrl: true,
+    orderBy: { createdAt: "desc" },
+    include: {
+      template: { select: { name: true } },
+      deployedApp: {
+        select: {
+          hostingStatus: true,
+          vercelProductionUrl: true,
+        },
+      },
     },
   });
 
   return (
-    <main id="main-content" className="min-h-screen pt-20 pb-16 bg-black">
-      {/* Header */}
-      <header className="border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white">Your ShipKits</h1>
-              <p className="mt-1 text-sm text-gray-400">
-                Welcome back, {session.user.name || session.user.email?.split('@')[0]}
-              </p>
-            </div>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              <span>+</span> New ShipKit
-            </Link>
-          </div>
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Your Projects</h1>
+          <p className="text-fsvc-text-secondary text-sm mt-1">
+            Manage your websites and track build progress
+          </p>
         </div>
-      </header>
+        <Link
+          href="/get-started"
+          className="px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-base text-sm font-medium transition-colors"
+        >
+          New Project
+        </Link>
+      </div>
 
-      {/* Projects Grid */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        {projects.length === 0 ? (
-          <>
-            {/* Just-paid polling state (client component) */}
-            <DashboardEmptyState userName={session.user.name || session.user.email?.split('@')[0]} />
+      {projects.length === 0 ? (
+        <div className="text-center py-16 rounded-xl border border-border bg-surface">
+          <div className="text-4xl mb-4">🚀</div>
+          <h2 className="text-xl font-semibold text-white mb-2">
+            No projects yet
+          </h2>
+          <p className="text-fsvc-text-secondary mb-6 max-w-md mx-auto">
+            Tell us about your business and we&apos;ll build you a professional
+            website in minutes.
+          </p>
+          <Link
+            href="/get-started"
+            className="inline-block px-6 py-3 rounded-lg bg-accent hover:bg-accent-hover text-base font-medium transition-colors"
+          >
+            Get Started
+          </Link>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {projects.map((project) => {
+            const badge = statusColors[project.status] || statusColors.INTAKE;
+            const url =
+              project.productionUrl ||
+              project.deployedApp?.vercelProductionUrl;
 
-            {/* Welcome banner for first-time users (client component, dismissible) */}
-            <WelcomeBanner />
-
-            {/* Fallback static empty state */}
-            <div className="py-16 text-center max-w-md mx-auto">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-pink-500/20 to-cyan-500/20 border border-white/10 flex items-center justify-center">
-                <svg className="w-10 h-10 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">No ShipKits yet</h3>
-              <p className="text-gray-400 mb-2">
-                Describe your business idea and we&apos;ll build a live, full-stack app in 30 minutes.
-              </p>
-              <p className="text-sm text-gray-500 mb-8">
-                Database, auth, payments, email — all wired up and deployed.
-              </p>
+            return (
               <Link
-                href="/"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-bold text-lg hover:opacity-90 transition-opacity"
+                key={project.id}
+                href={`/dashboard/project/${project.id}`}
+                className="block rounded-xl border border-border bg-surface p-6 hover:border-border hover:bg-surface transition-all"
               >
-                Start Building
-              </Link>
-            </div>
-          </>
-        ) : (
-          <div className="space-y-4">
-            {projects.map((project) => {
-              const tier = TIER_DISPLAY[project.biabTier] || TIER_DISPLAY.VALIDATION_PACK;
-              const status = STATUS_CONFIG[project.status] || STATUS_CONFIG.PENDING;
-              const isInProgress = project.status === 'IN_PROGRESS' || project.status === 'PENDING' || project.status === 'PACKAGING';
-              const isCompleted = project.status === 'COMPLETED';
-
-              return (
-                <div
-                  key={project.id}
-                  className="p-5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    {/* Left side */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className={`px-2.5 py-1 rounded text-xs font-bold text-white ${tier.color}`}>
-                          {tier.name}
-                        </span>
-                        <span className={`px-2.5 py-1 rounded text-xs font-medium ${status.color}`}>
-                          {status.label}
-                        </span>
-                      </div>
-                      <h3 className="text-lg font-semibold text-white truncate">{project.projectName}</h3>
-                      <p className="text-sm text-gray-400 mt-1">
-                        Created {new Date(project.createdAt).toLocaleDateString()}
-                        {project.completedAt && (
-                          <span> &middot; Completed {new Date(project.completedAt).toLocaleDateString()}</span>
-                        )}
-                      </p>
-                    </div>
-
-                    {/* Right side - Actions */}
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      {isCompleted && project.vercelDeploymentUrl && (
-                        <a
-                          href={project.vercelDeploymentUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-4 py-2 rounded-lg bg-green-500/20 border border-green-500/50 text-green-400 text-sm font-medium hover:bg-green-500/30 transition-colors"
-                        >
-                          View Live Site
-                        </a>
-                      )}
-                      {isCompleted && project.githubRepoUrl && (
-                        <a
-                          href={project.githubRepoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm font-medium hover:bg-white/20 transition-colors"
-                        >
-                          GitHub
-                        </a>
-                      )}
-                      <Link
-                        href={`/dashboard/project/${project.id}`}
-                        className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm font-medium hover:bg-white/20 transition-colors"
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-1">
+                      <h2 className="text-lg font-semibold text-white truncate">
+                        {project.name}
+                      </h2>
+                      <span
+                        className={`flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${badge}`}
                       >
-                        {isCompleted ? 'Download' : 'View Details'}
-                      </Link>
+                        {project.status}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-fsvc-text-secondary">
+                      {project.template && (
+                        <span>{project.template.name}</span>
+                      )}
+                      <span>
+                        Created{" "}
+                        {new Date(project.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Progress Bar */}
-                  {isInProgress && (
-                    <div className="mt-4">
-                      <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
-                        <span>{project.completedPrompts}/{project.totalPrompts} sections complete</span>
-                        <span>{project.progress}%</span>
-                      </div>
-                      <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-pink-500 to-cyan-500 rounded-full transition-all duration-500"
-                          style={{ width: `${project.progress}%` }}
-                        />
-                      </div>
-                    </div>
+                  {url && (
+                    <span className="text-xs text-accent-2 truncate max-w-[200px]">
+                      {url.replace(/^https?:\/\//, "")}
+                    </span>
                   )}
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </main>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }

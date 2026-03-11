@@ -6,11 +6,12 @@ import { allBlogPosts, getBlogPosts, getAllCategories } from '@/lib/blog/blog-po
 import { categoryColors, type BlogCategory } from '@/lib/blog/blog-config';
 
 const categoryBorderColors: Record<string, string> = {
-  'Building in Public': '#06b6d4',
+  'Building in Public': '#00C4A0',
   'Case Studies': '#10b981',
-  'Myths Debunked': '#ec4899',
+  'Myths Debunked': '#FF5C35',
   'Scam Alerts': '#ef4444',
   'Fundamentals': '#8b5cf6',
+  'Culture & Craft': '#f59e0b',
 };
 
 export default function BlogPage() {
@@ -37,8 +38,8 @@ export default function BlogPage() {
                   px-6 py-2 rounded-full font-medium transition-all duration-300
                   border-2 backdrop-blur-xl
                   ${selectedCategory === category
-                    ? 'bg-gradient-to-r from-pink-500 to-cyan-500 text-white border-transparent shadow-lg shadow-pink-500/50'
-                    : 'bg-black/40 text-white/80 border-white/20 hover:border-pink-500/50 hover:text-white'
+                    ? 'bg-accent text-white border-transparent shadow-lg shadow-accent/50'
+                    : 'bg-black/40 text-white/80 border-white/20 hover:border-accent/50 hover:text-white'
                   }
                 `}
               >
@@ -74,7 +75,7 @@ export default function BlogPage() {
               <h2 className="blog-card-title">
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="group-hover:bg-gradient-to-r group-hover:from-pink-500 group-hover:to-cyan-500 group-hover:bg-clip-text group-hover:text-transparent transition-all"
+                  className="group-hover:text-accent transition-all"
                 >
                   {post.title}
                 </Link>
@@ -84,14 +85,14 @@ export default function BlogPage() {
               <p className="blog-card-excerpt">{post.excerpt}</p>
 
               {/* Footer */}
-              <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
+              <div className="flex items-center justify-between mt-6 pt-6 border-t border-border">
                 <span className="text-white/60 text-sm font-medium">{post.readTime}</span>
                 <Link
                   href={`/blog/${post.slug}`}
                   className="
-                    text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-cyan-500
+                    text-accent
                     font-semibold text-sm
-                    group-hover:from-cyan-400 group-hover:to-pink-400
+                    group-hover:text-accent-2
                     transition-all duration-300
                   "
                 >

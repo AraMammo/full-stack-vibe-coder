@@ -3,7 +3,6 @@
  *
  * Minimal top bar with hamburger menu that opens side navigation.
  * Works on all screen sizes - unified experience.
- * Part of UX overhaul for cleaner navigation and more screen real estate.
  */
 
 'use client';
@@ -12,7 +11,6 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { SideMenu } from './SideMenu';
 
 export interface NavItem {
@@ -27,34 +25,21 @@ export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
-  // Entrance animation on mount
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
+  useEffect(() => { setIsVisible(true); }, []);
+  useEffect(() => { setIsMenuOpen(false); }, [pathname]);
 
-  // Close menu on route change
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [pathname]);
-
-  // Prevent body scroll when menu is open
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
+    return () => { document.body.style.overflow = ''; };
   }, [isMenuOpen]);
 
-  // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isMenuOpen) {
-        setIsMenuOpen(false);
-      }
+      if (e.key === 'Escape' && isMenuOpen) setIsMenuOpen(false);
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
@@ -62,10 +47,9 @@ export function Navigation() {
 
   return (
     <>
-      {/* Skip to main content link */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:px-6 focus:py-3 focus:bg-gradient-to-r focus:from-pink-500 focus:to-cyan-500 focus:text-white focus:font-medium focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:px-6 focus:py-3 focus:bg-accent focus:text-base focus:font-medium focus:rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-base"
       >
         Skip to main content
       </a>
@@ -73,8 +57,8 @@ export function Navigation() {
       <nav
         className={`
           fixed top-0 left-0 right-0 z-[999999]
-          bg-black/90 backdrop-blur-xl
-          border-b border-pink-500/30
+          bg-base/90 backdrop-blur-xl
+          border-b border-border
           transition-all duration-500
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}
         `}
@@ -82,56 +66,30 @@ export function Navigation() {
       >
         <div className="max-w-[2560px] mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between">
-            {/* Hamburger Menu - Left Side */}
+            {/* Hamburger Menu */}
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="relative w-11 h-11 flex flex-col items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-pink-500/50 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black group"
+              className="relative w-11 h-11 flex flex-col items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 border border-border hover:border-accent/50 rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-base group"
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMenuOpen}
               aria-controls="side-menu"
             >
-              {/* Animated Hamburger Icon */}
-              <span
-                className={`block h-0.5 w-5 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
-                  isMenuOpen ? 'rotate-45 translate-y-2' : ''
-                }`}
-              />
-              <span
-                className={`block h-0.5 w-5 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
-                  isMenuOpen ? 'opacity-0' : ''
-                }`}
-              />
-              <span
-                className={`block h-0.5 w-5 bg-gradient-to-r from-pink-500 to-cyan-500 rounded transition-all duration-300 ${
-                  isMenuOpen ? '-rotate-45 -translate-y-2' : ''
-                }`}
-              />
+              <span className={`block h-0.5 w-5 bg-accent rounded transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+              <span className={`block h-0.5 w-5 bg-accent rounded transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`} />
+              <span className={`block h-0.5 w-5 bg-accent rounded transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
             </button>
 
-            {/* Logo */}
+            {/* Wordmark */}
             <Link
               href="/"
-              className="flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black rounded-lg"
+              className="flex items-baseline gap-1.5 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-base rounded-md"
             >
-              <Image
-                src="/logo.svg"
-                alt="ShipKit Logo"
-                width={32}
-                height={32}
-                className="transition-transform group-hover:scale-110 rounded-lg"
-                priority
-              />
-              <span
-                className="text-lg md:text-xl font-bold tracking-tight uppercase transition-transform group-hover:scale-105"
-                style={{
-                  background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                ShipKit
+              <span className="font-heading text-lg font-light tracking-wide text-fsvc-text transition-transform group-hover:scale-105">
+                Full Stack
+              </span>
+              <span className="font-heading text-lg font-bold tracking-tight text-accent transition-transform group-hover:scale-105">
+                Vibe Coder
               </span>
             </Link>
 
@@ -139,18 +97,17 @@ export function Navigation() {
             <div className="hidden md:flex items-center gap-6">
               {[
                 { label: 'Pricing', href: '/get-started' },
-                { label: 'EchoMe', href: '/echome' },
-                { label: 'Pre-Flight', href: '/pre-flight' },
                 { label: 'FAQ', href: '/faq' },
                 { label: 'Blog', href: '/blog' },
+                { label: 'Contact', href: '/contact' },
               ].map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm font-medium transition-colors ${
+                  className={`text-sm font-medium font-body transition-colors ${
                     pathname === link.href
-                      ? 'text-white'
-                      : 'text-gray-400 hover:text-white'
+                      ? 'text-fsvc-text'
+                      : 'text-fsvc-text-secondary hover:text-fsvc-text'
                   }`}
                 >
                   {link.label}
@@ -158,25 +115,23 @@ export function Navigation() {
               ))}
             </div>
 
-            {/* Sign In / Dashboard - Right Side */}
+            {/* Sign In / Dashboard */}
             {status !== 'loading' && (
               <Link
                 href={session ? '/dashboard' : '/auth/signin'}
-                className="px-4 py-2 text-sm font-medium rounded-lg border border-white/20 hover:border-pink-500/50 bg-white/5 hover:bg-white/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black"
-                style={{
-                  background: session ? 'linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(6, 182, 212, 0.1))' : undefined,
-                }}
+                className={`px-4 py-2 text-sm font-medium font-body rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-base ${
+                  session
+                    ? 'bg-accent text-base hover:bg-accent-hover'
+                    : 'border border-border hover:border-fsvc-text-disabled bg-white/5 hover:bg-white/10 text-fsvc-text'
+                }`}
               >
-                <span className="text-white">
-                  {session ? 'Dashboard' : 'Sign In'}
-                </span>
+                {session ? 'Dashboard' : 'Sign In'}
               </Link>
             )}
           </div>
         </div>
       </nav>
 
-      {/* Side Menu */}
       <SideMenu
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}

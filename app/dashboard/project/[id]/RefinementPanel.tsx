@@ -32,24 +32,24 @@ interface RefinementCycle {
 
 const statusBadge: Record<string, { label: string; color: string }> = {
   PENDING: { label: 'Pending', color: 'bg-yellow-500/20 text-yellow-400' },
-  EVALUATING: { label: 'Evaluating', color: 'bg-cyan-500/20 text-cyan-400' },
+  EVALUATING: { label: 'Evaluating', color: 'bg-accent-2/20 text-accent-2' },
   SYNTHESIZING: { label: 'Synthesizing', color: 'bg-purple-500/20 text-purple-400' },
-  REGENERATING: { label: 'Regenerating', color: 'bg-pink-500/20 text-pink-400' },
+  REGENERATING: { label: 'Regenerating', color: 'bg-accent/20 text-accent' },
   COMPLETE: { label: 'Complete', color: 'bg-green-500/20 text-green-400' },
   FAILED: { label: 'Failed', color: 'bg-red-500/20 text-red-400' },
 };
 
 const skillLabels: Record<string, { name: string; color: string }> = {
   structure: { name: 'Structure', color: 'text-blue-400' },
-  brand_visual: { name: 'Brand/Visual', color: 'text-pink-400' },
+  brand_visual: { name: 'Brand/Visual', color: 'text-accent' },
   copy_conversion: { name: 'Copy/Conversion', color: 'text-green-400' },
-  code_quality: { name: 'Code Quality', color: 'text-cyan-400' },
+  code_quality: { name: 'Code Quality', color: 'text-accent-2' },
 };
 
 const severityColors: Record<string, string> = {
   critical: 'text-red-400 bg-red-500/10 border-red-500/30',
   major: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/30',
-  minor: 'text-gray-400 bg-gray-500/10 border-gray-500/30',
+  minor: 'text-fsvc-text-secondary bg-gray-500/10 border-gray-500/30',
 };
 
 export function RefinementPanel({ projectId }: { projectId: string }) {
@@ -120,18 +120,18 @@ export function RefinementPanel({ projectId }: { projectId: string }) {
   const totalTokens = cycles.reduce((sum, c) => sum + c.tokensUsed, 0);
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+    <div className="rounded-xl border border-border bg-surface p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-lg font-bold text-white">OpenClaw Refinement</h2>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-fsvc-text-secondary">
             AI-powered evaluation and refinement across 4 dimensions
           </p>
         </div>
         <button
           onClick={handleRefine}
           disabled={isRefining}
-          className="px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+          className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
         >
           {isRefining ? 'Starting...' : 'Refine'}
         </button>
@@ -145,7 +145,7 @@ export function RefinementPanel({ projectId }: { projectId: string }) {
 
       {/* Summary */}
       {cycles.length > 0 && (
-        <div className="flex gap-4 mb-4 text-xs text-gray-500">
+        <div className="flex gap-4 mb-4 text-xs text-fsvc-text-disabled">
           <span>{cycles.length} cycle{cycles.length !== 1 ? 's' : ''}</span>
           <span>{totalFindings} findings</span>
           <span>{totalTokens.toLocaleString()} tokens</span>
@@ -162,12 +162,12 @@ export function RefinementPanel({ projectId }: { projectId: string }) {
             return (
               <div
                 key={cycle.id}
-                className="rounded-lg border border-white/10 bg-white/5 overflow-hidden"
+                className="rounded-lg border border-border bg-surface overflow-hidden"
               >
                 {/* Cycle Header */}
                 <button
                   onClick={() => setExpandedCycle(isExpanded ? null : cycle.id)}
-                  className="w-full flex items-center justify-between p-3 hover:bg-white/5 transition-colors text-left"
+                  className="w-full flex items-center justify-between p-3 hover:bg-surface transition-colors text-left"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-bold text-white">
@@ -177,13 +177,13 @@ export function RefinementPanel({ projectId }: { projectId: string }) {
                       {badge.label}
                     </span>
                     {cycle.filesRegenerated.length > 0 && (
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-fsvc-text-disabled">
                         {cycle.filesRegenerated.length} files updated
                       </span>
                     )}
                   </div>
                   <svg
-                    className={`w-4 h-4 text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 text-fsvc-text-disabled transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -195,9 +195,9 @@ export function RefinementPanel({ projectId }: { projectId: string }) {
 
                 {/* Expanded: Agent Evaluations */}
                 {isExpanded && (
-                  <div className="border-t border-white/10 p-3 space-y-2">
+                  <div className="border-t border-border p-3 space-y-2">
                     {cycle.evaluations.map((evaluation) => {
-                      const skill = skillLabels[evaluation.skill] || { name: evaluation.skill, color: 'text-gray-400' };
+                      const skill = skillLabels[evaluation.skill] || { name: evaluation.skill, color: 'text-fsvc-text-secondary' };
                       const findings = evaluation.findings || [];
                       const isSkillExpanded = expandedSkill === evaluation.id;
 
@@ -205,13 +205,13 @@ export function RefinementPanel({ projectId }: { projectId: string }) {
                         <div key={evaluation.id}>
                           <button
                             onClick={() => setExpandedSkill(isSkillExpanded ? null : evaluation.id)}
-                            className="w-full flex items-center justify-between py-2 px-2 rounded hover:bg-white/5 transition-colors text-left"
+                            className="w-full flex items-center justify-between py-2 px-2 rounded hover:bg-surface transition-colors text-left"
                           >
                             <div className="flex items-center gap-2">
                               <span className={`text-sm font-medium ${skill.color}`}>
                                 {skill.name}
                               </span>
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-fsvc-text-disabled">
                                 {findings.length} finding{findings.length !== 1 ? 's' : ''}
                               </span>
                               {findings.filter((f) => f.severity === 'critical').length > 0 && (
@@ -221,7 +221,7 @@ export function RefinementPanel({ projectId }: { projectId: string }) {
                               )}
                             </div>
                             <svg
-                              className={`w-3 h-3 text-gray-500 transition-transform ${isSkillExpanded ? 'rotate-180' : ''}`}
+                              className={`w-3 h-3 text-fsvc-text-disabled transition-transform ${isSkillExpanded ? 'rotate-180' : ''}`}
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -242,12 +242,12 @@ export function RefinementPanel({ projectId }: { projectId: string }) {
                                     <span className="font-bold uppercase text-[10px]">
                                       {finding.severity}
                                     </span>
-                                    <span className="text-gray-500 font-mono">
+                                    <span className="text-fsvc-text-disabled font-mono">
                                       {finding.file}
                                     </span>
                                   </div>
                                   <p className="mb-1">{finding.issue}</p>
-                                  <p className="text-gray-500">{finding.suggestion}</p>
+                                  <p className="text-fsvc-text-disabled">{finding.suggestion}</p>
                                 </div>
                               ))}
                             </div>
@@ -262,7 +262,7 @@ export function RefinementPanel({ projectId }: { projectId: string }) {
           })}
         </div>
       ) : (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-fsvc-text-disabled">
           No refinement cycles yet. Refinement runs automatically during build, or click Refine for a manual cycle.
         </p>
       )}

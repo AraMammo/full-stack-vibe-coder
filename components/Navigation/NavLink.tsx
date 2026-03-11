@@ -2,7 +2,7 @@
  * NavLink Component
  *
  * Individual navigation link optimized for horizontal navbar display.
- * Handles both regular links and emphasized contact link with cyberpunk styling.
+ * Handles both regular links and emphasized contact link with brand styling.
  */
 
 'use client';
@@ -21,7 +21,7 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   if (isContact) {
-    // Contact Link - Emphasized with gradient border
+    // Contact Link - Emphasized with accent border
     return (
       <Link
         href={href}
@@ -37,33 +37,20 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
             transition-all duration-200
             ${
               isActive || isHovered
-                ? 'bg-gradient-to-r from-pink-500/10 to-cyan-500/10 scale-105'
+                ? 'bg-accent/10 scale-105'
                 : 'bg-transparent'
             }
           `}
           style={{
-            borderImage: isActive || isHovered
-              ? 'linear-gradient(135deg, #ec4899, #06b6d4) 1'
-              : 'none',
-            borderColor: isActive || isHovered ? 'transparent' : 'rgba(255, 255, 255, 0.15)',
+            borderColor: isActive || isHovered ? '#FF5C35' : 'rgba(255, 255, 255, 0.15)',
           }}
         >
           <span
             className={`
               block text-sm font-bold whitespace-nowrap
               transition-all duration-200
-              ${isActive || isHovered ? '' : 'text-white/90'}
+              ${isActive || isHovered ? 'text-accent' : 'text-white/90'}
             `}
-            style={
-              isActive || isHovered
-                ? {
-                    background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }
-                : undefined
-            }
           >
             {label}
           </span>
@@ -71,10 +58,7 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
           {/* Glow effect on hover */}
           {isHovered && (
             <div
-              className="absolute inset-0 rounded-lg opacity-40 blur-xl -z-10"
-              style={{
-                background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
-              }}
+              className="absolute inset-0 rounded-lg opacity-40 blur-xl -z-10 bg-accent"
             />
           )}
         </div>
@@ -83,7 +67,7 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
         <div
           className="absolute inset-0 rounded-lg opacity-0 group-focus-visible:opacity-100 transition-opacity"
           style={{
-            boxShadow: '0 0 0 2px black, 0 0 0 4px #ec4899',
+            boxShadow: '0 0 0 2px black, 0 0 0 4px #FF5C35',
           }}
         />
       </Link>
@@ -103,19 +87,8 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
         className={`
           block px-4 py-2.5 text-sm font-semibold rounded-lg whitespace-nowrap
           transition-all duration-200
-          ${isActive || isHovered ? 'scale-105' : 'scale-100'}
+          ${isActive || isHovered ? 'text-accent scale-105' : 'text-white/90 scale-100'}
         `}
-        style={
-          isActive || isHovered
-            ? {
-                background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                filter: 'brightness(1.2)',
-              }
-            : { color: 'rgba(255, 255, 255, 0.90)' }
-        }
       >
         {label}
       </span>
@@ -123,10 +96,9 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
       {/* Active indicator - bottom border */}
       {isActive && (
         <div
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-3/4 rounded-full"
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-3/4 rounded-full bg-accent"
           style={{
-            background: 'linear-gradient(90deg, #ec4899 0%, #06b6d4 100%)',
-            boxShadow: '0 0 8px rgba(236, 72, 153, 0.8)',
+            boxShadow: '0 0 8px rgba(255, 92, 53, 0.8)',
           }}
         />
       )}
@@ -134,10 +106,7 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
       {/* Hover glow */}
       {isHovered && !isActive && (
         <div
-          className="absolute inset-0 rounded-lg opacity-20 blur-lg pointer-events-none"
-          style={{
-            background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
-          }}
+          className="absolute inset-0 rounded-lg opacity-20 blur-lg pointer-events-none bg-accent"
         />
       )}
 
@@ -145,7 +114,7 @@ export function NavLink({ label, href, isActive, isContact }: NavLinkProps) {
       <div
         className="absolute inset-0 rounded-lg opacity-0 group-focus-visible:opacity-100 transition-opacity pointer-events-none"
         style={{
-          boxShadow: '0 0 0 2px black, 0 0 0 4px #ec4899',
+          boxShadow: '0 0 0 2px black, 0 0 0 4px #FF5C35',
         }}
       />
     </Link>

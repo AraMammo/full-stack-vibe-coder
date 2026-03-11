@@ -1,7 +1,7 @@
 /**
  * Cookie Policy Page
  *
- * Comprehensive explanation of cookies used by ShipKit.
+ * Comprehensive explanation of cookies used by Full Stack Vibe Coder.
  * GDPR compliant, accessible, clear language.
  */
 
@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { getUsedCookies } from '@/lib/cookie-consent';
 
 export const metadata = {
-  title: 'Cookie Policy | ShipKit',
+  title: 'Cookie Policy | Full Stack Vibe Coder',
   description: 'Learn about the cookies we use and how to manage your preferences.',
 };
 
@@ -48,7 +48,7 @@ export default function CookiePolicyPage() {
               the site.
             </p>
             <p>
-              We use cookies to make ShipKit work properly and to improve your experience.
+              We use cookies to make Full Stack Vibe Coder work properly and to improve your experience.
               This policy explains what cookies we use and why.
             </p>
           </div>
@@ -275,10 +275,10 @@ export default function CookiePolicyPage() {
           <p className="text-gray-700">
             If you have questions about our use of cookies, please contact us at{' '}
             <a
-              href="mailto:privacy@shipkit.io"
+              href="mailto:privacy@fullstackvibecoder.com"
               className="text-gray-900 underline hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded"
             >
-              privacy@shipkit.io
+              privacy@fullstackvibecoder.com
             </a>
           </p>
         </section>

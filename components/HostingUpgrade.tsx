@@ -88,19 +88,19 @@ export function HostingUpgrade({ projectId, currentPlan, onUpgraded }: HostingUp
               key={tier.plan}
               className={`relative p-5 rounded-xl border transition-colors ${
                 isCurrent
-                  ? 'border-cyan-500/50 bg-cyan-500/10'
+                  ? 'border-accent-2/50 bg-accent-2/10'
                   : tier.popular
-                  ? 'border-pink-500/50 bg-pink-500/5'
-                  : 'border-white/10 bg-white/5'
+                  ? 'border-accent/50 bg-accent/5'
+                  : 'border-border bg-surface'
               }`}
             >
               {tier.popular && !isCurrent && (
-                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-pink-500 text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-accent text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
                   Popular
                 </span>
               )}
               {isCurrent && (
-                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-cyan-500 text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-accent-2 text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
                   Current Plan
                 </span>
               )}
@@ -109,29 +109,29 @@ export function HostingUpgrade({ projectId, currentPlan, onUpgraded }: HostingUp
                 <h4 className="text-white font-semibold">{tier.name}</h4>
                 <div className="mt-1">
                   <span className="text-2xl font-bold text-white">{tier.price}</span>
-                  <span className="text-gray-400 text-sm">/mo</span>
+                  <span className="text-fsvc-text-secondary text-sm">/mo</span>
                 </div>
               </div>
 
               <ul className="space-y-2 mb-5">
                 {tier.features.map((f, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm">
-                    <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
-                    <span className="text-gray-300">{f}</span>
+                    <span className="text-accent-2 mt-0.5 flex-shrink-0">&#10003;</span>
+                    <span className="text-fsvc-text-secondary">{f}</span>
                   </li>
                 ))}
               </ul>
 
               {isCurrent ? (
-                <div className="text-center text-xs text-gray-500">Your current plan</div>
+                <div className="text-center text-xs text-fsvc-text-disabled">Your current plan</div>
               ) : (
                 <button
                   onClick={() => handleUpgrade(tier.plan)}
                   disabled={loading !== null}
                   className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-all ${
                     isDowngrade
-                      ? 'bg-white/10 text-gray-300 hover:bg-white/20'
-                      : 'bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:opacity-90'
+                      ? 'bg-surface text-fsvc-text-secondary hover:bg-raised'
+                      : 'bg-accent text-white hover:opacity-90'
                   } ${loading === tier.plan ? 'opacity-70 cursor-wait' : ''}`}
                 >
                   {loading === tier.plan
@@ -147,16 +147,16 @@ export function HostingUpgrade({ projectId, currentPlan, onUpgraded }: HostingUp
       </div>
 
       {/* Enterprise tier */}
-      <div className="p-5 rounded-xl border border-white/10 bg-white/5 flex items-center justify-between">
+      <div className="p-5 rounded-xl border border-border bg-surface flex items-center justify-between">
         <div>
           <h4 className="text-white font-semibold">Enterprise</h4>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-fsvc-text-secondary">
             $999+/mo &mdash; Custom builds, dedicated infrastructure, SLA guarantees
           </p>
         </div>
         <a
-          href="mailto:ara@shipkit.io?subject=ShipKit Enterprise"
-          className="px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors flex-shrink-0"
+          href="mailto:ara@fullstackvibecoder.com?subject=Full Stack Vibe Coder Enterprise"
+          className="px-4 py-2 rounded-lg bg-surface text-white text-sm font-medium hover:bg-raised transition-colors flex-shrink-0"
         >
           Contact Us
         </a>

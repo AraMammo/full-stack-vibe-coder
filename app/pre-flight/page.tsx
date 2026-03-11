@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Pre-Flight Confidence Audit | ShipKit',
+  title: 'Pre-Flight Confidence Audit | Full Stack Vibe Coder',
   description: '15-dimension system audit in 48 hours. Risk matrix, remediation roadmap, and go/no-go recommendation.',
 };
 
@@ -12,7 +12,7 @@ function BottleneckBadge() {
         href="https://bottlenecklabs.ai"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 hover:border-pink-500/30 transition-all text-xs text-gray-400 hover:text-gray-300"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-surface hover:bg-white/10 hover:border-accent/30 transition-all text-xs text-fsvc-text-secondary hover:text-fsvc-text-secondary"
       >
         Built by Bottleneck Labs
         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -29,13 +29,13 @@ export default function PreFlightPage() {
       {/* Hero */}
       <section className="px-4 sm:px-6 py-20">
         <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-block px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-sm font-medium mb-6">
+          <div className="inline-block px-4 py-1.5 rounded-full border border-accent-2/30 bg-accent-2/10 text-accent-2 text-sm font-medium mb-6">
             Required Diagnostic Gate
           </div>
           <h1
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6"
             style={{
-              background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
+              background: '#FF5C35',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -43,7 +43,7 @@ export default function PreFlightPage() {
           >
             Pre-Flight Confidence Audit
           </h1>
-          <p className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto mb-4">
+          <p className="text-lg sm:text-xl text-fsvc-text-secondary max-w-3xl mx-auto mb-4">
             15-dimension system audit in 48 hours. Know exactly where you stand before committing to a build.
           </p>
           <p className="text-2xl font-bold text-white mb-8">$249 – $749</p>
@@ -51,7 +51,7 @@ export default function PreFlightPage() {
             href="https://cal.com/ara-mamourian-ynargr/bottleneck-discovery"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:opacity-90 transition-opacity"
+            className="inline-block px-8 py-4 text-lg font-bold rounded-lg bg-accent text-white hover:opacity-90 transition-opacity"
           >
             Start Your Audit
           </a>
@@ -105,13 +105,13 @@ export default function PreFlightPage() {
             ].map((item) => (
               <div
                 key={item.title}
-                className="p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-cyan-500/30 transition-all"
+                className="p-6 rounded-2xl border border-border bg-surface hover:border-accent-2/30 transition-all"
               >
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-pink-500/20 to-cyan-500/20 border border-white/10 text-cyan-400 mb-4">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-accent/10 border border-border text-accent-2 mb-4">
                   {item.icon}
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-                <p className="text-gray-400">{item.description}</p>
+                <p className="text-fsvc-text-secondary">{item.description}</p>
               </div>
             ))}
           </div>
@@ -132,14 +132,14 @@ export default function PreFlightPage() {
             ].map((item) => (
               <div key={item.step} className="flex gap-6 items-start">
                 <div
-                  className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-lg font-black border border-pink-500/30"
+                  className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-lg font-black border border-accent/30"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(6, 182, 212, 0.15))',
+                    background: 'rgba(255, 92, 53, 0.10)',
                   }}
                 >
                   <span
                     style={{
-                      background: 'linear-gradient(135deg, #ec4899, #06b6d4)',
+                      background: '#FF5C35',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text',
@@ -150,7 +150,7 @@ export default function PreFlightPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white mb-1">{item.title}</h3>
-                  <p className="text-gray-400">{item.description}</p>
+                  <p className="text-fsvc-text-secondary">{item.description}</p>
                 </div>
               </div>
             ))}
@@ -164,14 +164,14 @@ export default function PreFlightPage() {
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
             Don&apos;t build on shaky ground.
           </h2>
-          <p className="text-gray-400 mb-8">
+          <p className="text-fsvc-text-secondary mb-8">
             Every build engagement starts with Pre-Flight. Know your risks before you invest.
           </p>
           <a
             href="https://cal.com/ara-mamourian-ynargr/bottleneck-discovery"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:opacity-90 transition-opacity"
+            className="inline-block px-8 py-4 text-lg font-bold rounded-lg bg-accent text-white hover:opacity-90 transition-opacity"
           >
             Book a Call
           </a>

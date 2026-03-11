@@ -98,38 +98,23 @@ export async function POST(
       );
     }
 
-    // Get orchestrator outputs from prompt executions for context
-    const executions = await prisma.promptExecution.findMany({
-      where: { projectId: params.id, status: 'completed' },
-      include: { prompt: true },
-    });
-
-    const orchestratorOutputs: Record<string, string> = {};
-    for (const exec of executions) {
-      orchestratorOutputs[exec.prompt.promptId] = exec.output;
-    }
-
     // Fetch current files from GitHub repo
-    // For now, we use the codebase spec as the file source
-    // TODO: fetch live files from GitHub API when available
-    const codebaseOutput = orchestratorOutputs['sk_nextjs_codebase_08']
-      || orchestratorOutputs['sk_landing_deploy_01']
-      || '';
-
-    if (!codebaseOutput) {
+    const deployedApp = project.deployedApp;
+    if (!deployedApp?.githubRepoFullName) {
       return NextResponse.json(
-        { error: 'No codebase found for this project' },
+        { error: 'No GitHub repo found for this project' },
         { status: 400 }
       );
     }
 
-    // Import parseCodebaseOutput dynamically to avoid circular deps
-    const { parseCodebaseOutput } = await import('@/lib/services/claude-codegen');
-    const files = parseCodebaseOutput(codebaseOutput);
+    // TODO: Fetch live files from GitHub API
+    // For now, return an error if no files can be loaded
+    const files = new Map<string, string>();
+    const orchestratorOutputs: Record<string, string> = {};
 
     if (files.size === 0) {
       return NextResponse.json(
-        { error: 'Could not parse project files' },
+        { error: 'Could not load project files from GitHub. GitHub file fetching not yet implemented.' },
         { status: 400 }
       );
     }

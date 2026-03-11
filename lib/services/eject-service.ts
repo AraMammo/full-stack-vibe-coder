@@ -35,7 +35,7 @@ export async function ejectApp(deployedAppId: string): Promise<EjectResult> {
     where: { id: deployedAppId },
     include: {
       subscription: true,
-      project: { select: { projectName: true, businessConcept: true } },
+      project: { select: { name: true } },
     },
   });
 

@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { BlogPostLayout, BlogSection, BlogWarning, BlogQuote } from '@/components/BlogPostLayout';
 
 export const metadata: Metadata = {
-  title: "I Paid $3K for an 'AI Agency Course' - Complete Scam | ShipKit",
+  title: "I Paid $3K for an 'AI Agency Course' - Complete Scam | Full Stack Vibe Coder",
   description: "Fell for the AI agency guru playbook. Paid $3,000. Got recycled ChatGPT prompts. Here are the exact red flags I missed.",
   keywords: "AI agency scam, course scam, AI development course, fake guru",
   openGraph: {
@@ -213,8 +213,8 @@ export default function AIAgencyCourseScam() {
           That $2,997 wasn't a total loss. It taught me exactly what NOT to do.
         </p>
 
-        <div className="bg-gradient-to-br from-cyan-500/10 to-green-500/10 border border-cyan-500/30 rounded-lg p-6 my-6">
-          <h4 className="text-cyan-400 font-bold text-lg mb-4">Real Lessons:</h4>
+        <div className="bg-gradient-to-br from-accent-2/10 to-green-500/10 border border-accent-2/30 rounded-lg p-6 my-6">
+          <h4 className="text-accent-2 font-bold text-lg mb-4">Real Lessons:</h4>
           <ol className="space-y-4 text-white/90">
             <li>
               <strong>1. AI agencies ARE real businesses.</strong> But they require actual skills—prompt
@@ -231,7 +231,7 @@ export default function AIAgencyCourseScam() {
               automated income, work 2 hours a week"—all lies designed to extract money from desperate people.
             </li>
             <li>
-              <strong>4. Real success takes work.</strong> I built ShipKit in 48 hours, but
+              <strong>4. Real success takes work.</strong> I built Full Stack Vibe Coder in 48 hours, but
               I have 18 years of development experience. AI amplified my skills. It didn't replace them.
             </li>
           </ol>
@@ -245,7 +245,7 @@ export default function AIAgencyCourseScam() {
         </p>
 
         <div className="space-y-4 mt-6">
-          <div className="bg-black/40 border border-white/10 rounded-lg p-5">
+          <div className="bg-black/40 border border-border rounded-lg p-5">
             <h4 className="text-white font-semibold mb-2">✅ Do This:</h4>
             <ul className="list-disc list-inside space-y-2 text-white/80">
               <li>Google "[instructor name] scam" and "[instructor name] review"</li>

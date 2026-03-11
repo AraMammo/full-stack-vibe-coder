@@ -76,15 +76,15 @@ export function OnboardingChecklist({
   const allDone = completedCount === items.length;
 
   return (
-    <div className="mb-8 rounded-xl border border-white/10 bg-white/5 p-6" style={{ borderImage: 'linear-gradient(135deg, rgba(236,72,153,0.3), rgba(6,182,212,0.3)) 1' }}>
+    <div className="mb-8 rounded-xl border border-accent/30 bg-surface p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-bold text-white">Get started with your app</h3>
-          <p className="text-xs text-gray-400 mt-1">{completedCount}/{items.length} complete</p>
+          <p className="text-xs text-fsvc-text-secondary mt-1">{completedCount}/{items.length} complete</p>
         </div>
         <button
           onClick={handleDismiss}
-          className="text-gray-500 hover:text-gray-300 transition-colors"
+          className="text-fsvc-text-disabled hover:text-fsvc-text-secondary transition-colors"
           aria-label="Dismiss checklist"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,9 +94,9 @@ export function OnboardingChecklist({
       </div>
 
       {/* Progress bar */}
-      <div className="w-full h-1.5 bg-white/10 rounded-full mb-4 overflow-hidden">
+      <div className="w-full h-1.5 bg-border rounded-full mb-4 overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-pink-500 to-cyan-500 rounded-full transition-all duration-500"
+          className="h-full bg-accent rounded-full transition-all duration-500"
           style={{ width: `${(completedCount / items.length) * 100}%` }}
         />
       </div>
@@ -123,12 +123,12 @@ export function OnboardingChecklist({
                 href={item.href}
                 target={item.external ? '_blank' : undefined}
                 rel={item.external ? 'noopener noreferrer' : undefined}
-                className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                className="text-sm text-accent-2 hover:text-accent-2/80 transition-colors"
               >
                 {item.label}
               </a>
             ) : (
-              <span className={`text-sm ${item.checked ? 'text-gray-500 line-through' : 'text-gray-300'}`}>
+              <span className={`text-sm ${item.checked ? 'text-fsvc-text-disabled line-through' : 'text-fsvc-text-secondary'}`}>
                 {item.label}
               </span>
             )}

@@ -8,6 +8,17 @@ import { BlogPost } from './blog-config';
  */
 
 export const allBlogPosts: BlogPost[] = [
+  // CULTURE & CRAFT
+  {
+    slug: 'we-didnt-build-this-they-did',
+    title: "We Didn't Build This. They Did.",
+    excerpt: "A real thank you to the OG coders, hackers, and rebels who broke things so we could build things. The people who paved the road every vibe coder now drives on.",
+    date: '2025-03-11',
+    readTime: '11 min read',
+    category: 'Culture & Craft',
+    featured: true
+  },
+
   // FUNDAMENTALS
   {
     slug: 'what-is-vibe-coding',

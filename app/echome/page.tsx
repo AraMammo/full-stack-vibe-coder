@@ -12,7 +12,7 @@ function BottleneckBadge() {
         href="https://bottlenecklabs.ai"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 hover:border-pink-500/30 transition-all text-xs text-gray-400 hover:text-gray-300"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-surface hover:bg-white/10 hover:border-accent/30 transition-all text-xs text-fsvc-text-secondary hover:text-fsvc-text-secondary"
       >
         Built by Bottleneck Labs
         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -36,13 +36,13 @@ export default function EchoMePage() {
       {/* ═══════════════════════════════════════════ */}
       <section className="px-4 sm:px-6 py-20 sm:py-28">
         <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-block px-4 py-1.5 rounded-full border border-pink-500/30 bg-pink-500/10 text-pink-400 text-sm font-medium mb-6">
+          <div className="inline-block px-4 py-1.5 rounded-full border border-accent/30 bg-accent/10 text-accent text-sm font-medium mb-6">
             Agentic Content Marketing
           </div>
           <h1
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight"
             style={{
-              background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
+              background: '#FF5C35',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -50,13 +50,13 @@ export default function EchoMePage() {
           >
             Your brand voice, encoded.
           </h1>
-          <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto mb-3">
+          <p className="text-lg sm:text-xl text-fsvc-text-secondary max-w-3xl mx-auto mb-3">
             We analyze your best-performing content, encode your tone and positioning into a reusable model, then generate campaign-ready content across every channel — on demand.
           </p>
-          <p className="text-base text-gray-500 max-w-2xl mx-auto mb-4">
+          <p className="text-base text-fsvc-text-disabled max-w-2xl mx-auto mb-4">
             Not a chatbot. Not a prompt wrapper. A managed content pipeline with direct API access.
           </p>
-          <p className="text-sm text-gray-500 mb-8">
+          <p className="text-sm text-fsvc-text-disabled mb-8">
             Starting at $987/mo &middot; Cancel anytime
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -64,13 +64,13 @@ export default function EchoMePage() {
               href="https://cal.com/ara-mamourian-ynargr/bottleneck-discovery"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:opacity-90 transition-opacity"
+              className="inline-block px-8 py-4 text-lg font-bold rounded-lg bg-accent text-white hover:opacity-90 transition-opacity"
             >
               Book a Discovery Call
             </a>
             <a
               href="#how-it-works"
-              className="inline-block px-8 py-4 text-lg font-medium rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-white transition-all"
+              className="inline-block px-8 py-4 text-lg font-medium rounded-lg border border-white/20 bg-surface hover:bg-white/10 text-white transition-all"
             >
               See How It Works
             </a>
@@ -88,7 +88,7 @@ export default function EchoMePage() {
           <h2 className="text-3xl sm:text-4xl font-bold text-center text-white mb-4">
             Content is the bottleneck.
           </h2>
-          <p className="text-gray-400 text-center max-w-2xl mx-auto mb-14">
+          <p className="text-fsvc-text-secondary text-center max-w-2xl mx-auto mb-14">
             You know you need to post consistently. But every piece takes hours, sounds slightly off-brand, and by the time it&apos;s approved — the moment has passed.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -111,7 +111,7 @@ export default function EchoMePage() {
                   '2-3 posts per week, max — because there\'s no time for more.',
                   'Inconsistent voice across LinkedIn, email, and ads.',
                 ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-gray-400 text-sm">
+                  <li key={item} className="flex items-start gap-2 text-fsvc-text-secondary text-sm">
                     <span className="text-red-400/60 mt-1 shrink-0">&mdash;</span>
                     {item}
                   </li>
@@ -120,14 +120,14 @@ export default function EchoMePage() {
             </div>
 
             {/* With EchoMe */}
-            <div className="p-6 rounded-2xl border border-cyan-500/20 bg-cyan-500/5">
+            <div className="p-6 rounded-2xl border border-accent-2/20 bg-accent-2/5">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <div className="w-8 h-8 rounded-lg bg-accent-2/20 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-accent-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-cyan-400">With EchoMe</h3>
+                <h3 className="text-lg font-bold text-accent-2">With EchoMe</h3>
               </div>
               <ul className="space-y-3">
                 {[
@@ -138,8 +138,8 @@ export default function EchoMePage() {
                   '30-100+ pieces per month without adding headcount.',
                   'One voice across every channel, every time.',
                 ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-gray-300 text-sm">
-                    <svg className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <li key={item} className="flex items-start gap-2 text-fsvc-text-secondary text-sm">
+                    <svg className="w-4 h-4 text-accent-2 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                     {item}
@@ -178,12 +178,12 @@ export default function EchoMePage() {
             ].map((prop) => (
               <div
                 key={prop.label}
-                className="p-6 rounded-2xl border border-white/10 bg-white/5"
+                className="p-6 rounded-2xl border border-border bg-surface"
               >
                 <div
                   className="text-5xl font-black mb-1"
                   style={{
-                    background: 'linear-gradient(135deg, #ec4899, #06b6d4)',
+                    background: '#FF5C35',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
@@ -191,8 +191,8 @@ export default function EchoMePage() {
                 >
                   {prop.metric}
                 </div>
-                <div className="text-sm text-gray-500 mb-3">{prop.label}</div>
-                <p className="text-gray-400 text-sm">{prop.detail}</p>
+                <div className="text-sm text-fsvc-text-disabled mb-3">{prop.label}</div>
+                <p className="text-fsvc-text-secondary text-sm">{prop.detail}</p>
               </div>
             ))}
           </div>
@@ -209,7 +209,7 @@ export default function EchoMePage() {
           <h2 className="text-3xl sm:text-4xl font-bold text-center text-white mb-4">
             How Encoding Works
           </h2>
-          <p className="text-gray-400 text-center max-w-2xl mx-auto mb-14">
+          <p className="text-fsvc-text-secondary text-center max-w-2xl mx-auto mb-14">
             Three steps to go from &ldquo;we need content&rdquo; to a content engine that sounds exactly like you.
           </p>
 
@@ -236,14 +236,14 @@ export default function EchoMePage() {
             ].map((item) => (
               <div key={item.step} className="flex gap-6 items-start">
                 <div
-                  className="shrink-0 w-14 h-14 rounded-xl flex items-center justify-center text-xl font-black border border-pink-500/30"
+                  className="shrink-0 w-14 h-14 rounded-xl flex items-center justify-center text-xl font-black border border-accent/30"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(6, 182, 212, 0.15))',
+                    background: 'rgba(255, 92, 53, 0.10)',
                   }}
                 >
                   <span
                     style={{
-                      background: 'linear-gradient(135deg, #ec4899, #06b6d4)',
+                      background: '#FF5C35',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text',
@@ -254,8 +254,8 @@ export default function EchoMePage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-                  <p className="text-gray-300 mb-2">{item.description}</p>
-                  <p className="text-gray-500 text-sm">{item.detail}</p>
+                  <p className="text-fsvc-text-secondary mb-2">{item.description}</p>
+                  <p className="text-fsvc-text-disabled text-sm">{item.detail}</p>
                 </div>
               </div>
             ))}
@@ -273,7 +273,7 @@ export default function EchoMePage() {
           <h2 className="text-3xl sm:text-4xl font-bold text-center text-white mb-4">
             What Comes Out
           </h2>
-          <p className="text-gray-400 text-center max-w-2xl mx-auto mb-14">
+          <p className="text-fsvc-text-secondary text-center max-w-2xl mx-auto mb-14">
             One topic. Multiple platforms. Every piece sounds like you wrote it — because the model learned how you write.
           </p>
 
@@ -297,8 +297,8 @@ That's what we built EchoMe to do.`,
               },
               {
                 platform: 'Email (Cold Outreach)',
-                color: 'from-pink-500/20 to-rose-600/10',
-                borderColor: 'border-pink-500/20',
+                color: 'from-accent/20 to-rose-600/10',
+                borderColor: 'border-accent/20',
                 example: `Subject: Your content team is a bottleneck
 
 Hey {{first_name}},
@@ -354,19 +354,19 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
                 key={item.platform}
                 className={`rounded-2xl border ${item.borderColor} bg-gradient-to-b ${item.color} overflow-hidden`}
               >
-                <div className="px-5 py-3 border-b border-white/10 flex items-center justify-between">
+                <div className="px-5 py-3 border-b border-border flex items-center justify-between">
                   <span className="text-sm font-bold text-white">{item.platform}</span>
-                  <span className="text-xs text-gray-500">EchoMe output</span>
+                  <span className="text-xs text-fsvc-text-disabled">EchoMe output</span>
                 </div>
                 <div className="px-5 py-4">
-                  <pre className="text-sm text-gray-300 whitespace-pre-wrap font-sans leading-relaxed">
+                  <pre className="text-sm text-fsvc-text-secondary whitespace-pre-wrap font-sans leading-relaxed">
                     {item.example}
                   </pre>
                 </div>
               </div>
             ))}
           </div>
-          <p className="text-center text-gray-500 text-sm mt-8">
+          <p className="text-center text-fsvc-text-disabled text-sm mt-8">
             These are illustrative examples. Your output will match your encoded voice, not ours.
           </p>
         </div>
@@ -382,7 +382,7 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
           <h2 className="text-3xl sm:text-4xl font-bold text-center text-white mb-4">
             What&apos;s Under the Hood
           </h2>
-          <p className="text-gray-400 text-center max-w-2xl mx-auto mb-14">
+          <p className="text-fsvc-text-secondary text-center max-w-2xl mx-auto mb-14">
             EchoMe isn&apos;t a prompt template. It&apos;s a managed pipeline with three integrated systems.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -423,18 +423,18 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
             ].map((cap) => (
               <div
                 key={cap.title}
-                className="p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-cyan-500/20 transition-all"
+                className="p-6 rounded-2xl border border-border bg-surface hover:border-accent-2/20 transition-all"
               >
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-pink-500/20 to-cyan-500/20 border border-white/10 text-cyan-400 mb-4">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-accent/10 border border-border text-accent-2 mb-4">
                   {cap.icon}
                 </div>
                 <h3 className="text-xl font-bold text-white">{cap.title}</h3>
-                <p className="text-sm text-pink-400 mb-3">{cap.subtitle}</p>
-                <p className="text-gray-400 text-sm mb-4">{cap.description}</p>
+                <p className="text-sm text-accent mb-3">{cap.subtitle}</p>
+                <p className="text-fsvc-text-secondary text-sm mb-4">{cap.description}</p>
                 <ul className="space-y-1.5">
                   {cap.details.map((detail) => (
-                    <li key={detail} className="flex items-center gap-2 text-gray-500 text-xs">
-                      <span className="w-1 h-1 rounded-full bg-cyan-500/60 shrink-0" />
+                    <li key={detail} className="flex items-center gap-2 text-fsvc-text-disabled text-xs">
+                      <span className="w-1 h-1 rounded-full bg-accent-2/60 shrink-0" />
                       {detail}
                     </li>
                   ))}
@@ -455,7 +455,7 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
           <h2 className="text-3xl sm:text-4xl font-bold text-center text-white mb-4">
             Who EchoMe Is For
           </h2>
-          <p className="text-gray-400 text-center max-w-2xl mx-auto mb-14">
+          <p className="text-fsvc-text-secondary text-center max-w-2xl mx-auto mb-14">
             EchoMe works best for teams that already have a voice — they just can&apos;t scale it.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -479,10 +479,10 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
             ].map((persona) => (
               <div
                 key={persona.title}
-                className="p-5 rounded-2xl border border-white/10 bg-white/5"
+                className="p-5 rounded-2xl border border-border bg-surface"
               >
                 <h3 className="text-lg font-bold text-white mb-2">{persona.title}</h3>
-                <p className="text-gray-400 text-sm">{persona.description}</p>
+                <p className="text-fsvc-text-secondary text-sm">{persona.description}</p>
               </div>
             ))}
           </div>
@@ -499,7 +499,7 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
           <h2 className="text-3xl sm:text-4xl font-bold text-center text-white mb-4">
             The Math
           </h2>
-          <p className="text-gray-400 text-center max-w-2xl mx-auto mb-14">
+          <p className="text-fsvc-text-secondary text-center max-w-2xl mx-auto mb-14">
             EchoMe replaces the most expensive, slowest part of your content operation.
           </p>
 
@@ -545,33 +545,33 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
                 key={row.option}
                 className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border ${
                   row.highlight
-                    ? 'border-cyan-500/30 bg-cyan-500/5'
-                    : 'border-white/10 bg-white/5'
+                    ? 'border-accent-2/30 bg-accent-2/5'
+                    : 'border-border bg-surface'
                 }`}
               >
                 <div className="sm:w-1/3">
-                  <span className={`font-bold ${row.highlight ? 'text-cyan-400' : 'text-white'}`}>
+                  <span className={`font-bold ${row.highlight ? 'text-accent-2' : 'text-white'}`}>
                     {row.option}
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-x-8 gap-y-1 text-sm">
-                  <span className="text-gray-400">
+                  <span className="text-fsvc-text-secondary">
                     <span className="text-gray-600">Cost: </span>
                     {row.cost}
                   </span>
-                  <span className="text-gray-400">
+                  <span className="text-fsvc-text-secondary">
                     <span className="text-gray-600">Output: </span>
                     {row.output}
                   </span>
-                  <span className={row.highlight ? 'text-cyan-400 font-bold' : 'text-gray-400'}>
-                    <span className={row.highlight ? 'text-cyan-600' : 'text-gray-600'}>Unit: </span>
+                  <span className={row.highlight ? 'text-accent-2 font-bold' : 'text-fsvc-text-secondary'}>
+                    <span className={row.highlight ? 'text-accent-2' : 'text-gray-600'}>Unit: </span>
                     {row.perPiece}
                   </span>
                 </div>
               </div>
             ))}
           </div>
-          <p className="text-gray-500 text-sm text-center mt-6">
+          <p className="text-fsvc-text-disabled text-sm text-center mt-6">
             And none of the alternatives guarantee brand consistency — or give you API access.
           </p>
         </div>
@@ -587,10 +587,10 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
           <h2 className="text-3xl sm:text-4xl font-bold text-center text-white mb-4">
             Pricing
           </h2>
-          <p className="text-gray-400 text-center mb-4 max-w-2xl mx-auto">
+          <p className="text-fsvc-text-secondary text-center mb-4 max-w-2xl mx-auto">
             All plans include voice encoding, onboarding, and quarterly re-calibration. Cancel anytime.
           </p>
-          <p className="text-gray-500 text-center text-sm mb-12">
+          <p className="text-fsvc-text-disabled text-center text-sm mb-12">
             Voice encoding is included in your first month — no separate setup fee.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -650,22 +650,22 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
                 key={tier.name}
                 className={`relative p-6 rounded-2xl border transition-all ${
                   tier.featured
-                    ? 'border-pink-500/50 bg-gradient-to-b from-pink-500/10 to-cyan-500/10 md:scale-105'
-                    : 'border-white/10 bg-white/5 hover:border-white/20'
+                    ? 'border-accent/50 bg-accent/10 md:scale-105'
+                    : 'border-border bg-surface hover:border-white/20'
                 }`}
               >
                 {tier.featured && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-pink-500 to-cyan-500 text-xs font-bold text-white whitespace-nowrap">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-accent text-xs font-bold text-white whitespace-nowrap">
                     Most Popular
                   </div>
                 )}
                 <h3 className="text-xl font-bold text-white mb-1">{tier.name}</h3>
-                <p className="text-gray-500 text-sm mb-4">{tier.tagline}</p>
+                <p className="text-fsvc-text-disabled text-sm mb-4">{tier.tagline}</p>
                 <div className="flex items-baseline gap-1 mb-6">
                   <span
                     className="text-4xl font-black"
                     style={{
-                      background: 'linear-gradient(135deg, #ec4899, #06b6d4)',
+                      background: '#FF5C35',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text',
@@ -673,15 +673,15 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
                   >
                     {tier.price}
                   </span>
-                  <span className="text-gray-500">{tier.period}</span>
+                  <span className="text-fsvc-text-disabled">{tier.period}</span>
                 </div>
                 <ul className="space-y-3 mb-8">
                   {tier.features.map((feature) => {
                     const text = typeof feature === 'string' ? feature : feature.text;
                     const isBold = typeof feature === 'object' && feature.bold;
                     return (
-                      <li key={text} className={`flex items-start gap-2 ${isBold ? 'text-white font-medium' : 'text-gray-300'}`}>
-                        <svg className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <li key={text} className={`flex items-start gap-2 ${isBold ? 'text-white font-medium' : 'text-fsvc-text-secondary'}`}>
+                        <svg className="w-5 h-5 text-accent-2 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                         {text}
@@ -695,8 +695,8 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
                   rel="noopener noreferrer"
                   className={`block w-full text-center py-3 rounded-lg font-bold transition-all ${
                     tier.featured
-                      ? 'bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:opacity-90'
-                      : 'border border-white/20 bg-white/5 hover:bg-white/10 text-white'
+                      ? 'bg-accent text-white hover:opacity-90'
+                      : 'border border-white/20 bg-surface hover:bg-white/10 text-white'
                   }`}
                 >
                   Book a Call
@@ -750,7 +750,7 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
             ].map((faq) => (
               <div key={faq.q}>
                 <h3 className="text-lg font-bold text-white mb-2">{faq.q}</h3>
-                <p className="text-gray-400">{faq.a}</p>
+                <p className="text-fsvc-text-secondary">{faq.a}</p>
               </div>
             ))}
           </div>
@@ -767,7 +767,7 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
           <h2
             className="text-3xl sm:text-4xl font-bold mb-4"
             style={{
-              background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 100%)',
+              background: '#FF5C35',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -775,17 +775,17 @@ EchoMe encodes your voice into a reusable model. Feed it a topic, get back conte
           >
             Your best content, on repeat.
           </h2>
-          <p className="text-gray-400 mb-3">
+          <p className="text-fsvc-text-secondary mb-3">
             Book a 15-minute discovery call. We&apos;ll assess your content operation, show you how encoding works, and give you a realistic picture of what EchoMe can do for your specific use case.
           </p>
-          <p className="text-gray-500 text-sm mb-8">
+          <p className="text-fsvc-text-disabled text-sm mb-8">
             No pitch deck. No 45-minute demo. Just a conversation about your content.
           </p>
           <a
             href="https://cal.com/ara-mamourian-ynargr/bottleneck-discovery"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:opacity-90 transition-opacity"
+            className="inline-block px-8 py-4 text-lg font-bold rounded-lg bg-accent text-white hover:opacity-90 transition-opacity"
           >
             Book a Discovery Call
           </a>

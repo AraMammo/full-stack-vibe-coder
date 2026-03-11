@@ -1,7 +1,7 @@
 /**
  * BlogPostLayout Component
  *
- * Reusable layout for all blog posts. Substack-style with cyberpunk theme.
+ * Reusable layout for all blog posts. Substack-style with brand theme.
  * Handles structure, navigation, and CTA consistently across all posts.
  */
 
@@ -32,7 +32,7 @@ export function BlogPostLayout({
           <div className="flex flex-wrap items-center gap-4 mb-8">
             <Link
               href="/blog"
-              className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+              className="text-accent-2 hover:text-accent-2/80 font-medium transition-colors"
             >
               ← Back to Blog
             </Link>
@@ -62,13 +62,7 @@ export function BlogPostLayout({
         <footer className="blog-post-footer">
           <div className="blog-cta-box">
             <h3
-              className="text-2xl font-bold mb-4"
-              style={{
-                background: 'linear-gradient(135deg, #ec4899 0%, #06b6d4 50%, #10b981 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}
+              className="text-2xl font-bold mb-4 text-accent"
             >
               Ready to Build Fast?
             </h3>
@@ -79,8 +73,8 @@ export function BlogPostLayout({
               href="/get-started"
               className="
                 inline-block px-8 py-4 rounded-lg font-bold text-white
-                bg-gradient-to-r from-pink-500 via-cyan-500 to-green-500
-                hover:shadow-2xl hover:shadow-pink-500/50 hover:scale-105
+                bg-accent
+                hover:shadow-2xl hover:shadow-accent/50 hover:scale-105
                 transition-all duration-300
               "
             >
@@ -115,8 +109,8 @@ export function BlogSection({ children }: { children: React.ReactNode }) {
 export function BlogQuote({ children }: { children: React.ReactNode }) {
   return (
     <blockquote className="
-      my-8 p-6 border-l-4 border-pink-500
-      bg-gradient-to-r from-pink-500/10 to-transparent
+      my-8 p-6 border-l-4 border-accent
+      bg-accent/10
       rounded-r-lg
     ">
       <div className="text-white/90 text-lg italic">
@@ -133,11 +127,11 @@ export function BlogHighlight({ title, children }: { title?: string; children: R
   return (
     <div className="
       my-8 p-6 rounded-lg
-      bg-gradient-to-br from-cyan-500/10 via-transparent to-green-500/10
-      border border-cyan-500/30
+      bg-accent-2/10
+      border border-accent-2/30
     ">
       {title && (
-        <h4 className="text-cyan-400 font-bold text-lg mb-3">
+        <h4 className="text-accent-2 font-bold text-lg mb-3">
           {title}
         </h4>
       )}

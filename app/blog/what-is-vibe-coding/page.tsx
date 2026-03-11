@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: "What is Vibe Coding: Complete Guide for 2025 | ShipKit Blog",
+  title: "What is Vibe Coding: Complete Guide for 2025 | Full Stack Vibe Coder Blog",
   description: "A comprehensive guide to vibe coding - how AI-powered development is changing software forever. Learn from real examples, avoid common mistakes, and understand why this is the future.",
   keywords: "vibe coding guide, AI coding tutorial, vibe coder, AI software development, future of coding",
   openGraph: {
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     type: "article",
   },
   alternates: {
-    canonical: "https://shipkit.io/blog/what-is-vibe-coding"
+    canonical: "https://fullstackvibecoder.com/blog/what-is-vibe-coding"
   }
 };
 

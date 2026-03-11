@@ -13,7 +13,7 @@ export function UpgradeSection({ projectId, currentPlan }: { projectId: string; 
       {!showUpgrade ? (
         <button
           onClick={() => setShowUpgrade(true)}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500/20 to-cyan-500/20 border border-pink-500/30 text-pink-400 text-sm font-medium hover:from-pink-500/30 hover:to-cyan-500/30 transition-all"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent/10 border border-accent/30 text-accent text-sm font-medium hover:bg-accent/20 transition-all"
         >
           Upgrade Plan
         </button>
@@ -22,7 +22,7 @@ export function UpgradeSection({ projectId, currentPlan }: { projectId: string; 
           <HostingUpgrade projectId={projectId} currentPlan={currentPlan} />
           <button
             onClick={() => setShowUpgrade(false)}
-            className="mt-3 text-xs text-gray-500 hover:text-gray-300 transition-colors"
+            className="mt-3 text-xs text-fsvc-text-disabled hover:text-fsvc-text-secondary transition-colors"
           >
             Cancel
           </button>

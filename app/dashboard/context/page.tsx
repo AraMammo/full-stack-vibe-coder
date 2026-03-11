@@ -165,21 +165,21 @@ export default function ContextManagementPage() {
   // ============================================
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-base text-white">
       {/* Header */}
       <div className="border-b border-gray-800">
         <div className="max-w-6xl mx-auto px-4 py-6">
           <button
             onClick={() => router.push('/dashboard')}
-            className="text-gray-400 hover:text-white mb-4 flex items-center gap-2"
+            className="text-fsvc-text-secondary hover:text-white mb-4 flex items-center gap-2"
           >
             ← Back to Dashboard
           </button>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 via-cyan-500 to-green-500 text-transparent bg-clip-text">
+          <h1 className="text-3xl font-bold text-accent">
             Context Library
           </h1>
-          <p className="text-gray-400 mt-2">
-            Upload files and URLs to personalize your ShipKit outputs
+          <p className="text-fsvc-text-secondary mt-2">
+            Upload files and URLs to personalize your Full Stack Vibe Coder outputs
           </p>
         </div>
       </div>
@@ -227,11 +227,11 @@ export default function ContextManagementPage() {
           <h2 className="text-xl font-bold mb-4">Your Contexts</h2>
 
           {loading ? (
-            <div className="text-center py-12 text-gray-400">
+            <div className="text-center py-12 text-fsvc-text-secondary">
               Loading contexts...
             </div>
           ) : contexts.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
+            <div className="text-center py-12 text-fsvc-text-secondary">
               <p>No contexts uploaded yet.</p>
               <p className="text-sm mt-2">Upload files or URLs above to get started.</p>
             </div>
@@ -259,7 +259,7 @@ export default function ContextManagementPage() {
 function StatCard({ title, value }: { title: string; value: number | string }) {
   return (
     <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
-      <div className="text-gray-400 text-sm">{title}</div>
+      <div className="text-fsvc-text-secondary text-sm">{title}</div>
       <div className="text-2xl font-bold mt-1">{value}</div>
     </div>
   );
@@ -304,7 +304,7 @@ function FileUploadCard({
   return (
     <div
       className={`bg-gray-900/50 border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-        dragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-700 hover:border-gray-600'
+        dragActive ? 'border-accent-2 bg-accent-2/10' : 'border-gray-700 hover:border-gray-600'
       }`}
       onDragEnter={handleDrag}
       onDragLeave={handleDrag}
@@ -313,7 +313,7 @@ function FileUploadCard({
     >
       <div className="text-4xl mb-4">📄</div>
       <h3 className="text-lg font-semibold mb-2">Upload File</h3>
-      <p className="text-sm text-gray-400 mb-4">
+      <p className="text-sm text-fsvc-text-secondary mb-4">
         PDF, DOCX, TXT, MD (max 10MB)
       </p>
 
@@ -325,12 +325,12 @@ function FileUploadCard({
           accept=".pdf,.docx,.txt,.md,.html"
           disabled={uploading}
         />
-        <span className="inline-block px-6 py-2 bg-gradient-to-r from-pink-500 to-cyan-500 text-white rounded-lg font-medium cursor-pointer hover:opacity-90 transition-opacity">
+        <span className="inline-block px-6 py-2 bg-accent text-white rounded-lg font-medium cursor-pointer hover:opacity-90 transition-opacity">
           {uploading ? 'Uploading...' : 'Choose File'}
         </span>
       </label>
 
-      <p className="text-xs text-gray-500 mt-4">
+      <p className="text-xs text-fsvc-text-disabled mt-4">
         or drag and drop
       </p>
     </div>
@@ -358,7 +358,7 @@ function URLUploadCard({
     <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-8">
       <div className="text-4xl mb-4 text-center">🌐</div>
       <h3 className="text-lg font-semibold mb-2 text-center">Add URL</h3>
-      <p className="text-sm text-gray-400 mb-4 text-center">
+      <p className="text-sm text-fsvc-text-secondary mb-4 text-center">
         LinkedIn, portfolio, competitor sites
       </p>
 
@@ -368,14 +368,14 @@ function URLUploadCard({
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://example.com"
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
+          className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent"
           disabled={uploading}
           required
         />
         <button
           type="submit"
           disabled={uploading || !url.trim()}
-          className="w-full px-6 py-2 bg-gradient-to-r from-pink-500 to-cyan-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-6 py-2 bg-accent text-white rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading ? 'Processing...' : 'Add URL'}
         </button>
@@ -395,10 +395,10 @@ function ContextCard({
     COMPLETED: 'text-green-500',
     PROCESSING: 'text-yellow-500',
     FAILED: 'text-red-500',
-    PENDING: 'text-gray-500',
+    PENDING: 'text-fsvc-text-disabled',
   };
 
-  const statusColor = statusColors[context.status as keyof typeof statusColors] || 'text-gray-500';
+  const statusColor = statusColors[context.status as keyof typeof statusColors] || 'text-fsvc-text-disabled';
 
   return (
     <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 flex items-center justify-between hover:border-gray-600 transition-colors">
@@ -411,7 +411,7 @@ function ContextCard({
           </span>
           <div>
             <h3 className="font-medium">{context.fileName}</h3>
-            <div className="flex items-center gap-4 text-sm text-gray-400 mt-1">
+            <div className="flex items-center gap-4 text-sm text-fsvc-text-secondary mt-1">
               <span className={statusColor}>{context.status}</span>
               <span>{context.chunksCount} chunks</span>
               {context.wordCount && <span>{context.wordCount.toLocaleString()} words</span>}

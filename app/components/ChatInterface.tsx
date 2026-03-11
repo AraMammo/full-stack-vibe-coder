@@ -221,7 +221,7 @@ export default function ChatInterface() {
   return (
     <div className="w-full">
       {/* Chat Messages */}
-      <div className="rounded-xl bg-white/5 p-3 mb-3 min-h-[80px] max-h-[400px] overflow-y-auto">
+      <div className="rounded-xl bg-raised p-3 mb-3 min-h-[80px] max-h-[400px] overflow-y-auto">
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -230,8 +230,8 @@ export default function ChatInterface() {
             <div
               className={`px-3 py-2 rounded-lg max-w-[80%] text-sm leading-relaxed ${
                 msg.role === "user"
-                  ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white"
-                  : "bg-white/5 border border-white/10 text-gray-300"
+                  ? "bg-accent text-base"
+                  : "bg-surface border border-border text-fsvc-text-secondary"
               }`}
             >
               {msg.content}
@@ -241,12 +241,12 @@ export default function ChatInterface() {
 
         {isSubmitting && (
           <div className="flex justify-start mb-2">
-            <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-lg">
-              <div className="flex items-center gap-2 text-gray-400 text-sm">
+            <div className="bg-surface border border-border px-4 py-3 rounded-lg">
+              <div className="flex items-center gap-2 text-fsvc-text-disabled text-sm">
                 <div className="flex gap-1">
-                  <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                  <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-1.5 h-1.5 bg-accent-2 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-1.5 h-1.5 bg-success rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
                 Analyzing your business idea...
               </div>
@@ -259,7 +259,7 @@ export default function ChatInterface() {
           <div className="mt-4 space-y-4">
             {/* Business Name Options */}
             <div>
-              <p className="text-xs font-semibold text-pink-400 uppercase tracking-wide mb-2">
+              <p className="text-xs font-semibold text-accent uppercase tracking-wide mb-2">
                 Business Name Options
               </p>
               <div className="grid gap-2">
@@ -270,77 +270,77 @@ export default function ChatInterface() {
                     onClick={() => setSelectedName(idx)}
                     className={`text-left p-3 rounded-lg border transition-all ${
                       selectedName === idx
-                        ? "border-pink-500/50 bg-pink-500/10"
-                        : "border-white/10 bg-white/5 hover:border-white/20"
+                        ? "border-accent/50 bg-accent/10"
+                        : "border-border bg-surface hover:border-border"
                     }`}
                   >
-                    <p className="font-semibold text-white text-sm">{bn.name}</p>
-                    <p className="text-xs text-gray-400">{bn.tagline}</p>
+                    <p className="font-semibold text-fsvc-text text-sm">{bn.name}</p>
+                    <p className="text-xs text-fsvc-text-disabled">{bn.tagline}</p>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Value Proposition */}
-            <div className="p-3 rounded-lg bg-gradient-to-r from-pink-500/5 to-cyan-500/5 border border-white/10">
-              <p className="text-xs font-semibold text-cyan-400 uppercase tracking-wide mb-1">
+            <div className="p-3 rounded-lg bg-accent/5 border border-border">
+              <p className="text-xs font-semibold text-accent-2 uppercase tracking-wide mb-1">
                 Value Proposition
               </p>
-              <p className="text-white text-sm leading-relaxed">
+              <p className="text-fsvc-text text-sm leading-relaxed">
                 {analysis.valueProposition}
               </p>
             </div>
 
             {/* Target Audience */}
             <div>
-              <p className="text-xs font-semibold text-green-400 uppercase tracking-wide mb-2">
+              <p className="text-xs font-semibold text-success uppercase tracking-wide mb-2">
                 Target Audience
               </p>
               <div className="grid gap-2">
                 {analysis.targetAudience.map((seg, idx) => (
                   <div
                     key={idx}
-                    className="p-2 rounded-lg bg-white/5 border border-white/10"
+                    className="p-2 rounded-lg bg-surface border border-border"
                   >
-                    <p className="font-medium text-white text-sm">{seg.segment}</p>
-                    <p className="text-xs text-gray-400">{seg.description}</p>
+                    <p className="font-medium text-fsvc-text text-sm">{seg.segment}</p>
+                    <p className="text-xs text-fsvc-text-disabled">{seg.description}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Competitive Positioning */}
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <p className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-1">
+            <div className="p-3 rounded-lg bg-surface border border-border">
+              <p className="text-xs font-semibold text-fsvc-text-secondary uppercase tracking-wide mb-1">
                 Competitive Edge
               </p>
-              <p className="text-gray-300 text-sm leading-relaxed">
+              <p className="text-fsvc-text-secondary text-sm leading-relaxed">
                 {analysis.competitivePositioning}
               </p>
             </div>
 
             {/* Site Preview */}
             <div>
-              <p className="text-xs font-semibold text-yellow-400 uppercase tracking-wide mb-2">
+              <p className="text-xs font-semibold text-warning uppercase tracking-wide mb-2">
                 Site Preview
               </p>
               <div
-                className="rounded-lg overflow-hidden border border-white/10"
+                className="rounded-lg overflow-hidden border border-border"
                 dangerouslySetInnerHTML={{ __html: analysis.sitePreviewHtml }}
               />
             </div>
 
             {/* Inline Checkout Panel */}
-            <div className="p-4 rounded-lg bg-gradient-to-b from-pink-500/10 to-cyan-500/10 border border-pink-500/30 space-y-3">
-              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">
+            <div className="p-4 rounded-lg bg-surface border border-accent/30 space-y-3">
+              <p className="text-xs text-fsvc-text-disabled uppercase tracking-wide font-semibold">
                 This is your free business brief
               </p>
-              <p className="text-sm text-gray-300 leading-relaxed">
+              <p className="text-sm text-fsvc-text-secondary leading-relaxed">
                 Full build adds: live website, database, auth, payments, email, GitHub repo — all deployed and running.
               </p>
 
               {checkoutError && (
-                <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded p-2">
+                <p className="text-xs text-error bg-error/10 border border-error/20 rounded p-2">
                   {checkoutError}
                 </p>
               )}
@@ -350,9 +350,9 @@ export default function ChatInterface() {
                   type="checkbox"
                   checked={hostingAgreed}
                   onChange={(e) => setHostingAgreed(e.target.checked)}
-                  className="mt-0.5 rounded border-gray-600"
+                  className="mt-0.5 rounded border-border"
                 />
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-fsvc-text-disabled">
                   I agree to $49/mo hosting after 30-day free trial. Cancel anytime.
                 </span>
               </label>
@@ -361,7 +361,7 @@ export default function ChatInterface() {
                 <button
                   type="button"
                   onClick={() => signIn("google")}
-                  className="w-full py-3 px-4 rounded-lg bg-white/10 border border-white/20 text-white font-semibold text-sm hover:bg-white/20 transition-colors"
+                  className="w-full py-3 px-4 rounded-lg bg-raised border border-border text-fsvc-text font-semibold text-sm hover:bg-border transition-colors"
                 >
                   Sign in with Google to continue
                 </button>
@@ -370,7 +370,7 @@ export default function ChatInterface() {
                   type="button"
                   onClick={() => handleCheckout("TURNKEY_SYSTEM")}
                   disabled={!hostingAgreed || checkoutLoading}
-                  className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 px-4 rounded-lg bg-accent text-base font-semibold text-sm hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {checkoutLoading ? "Processing..." : "Build & Deploy My App — $497"}
                 </button>
@@ -380,7 +380,7 @@ export default function ChatInterface() {
                 type="button"
                 onClick={() => handleCheckout("VALIDATION_PACK")}
                 disabled={checkoutLoading}
-                className="w-full text-center text-xs text-gray-500 hover:text-gray-300 transition-colors py-1"
+                className="w-full text-center text-xs text-fsvc-text-disabled hover:text-fsvc-text-secondary transition-colors py-1"
               >
                 Or try a free preview first
               </button>
@@ -397,9 +397,9 @@ export default function ChatInterface() {
           <img
             src={screenshotPreview}
             alt="Screenshot preview"
-            className="h-12 w-12 rounded object-cover border border-white/20"
+            className="h-12 w-12 rounded object-cover border border-border"
           />
-          <span className="text-xs text-gray-400 flex-1 truncate">
+          <span className="text-xs text-fsvc-text-disabled flex-1 truncate">
             {screenshotFile?.name}
           </span>
           <button
@@ -408,7 +408,7 @@ export default function ChatInterface() {
               setScreenshotFile(null);
               setScreenshotPreview(null);
             }}
-            className="text-xs text-red-400 hover:text-red-300"
+            className="text-xs text-error hover:text-error/80"
           >
             Remove
           </button>
@@ -440,11 +440,11 @@ export default function ChatInterface() {
           type="button"
           onClick={() => screenshotInputRef.current?.click()}
           disabled={isRecording || isTranscribing || isSubmitting}
-          className="w-10 h-10 flex items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-10 h-10 flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-raised transition-all text-lg disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Upload screenshot"
           title="Upload a screenshot of a site you like (optional)"
         >
-          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-fsvc-text-disabled" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </button>
@@ -458,7 +458,7 @@ export default function ChatInterface() {
               ? "Transcribing..."
               : "Describe your business idea..."
           }
-          className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white text-base placeholder-gray-400 focus:outline-none focus:border-pink-500/50 focus:bg-white/15 transition-colors"
+          className="flex-1 bg-surface border border-border rounded-lg px-4 py-3 text-fsvc-text text-base placeholder-fsvc-text-disabled focus:outline-none focus:border-accent/50 focus:shadow-[0_0_0_3px_rgba(255,92,53,0.12)] transition-colors"
           disabled={isRecording || isTranscribing || isSubmitting}
         />
         <button
@@ -467,8 +467,8 @@ export default function ChatInterface() {
           disabled={isTranscribing || isSubmitting}
           className={`w-10 h-10 flex items-center justify-center rounded-lg border transition-all text-lg ${
             isRecording
-              ? "border-red-500/50 bg-red-500/20 animate-pulse"
-              : "border-white/10 bg-white/5 hover:bg-white/10"
+              ? "border-error/50 bg-error/20 animate-pulse"
+              : "border-border bg-surface hover:bg-raised"
           } disabled:opacity-50 disabled:cursor-not-allowed`}
           aria-label={isRecording ? "Stop recording" : "Start recording"}
         >
@@ -478,7 +478,7 @@ export default function ChatInterface() {
           type="button"
           onClick={handleTextSubmit}
           disabled={!inputText.trim() || isRecording || isTranscribing || isSubmitting}
-          className="px-6 py-3 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white text-base font-bold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-3 rounded-lg bg-accent text-base text-base font-bold hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? "..." : "Send"}
         </button>

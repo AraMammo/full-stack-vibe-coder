@@ -15,7 +15,7 @@ interface ChangeRequest {
 
 const statusBadge: Record<string, { label: string; color: string }> = {
   PENDING: { label: 'Pending', color: 'bg-yellow-500/20 text-yellow-400' },
-  PROCESSING: { label: 'Processing', color: 'bg-cyan-500/20 text-cyan-400' },
+  PROCESSING: { label: 'Processing', color: 'bg-cyan-500/20 text-accent-2' },
   COMPLETE: { label: 'Complete', color: 'bg-green-500/20 text-green-400' },
   FAILED: { label: 'Failed', color: 'bg-red-500/20 text-red-400' },
 };
@@ -89,9 +89,9 @@ export function ChangeRequestPanel({ projectId }: { projectId: string }) {
   };
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+    <div className="rounded-xl border border-border bg-surface p-6">
       <h2 className="text-lg font-bold text-white mb-4">Request a Change</h2>
-      <p className="text-sm text-gray-400 mb-4">
+      <p className="text-sm text-fsvc-text-secondary mb-4">
         Describe what you want updated — we&apos;ll regenerate the affected files and redeploy.
       </p>
 
@@ -103,13 +103,13 @@ export function ChangeRequestPanel({ projectId }: { projectId: string }) {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSubmit()}
           placeholder='e.g. "Make the background darker" or "Add a testimonials section"'
-          className="flex-1 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 transition-colors"
+          className="flex-1 rounded-md border border-border bg-base px-3 py-2 text-sm text-fsvc-text placeholder-fsvc-text-disabled focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(255,92,53,0.12)] transition-colors"
           disabled={isSubmitting}
         />
         <button
           onClick={handleSubmit}
           disabled={isSubmitting || !message.trim() || message.trim().length < 5}
-          className="px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+          className="px-4 py-2 rounded-md bg-accent text-base text-sm font-medium hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isSubmitting ? 'Submitting...' : 'Submit'}
         </button>
@@ -153,7 +153,7 @@ export function ChangeRequestPanel({ projectId }: { projectId: string }) {
                       href={req.deployUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-cyan-400 hover:underline mt-1 inline-block"
+                      className="text-xs text-accent-2 hover:underline mt-1 inline-block"
                     >
                       View updated site
                     </a>

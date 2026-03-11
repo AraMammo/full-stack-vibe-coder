@@ -60,16 +60,16 @@ const statusConfig = {
   },
   in_progress: {
     icon: '⏳',
-    bgColor: 'bg-cyan-500/10',
-    borderColor: 'border-cyan-500/30',
-    textColor: 'text-cyan-400',
-    iconBg: 'bg-cyan-500',
+    bgColor: 'bg-accent-2/10',
+    borderColor: 'border-accent-2/30',
+    textColor: 'text-accent-2',
+    iconBg: 'bg-accent-2',
   },
   pending: {
     icon: '○',
-    bgColor: 'bg-white/5',
-    borderColor: 'border-white/10',
-    textColor: 'text-gray-400',
+    bgColor: 'bg-surface',
+    borderColor: 'border-border',
+    textColor: 'text-fsvc-text-secondary',
     iconBg: 'bg-gray-600',
   },
   failed: {
@@ -180,9 +180,9 @@ export function ProjectDetailClient({
     <div className="space-y-4">
       {/* Provisioning Progress Banner */}
       {provisioningLabel && (
-        <div className="p-4 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-          <p className="text-cyan-300 font-medium text-sm">{provisioningLabel}</p>
+        <div className="p-4 rounded-lg bg-accent-2/10 border border-accent-2/30 flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-accent-2 animate-pulse" />
+          <p className="text-accent-2 font-medium text-sm">{provisioningLabel}</p>
         </div>
       )}
 
@@ -236,14 +236,14 @@ export function ProjectDetailClient({
                       <h3 className={`text-base font-semibold ${config.textColor} truncate`}>
                         {execution.prompt.promptName}
                       </h3>
-                      <p className="text-sm text-gray-500 mt-0.5">{execution.prompt.promptSection}</p>
+                      <p className="text-sm text-fsvc-text-disabled mt-0.5">{execution.prompt.promptSection}</p>
                       {isComplete && execution.completedAt && (
                         <p className="text-xs text-gray-600 mt-1">
                           Completed {new Date(execution.completedAt).toLocaleString()}
                         </p>
                       )}
                       {isInProgressNow && (
-                        <p className="text-xs text-cyan-400 mt-1 font-medium animate-pulse">
+                        <p className="text-xs text-accent-2 mt-1 font-medium animate-pulse">
                           Generating now...
                         </p>
                       )}
@@ -270,9 +270,9 @@ export function ProjectDetailClient({
 
               {/* Expanded Output */}
               {isExpanded && isComplete && execution.output && (
-                <div className="px-6 py-4 bg-black/40 border-t border-white/10">
+                <div className="px-6 py-4 bg-black/40 border-t border-border">
                   <div className="prose prose-sm max-w-none">
-                    <pre className="whitespace-pre-wrap text-sm text-gray-300 font-mono bg-white/5 p-4 rounded border border-white/10 max-h-96 overflow-y-auto">
+                    <pre className="whitespace-pre-wrap text-sm text-fsvc-text-secondary font-mono bg-surface p-4 rounded border border-border max-h-96 overflow-y-auto">
                       {execution.output}
                     </pre>
                   </div>
@@ -287,7 +287,7 @@ export function ProjectDetailClient({
                         a.click();
                         URL.revokeObjectURL(url);
                       }}
-                      className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-white/10 border border-white/20 rounded hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                      className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-fsvc-text-secondary bg-white/10 border border-white/20 rounded hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                     >
                       Download as TXT
                     </button>
@@ -301,8 +301,8 @@ export function ProjectDetailClient({
 
       {/* Empty State */}
       {displayExecutions.length === 0 && (
-        <div className="text-center py-12 bg-white/5 rounded-lg border border-white/10">
-          <p className="text-gray-400">No sections found for this project.</p>
+        <div className="text-center py-12 bg-surface rounded-lg border border-border">
+          <p className="text-fsvc-text-secondary">No sections found for this project.</p>
         </div>
       )}
     </div>

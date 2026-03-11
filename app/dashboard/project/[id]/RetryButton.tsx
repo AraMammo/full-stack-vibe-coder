@@ -38,7 +38,7 @@ export function RetryButton({ projectId }: { projectId: string }) {
       <button
         onClick={handleRetry}
         disabled={loading}
-        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-white font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
       >
         {loading ? 'Restarting build...' : 'Retry Build'}
       </button>

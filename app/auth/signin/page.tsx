@@ -56,24 +56,24 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black px-4">
+    <div className="min-h-screen flex items-center justify-center bg-base px-4">
       <div className="max-w-md w-full">
         {/* Card */}
-        <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-pink-500/30 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-accent/30 rounded-2xl p-8 shadow-2xl">
           {/* Logo/Title */}
           <div className="text-center mb-8">
             <h1
               className="text-3xl font-bold mb-2"
               style={{
-                background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 25%, #06b6d4 75%, #10b981 100%)',
+                background: 'linear-gradient(135deg, #FF5C35 0%, #FF5C35 25%, #00C4A0 75%, #00C4A0 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
               }}
             >
-              ShipKit
+              Full Stack Vibe Coder
             </h1>
-            <p className="text-gray-400 text-sm">
+            <p className="text-fsvc-text-secondary text-sm">
               {getSubtitle()}
             </p>
           </div>
@@ -141,24 +141,24 @@ export default function SignInPage() {
                 <div className="w-full border-t border-gray-700"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-900 text-gray-500">or</span>
+                <span className="px-2 bg-base text-fsvc-text-disabled">or</span>
               </div>
             </div>
 
             {/* Email Sign-In */}
             {emailSent ? (
-              <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-center">
-                <svg className="w-8 h-8 text-cyan-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="p-4 bg-accent-2/10 border border-accent-2/30 rounded-lg text-center">
+                <svg className="w-8 h-8 text-accent-2 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 <p className="text-white font-medium text-sm mb-1">Check your email</p>
-                <p className="text-gray-400 text-xs mb-3">
+                <p className="text-fsvc-text-secondary text-xs mb-3">
                   We sent a sign-in link to <span className="text-white">{email}</span>
                 </p>
                 <button
                   type="button"
                   onClick={() => { setEmailSent(false); setEmail(''); }}
-                  className="text-xs text-cyan-400 hover:text-cyan-300 underline underline-offset-2"
+                  className="text-xs text-accent-2 hover:text-accent-2/80 underline underline-offset-2"
                 >
                   Try a different email
                 </button>
@@ -171,7 +171,7 @@ export default function SignInPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors text-sm"
+                  className="w-full px-4 py-3 rounded-lg bg-surface border border-border text-white placeholder-gray-500 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors text-sm"
                 />
                 <button
                   type="submit"
@@ -200,13 +200,13 @@ export default function SignInPage() {
 
             {/* Privacy Notice */}
             <div className="text-center pt-2">
-              <p className="text-xs text-gray-500 leading-relaxed">
+              <p className="text-xs text-fsvc-text-disabled leading-relaxed">
                 By signing in, you agree to our{' '}
-                <Link href="/terms-of-service" className="text-cyan-400 hover:text-cyan-300 underline">
+                <Link href="/terms-of-service" className="text-accent-2 hover:text-accent-2/80 underline">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy-policy" className="text-cyan-400 hover:text-cyan-300 underline">
+                <Link href="/privacy-policy" className="text-accent-2 hover:text-accent-2/80 underline">
                   Privacy Policy
                 </Link>
               </p>
@@ -217,7 +217,7 @@ export default function SignInPage() {
           <div className="mt-8 text-center">
             <Link
               href="/"
-              className="text-sm text-gray-400 hover:text-gray-300 transition-colors"
+              className="text-sm text-fsvc-text-secondary hover:text-fsvc-text-secondary/80 transition-colors"
             >
               &larr; Back to Home
             </Link>
@@ -226,31 +226,31 @@ export default function SignInPage() {
 
         {/* Why Sign In */}
         <div className="mt-8 text-center">
-          <p className="text-gray-500 text-sm mb-3">Why sign in?</p>
+          <p className="text-fsvc-text-disabled text-sm mb-3">Why sign in?</p>
           <div className="flex justify-center gap-6">
             <div className="text-center">
-              <div className="w-10 h-10 mx-auto mb-1 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
-                <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 mx-auto mb-1 rounded-lg bg-surface border border-border flex items-center justify-center">
+                <svg className="w-5 h-5 text-accent-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <p className="text-xs text-gray-400">Track<br/>Projects</p>
+              <p className="text-xs text-fsvc-text-secondary">Track<br/>Projects</p>
             </div>
             <div className="text-center">
-              <div className="w-10 h-10 mx-auto mb-1 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
-                <svg className="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 mx-auto mb-1 rounded-lg bg-surface border border-border flex items-center justify-center">
+                <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
               </div>
-              <p className="text-xs text-gray-400">Download<br/>Anytime</p>
+              <p className="text-xs text-fsvc-text-secondary">Download<br/>Anytime</p>
             </div>
             <div className="text-center">
-              <div className="w-10 h-10 mx-auto mb-1 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+              <div className="w-10 h-10 mx-auto mb-1 rounded-lg bg-surface border border-border flex items-center justify-center">
                 <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
               </div>
-              <p className="text-xs text-gray-400">Payment<br/>History</p>
+              <p className="text-xs text-fsvc-text-secondary">Payment<br/>History</p>
             </div>
           </div>
         </div>

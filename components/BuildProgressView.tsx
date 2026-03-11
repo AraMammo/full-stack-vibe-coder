@@ -90,7 +90,7 @@ export default function BuildProgressView({
           <h1 className="text-2xl font-bold text-white mb-2">
             Building {projectName}
           </h1>
-          <p className="text-gray-400 text-sm">
+          <p className="text-fsvc-text-secondary text-sm">
             Sit tight — your full-stack app is being generated and deployed.
           </p>
         </div>
@@ -102,18 +102,12 @@ export default function BuildProgressView({
               <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
               <circle
                 cx="60" cy="60" r="52" fill="none"
-                stroke="url(#progress-gradient)" strokeWidth="8"
+                stroke="#FF5C35" strokeWidth="8"
                 strokeLinecap="round"
                 strokeDasharray={`${2 * Math.PI * 52}`}
                 strokeDashoffset={`${2 * Math.PI * 52 * (1 - percentage / 100)}`}
                 className="transition-all duration-1000"
               />
-              <defs>
-                <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#ec4899" />
-                  <stop offset="100%" stopColor="#06b6d4" />
-                </linearGradient>
-              </defs>
             </svg>
             <span className="absolute text-2xl font-bold text-white">{percentage}%</span>
           </div>
@@ -121,8 +115,8 @@ export default function BuildProgressView({
 
         {/* Current Step */}
         <div className="flex items-center justify-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-          <p className="text-cyan-300 font-medium text-sm animate-pulse">
+          <div className="w-2 h-2 rounded-full bg-accent-2 animate-pulse" />
+          <p className="text-accent-2 font-medium text-sm animate-pulse">
             {currentLabel}
           </p>
         </div>
@@ -140,31 +134,31 @@ export default function BuildProgressView({
 
           {/* Current step */}
           {progress?.currentSection && (
-            <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-cyan-500/5 border border-cyan-500/20">
-              <div className="w-5 h-5 rounded-full border-2 border-cyan-400 flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-accent-2/5 border border-accent-2/20">
+              <div className="w-5 h-5 rounded-full border-2 border-accent-2 flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-accent-2 animate-pulse" />
               </div>
-              <span className="text-sm text-cyan-300">{progress.currentSection}</span>
+              <span className="text-sm text-accent-2">{progress.currentSection}</span>
             </div>
           )}
 
           {/* Provisioning steps */}
           {isProvisioning && (
-            <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-pink-500/5 border border-pink-500/20">
-              <div className="w-5 h-5 rounded-full border-2 border-pink-400 flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-pink-400 animate-pulse" />
+            <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-accent/5 border border-accent/20">
+              <div className="w-5 h-5 rounded-full border-2 border-accent flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
               </div>
-              <span className="text-sm text-pink-300">Deploying infrastructure</span>
+              <span className="text-sm text-accent">Deploying infrastructure</span>
             </div>
           )}
         </div>
 
         {/* What you'll get sidebar */}
-        <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-          <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-3">
+        <div className="bg-surface border border-border rounded-lg p-4">
+          <p className="text-xs text-fsvc-text-secondary uppercase tracking-wide font-semibold mb-3">
             What you&apos;ll get
           </p>
-          <div className="grid grid-cols-2 gap-2 text-xs text-gray-300">
+          <div className="grid grid-cols-2 gap-2 text-xs text-fsvc-text-secondary">
             <span>&#10003; Live website</span>
             <span>&#10003; PostgreSQL database</span>
             <span>&#10003; User auth</span>

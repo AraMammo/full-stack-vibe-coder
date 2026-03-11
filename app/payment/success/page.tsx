@@ -78,20 +78,20 @@ export default function PaymentSuccessPage() {
 
   const getTierDisplayName = (tier: string): string => {
     const tierNames: Record<string, string> = {
-      VALIDATION_PACK: 'ShipKit Lite',
-      LAUNCH_BLUEPRINT: 'ShipKit Pro',
-      TURNKEY_SYSTEM: 'ShipKit Complete',
-      PRESENCE: 'ShipKit Presence',
+      VALIDATION_PACK: 'Full Stack Vibe Coder Lite',
+      LAUNCH_BLUEPRINT: 'Full Stack Vibe Coder Pro',
+      TURNKEY_SYSTEM: 'Full Stack Vibe Coder Complete',
+      PRESENCE: 'Full Stack Vibe Coder Presence',
     };
     return tierNames[tier] || tier;
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-base text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-cyan-500 mx-auto mb-4"></div>
-          <p className="text-xl text-gray-400">Verifying your payment...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-accent-2 mx-auto mb-4"></div>
+          <p className="text-xl text-fsvc-text-secondary">Verifying your payment...</p>
         </div>
       </div>
     );
@@ -99,13 +99,13 @@ export default function PaymentSuccessPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-base text-white flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-red-500/10 border border-red-500/30 rounded-lg p-8 text-center">
           <svg className="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <h1 className="text-2xl font-bold text-red-500 mb-2">Payment Verification Failed</h1>
-          <p className="text-gray-400 mb-6">{error}</p>
+          <p className="text-fsvc-text-secondary mb-6">{error}</p>
           <Link
             href="/get-started"
             className="inline-block px-6 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors"
@@ -122,10 +122,10 @@ export default function PaymentSuccessPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-base text-white flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
         {/* Success Card */}
-        <div className="bg-gradient-to-br from-green-500/20 to-cyan-500/20 border border-green-500/30 rounded-lg p-8 text-center mb-6">
+        <div className="bg-gradient-to-br from-green-500/20 to-accent-2/20 border border-green-500/30 rounded-lg p-8 text-center mb-6">
           {/* Success Icon */}
           <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,14 +134,14 @@ export default function PaymentSuccessPage() {
           </div>
 
           {/* Success Message */}
-          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 to-accent-2 bg-clip-text text-transparent">
             You&apos;re In.
           </h1>
-          <p className="text-xl text-gray-300 mb-2">
-            Your ShipKit is already being built.
+          <p className="text-xl text-fsvc-text-secondary mb-2">
+            Your build is already in progress.
           </p>
           {paymentInfo.projectName && (
-            <p className="text-sm text-gray-400 mb-6">{paymentInfo.projectName}</p>
+            <p className="text-sm text-fsvc-text-secondary mb-6">{paymentInfo.projectName}</p>
           )}
           {!paymentInfo.projectName && <div className="mb-6" />}
 
@@ -149,23 +149,23 @@ export default function PaymentSuccessPage() {
           <div className="bg-black/50 rounded-lg p-6 mb-6">
             <div className="grid grid-cols-1 gap-4 text-left">
               <div className="flex justify-between items-center border-b border-gray-700 pb-3">
-                <span className="text-gray-400">Package:</span>
-                <span className="font-semibold text-cyan-400">{getTierDisplayName(paymentInfo.tier)}</span>
+                <span className="text-fsvc-text-secondary">Package:</span>
+                <span className="font-semibold text-accent-2">{getTierDisplayName(paymentInfo.tier)}</span>
               </div>
               <div className="flex justify-between items-center border-b border-gray-700 pb-3">
-                <span className="text-gray-400">Amount Paid:</span>
+                <span className="text-fsvc-text-secondary">Amount Paid:</span>
                 <span className="font-semibold text-green-400">${(paymentInfo.amount / 100).toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Email:</span>
+                <span className="text-fsvc-text-secondary">Email:</span>
                 <span className="font-semibold text-white">{paymentInfo.email}</span>
               </div>
             </div>
           </div>
 
           {/* Auto-redirect Message */}
-          <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4 mb-4">
-            <p className="text-cyan-400">
+          <div className="bg-accent-2/10 border border-accent-2/30 rounded-lg p-4 mb-4">
+            <p className="text-accent-2">
               Redirecting to dashboard in <span className="font-bold text-2xl">{countdown}</span> seconds...
             </p>
           </div>
@@ -180,42 +180,42 @@ export default function PaymentSuccessPage() {
                 router.push('/dashboard');
               }
             }}
-            className="w-full py-3 bg-gradient-to-r from-cyan-500 to-green-500 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-green-600 transition-all transform hover:scale-105"
+            className="w-full py-3 bg-accent-2 text-white font-semibold rounded-lg hover:opacity-90 transition-all transform hover:scale-105"
           >
             Watch Your Build Live →
           </button>
         </div>
 
         {/* What's Happening */}
-        <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-          <h2 className="text-xl font-bold mb-4 text-cyan-400">What&apos;s happening right now:</h2>
+        <div className="bg-surface border border-border rounded-lg p-6">
+          <h2 className="text-xl font-bold mb-4 text-accent-2">What&apos;s happening right now:</h2>
           {paymentInfo.tier === 'PRESENCE' ? (
-            <ol className="space-y-3 text-gray-300">
+            <ol className="space-y-3 text-fsvc-text-secondary">
               <li className="flex items-start">
-                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">1</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-2 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">1</span>
                 <span>Your static site is being generated from your business description</span>
               </li>
               <li className="flex items-start">
-                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">2</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-2 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">2</span>
                 <span>Pages, styling, and content are being crafted for your brand</span>
               </li>
               <li className="flex items-start">
-                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">3</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-2 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">3</span>
                 <span>Your site will be live in about 10 minutes</span>
               </li>
             </ol>
           ) : (
-            <ol className="space-y-3 text-gray-300">
+            <ol className="space-y-3 text-fsvc-text-secondary">
               <li className="flex items-start">
-                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">1</span>
-                <span>Your ShipKit is being built right now &mdash; brand, strategy, and full-stack app</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-2 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">1</span>
+                <span>Your project is being built right now &mdash; brand, strategy, and full-stack app</span>
               </li>
               <li className="flex items-start">
-                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">2</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-2 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">2</span>
                 <span>You can watch progress live in your dashboard</span>
               </li>
               <li className="flex items-start">
-                <span className="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">3</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-2 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">3</span>
                 <span>Everything will be ready in about 20 minutes</span>
               </li>
             </ol>

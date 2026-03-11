@@ -1,13 +1,13 @@
 /**
  * Terms of Service Page
  *
- * Legal terms for using ShipKit services.
+ * Legal terms for using Full Stack Vibe Coder services.
  */
 
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Terms of Service | ShipKit',
+  title: 'Terms of Service | Full Stack Vibe Coder',
   description: 'Legal terms and conditions for using our service.',
 };
 
@@ -36,7 +36,7 @@ export default function TermsOfServicePage() {
         {/* Introduction */}
         <section className="mb-12">
           <p className="text-gray-700 mb-4">
-            These Terms of Service ("Terms") govern your use of ShipKit's website and
+            These Terms of Service ("Terms") govern your use of Full Stack Vibe Coder's website and
             services. By using our service, you agree to these Terms. If you disagree with any part,
             you may not use our service.
           </p>
@@ -48,7 +48,7 @@ export default function TermsOfServicePage() {
             Service Description
           </h2>
           <p className="text-gray-700 mb-4">
-            ShipKit provides AI-powered software development services, including:
+            Full Stack Vibe Coder provides AI-powered software development services, including:
           </p>
           <ul className="list-disc ml-6 space-y-2 text-gray-700">
             <li>Voice-to-proposal conversion for project ideas</li>
@@ -140,7 +140,7 @@ export default function TermsOfServicePage() {
             Our Platform
           </h3>
           <p className="text-gray-700">
-            The ShipKit platform, including our website, AI models, and proprietary
+            The Full Stack Vibe Coder platform, including our website, AI models, and proprietary
             technology, is our intellectual property. You may not copy, modify, or create derivative
             works of our platform.
           </p>
@@ -203,7 +203,7 @@ export default function TermsOfServicePage() {
             Limitation of Liability
           </h2>
           <p className="text-gray-700 mb-4">
-            To the maximum extent permitted by law, ShipKit shall not be liable for:
+            To the maximum extent permitted by law, Full Stack Vibe Coder shall not be liable for:
           </p>
           <ul className="list-disc ml-6 space-y-2 text-gray-700">
             <li>Indirect, incidental, or consequential damages</li>
@@ -265,10 +265,10 @@ export default function TermsOfServicePage() {
           <p className="text-gray-700">
             Email:{' '}
             <a
-              href="mailto:legal@shipkit.io"
+              href="mailto:legal@fullstackvibecoder.com"
               className="text-gray-900 underline hover:text-gray-700"
             >
-              legal@shipkit.io
+              legal@fullstackvibecoder.com
             </a>
           </p>
         </section>

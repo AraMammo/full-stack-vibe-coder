@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "What is Vibe Coding? | Software Development in 2025 | ShipKit",
+  title: "What is Vibe Coding? | Software Development in 2025 | Full Stack Vibe Coder",
   description: "Vibe coding is how modern developers build software 10x faster using AI. Learn why traditional line-by-line coding is becoming obsolete and how vibe coders are out-building seasoned developers.",
   keywords: "vibe coding, what is vibe coding, vibe coder, AI coding, AI software development, future of coding 2025, AI-assisted development",
   openGraph: {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     type: "article",
   },
   alternates: {
-    canonical: "https://shipkit.io/what-is-vibe-coding"
+    canonical: "https://fullstackvibecoder.com/what-is-vibe-coding"
   }
 };
 
