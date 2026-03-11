@@ -10,7 +10,6 @@
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { CLAUDE_MODEL } from '@/lib/ai-config';
-import { randomUUID } from 'crypto';
 import { checkRateLimit, getClientIP, rateLimiters } from '@/lib/rate-limit';
 
 const anthropic = new Anthropic({
@@ -86,7 +85,7 @@ export async function POST(request: Request) {
     }
 
     // Generate sessionId for this analysis
-    const sessionId = randomUUID();
+    const sessionId = crypto.randomUUID();
 
     // Call Claude
     const message = await anthropic.messages.create({
@@ -137,9 +136,10 @@ export async function POST(request: Request) {
       analysis,
     });
   } catch (error) {
-    console.error('[Analyze] Error:', error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error('[Analyze] Error:', errMsg, error);
     return NextResponse.json(
-      { error: 'Failed to analyze business idea' },
+      { error: 'Failed to analyze business idea', detail: errMsg },
       { status: 500 }
     );
   }
