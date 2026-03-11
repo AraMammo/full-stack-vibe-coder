@@ -284,7 +284,7 @@ export default function ChatInterface({
                 )}
               </div>
               <p className="text-sm text-fsvc-text-secondary leading-relaxed">
-                Full build includes: live website, database, auth, payments, email, GitHub repo — all deployed and running.
+                We&apos;ll build the full app — your customers can sign up, log in, and pay you. Live on your own website in about 30 minutes.
               </p>
 
               {checkoutError && (

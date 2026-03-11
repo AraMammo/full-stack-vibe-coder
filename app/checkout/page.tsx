@@ -168,11 +168,11 @@ function CheckoutContent() {
           </h3>
           <ul className="space-y-2 text-sm">
             {[
-              "Live website with custom branding",
-              "PostgreSQL database with your data",
-              "Booking system & client portal",
-              "Stripe payment processing",
-              "GitHub repo (your code, transferable)",
+              "Your own website, live on the internet",
+              "Customers can create accounts and log in",
+              "Accept payments from day one",
+              "Automatic emails to your customers",
+              "You own the code — it's yours forever",
               "30 days free hosting, then $49/mo",
             ].map((item, i) => (
               <li key={i} className="flex items-center gap-2 text-gray-300">
@@ -198,8 +198,8 @@ function CheckoutContent() {
               className="mt-0.5 w-4 h-4 rounded border-gray-600 bg-white/10"
             />
             <span className="text-xs text-fsvc-text-secondary leading-relaxed">
-              I understand hosting is $49/mo after 30 days free. Cancel or eject
-              anytime — you keep everything.
+              I understand hosting is $49/mo after 30 days free. Cancel
+              anytime — you keep everything we built.
             </span>
           </label>
 

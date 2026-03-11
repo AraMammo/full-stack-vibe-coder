@@ -80,13 +80,13 @@ export default function Home() {
 
             {/* Subheadline */}
             <p className="text-lg sm:text-xl text-fsvc-text-secondary mb-2">
-              Database. Auth. Payments. Email. Custom domain.
+              Users can sign up, log in, and pay you — on day one.
             </p>
             <p className="text-base sm:text-lg text-fsvc-text-disabled mb-2">
-              Not a template. Not a mockup. A full-stack app — built and deployed.
+              Not a template. Not a mockup. A real app — live on the internet.
             </p>
             <p className="text-base sm:text-lg text-fsvc-text font-medium mb-8">
-              $497 to build. $49/mo to host. Eject anytime.
+              $497 one-time. $49/mo to keep it running. Cancel anytime — you keep everything.
             </p>
 
             {/* Chat Interface — visually prominent */}
@@ -146,7 +146,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-lg font-semibold text-fsvc-text mb-3">AI Builds Your Full-Stack App</h3>
                 <p className="text-fsvc-text-secondary text-base leading-relaxed">
-                  Database schema. Auth flows. Payment integration. Email setup. API routes. Frontend UI. All generated and wired together in under 30 minutes.
+                  User accounts. Payment processing. Automated emails. A beautiful interface. Everything connected and working together — in under 30 minutes.
                 </p>
               </div>
 
@@ -157,7 +157,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-lg font-semibold text-fsvc-text mb-3">Your App Goes Live</h3>
                 <p className="text-fsvc-text-secondary text-base leading-relaxed">
-                  Deployed to your domain. Stripe connected. Database running. Users can sign up and pay. You&apos;re not planning — you&apos;re live.
+                  Live on your own website. Customers can find you, sign up, and pay. You&apos;re not planning anymore — you&apos;re open for business.
                 </p>
               </div>
             </div>
@@ -183,7 +183,7 @@ export default function Home() {
                 )}
                 <p className="text-sm text-fsvc-text-disabled mb-4">Apps deployed</p>
                 <p className="text-sm text-fsvc-text-secondary leading-relaxed">
-                  Real databases, real Vercel deployments, real Stripe Connect accounts. Not demos.
+                  Real apps that real customers use every day. Not demos. Not prototypes. Working businesses.
                 </p>
               </div>
 
@@ -191,7 +191,7 @@ export default function Home() {
                 <p className="text-3xl font-black text-fsvc-text mb-1">Open</p>
                 <p className="text-sm text-fsvc-text-disabled mb-4">Architecture</p>
                 <p className="text-sm text-fsvc-text-secondary leading-relaxed">
-                  Eject anytime. Your code lives in your GitHub repo. Your database is yours. No lock-in, ever.
+                  You own everything we build. Want to leave? Take your app, your data, your code. No lock-in, ever.
                 </p>
               </div>
 
@@ -199,7 +199,7 @@ export default function Home() {
                 <p className="text-3xl font-black text-fsvc-text mb-1">~30 min</p>
                 <p className="text-sm text-fsvc-text-disabled mb-4">Idea to production</p>
                 <p className="text-sm text-fsvc-text-secondary leading-relaxed">
-                  8 AI-generated sections, full provisioning pipeline, deployed and live. Not a wireframe — a running app.
+                  From &ldquo;I have an idea&rdquo; to &ldquo;my customers are signing up&rdquo; in about half an hour.
                 </p>
               </div>
             </div>
@@ -213,7 +213,7 @@ export default function Home() {
               Pricing
             </h2>
             <p className="text-center text-fsvc-text-disabled mb-10">
-              Every vibe-coding tool generates a frontend shell. We generate the full stack — and deploy it live.
+              Other tools give you a pretty picture. We give you a running business.
             </p>
 
             {/* Single Pricing Card */}
@@ -230,27 +230,27 @@ export default function Home() {
               <ul className="space-y-3 mb-8 text-sm">
                 <li className="flex items-start gap-2 text-fsvc-text-secondary">
                   <span className="text-accent-2 mt-0.5 flex-shrink-0">&#10003;</span>
-                  <span>Live website, deployed on your domain</span>
+                  <span>Your own website, live on the internet</span>
                 </li>
                 <li className="flex items-start gap-2 text-fsvc-text-secondary">
                   <span className="text-accent-2 mt-0.5 flex-shrink-0">&#10003;</span>
-                  <span>Real database with auth and user management</span>
+                  <span>Customers can create accounts and log in</span>
                 </li>
                 <li className="flex items-start gap-2 text-fsvc-text-secondary">
                   <span className="text-accent-2 mt-0.5 flex-shrink-0">&#10003;</span>
-                  <span>Stripe payments — accept money day one</span>
+                  <span>Accept payments from day one</span>
                 </li>
                 <li className="flex items-start gap-2 text-fsvc-text-secondary">
                   <span className="text-accent-2 mt-0.5 flex-shrink-0">&#10003;</span>
-                  <span>Transactional email on your domain</span>
+                  <span>Automatic emails to your customers</span>
                 </li>
                 <li className="flex items-start gap-2 text-fsvc-text-secondary">
                   <span className="text-accent-2 mt-0.5 flex-shrink-0">&#10003;</span>
-                  <span>GitHub repo — your code, transferable</span>
+                  <span>You own the code — it&apos;s yours forever</span>
                 </li>
                 <li className="flex items-start gap-2 text-fsvc-text-secondary">
                   <span className="text-accent-2 mt-0.5 flex-shrink-0">&#10003;</span>
-                  <span>Eject anytime — take everything with you</span>
+                  <span>Cancel anytime and keep everything</span>
                 </li>
               </ul>
 
@@ -270,11 +270,11 @@ export default function Home() {
               </span>
               <span className="flex items-center gap-2">
                 <span className="text-success">&#10003;</span>
-                Built in under 30 minutes
+                Live in under 30 minutes
               </span>
               <span className="flex items-center gap-2">
                 <span className="text-success">&#10003;</span>
-                Eject anytime — no lock-in
+                You own everything — no lock-in
               </span>
             </div>
           </div>
@@ -284,16 +284,16 @@ export default function Home() {
         <section className="px-4 sm:px-6 py-20 border-t border-border">
           <div className="max-w-2xl mx-auto text-center">
             <p className="text-fsvc-text-disabled mb-2 text-sm">
-              One voice note. One full-stack app. One live deployment.
+              One conversation. One working app. One live business.
             </p>
             <p className="text-fsvc-text-disabled mb-2 text-sm">
-              Database, auth, payments, email — all wired up and running.
+              Your customers can find you, sign up, and pay — today.
             </p>
             <h2 className="text-2xl sm:text-3xl font-heading font-bold text-fsvc-text mt-4 mb-2">
-              Your SaaS, live in 30 minutes.
+              Your business, live in 30 minutes.
             </h2>
             <p className="text-fsvc-text-disabled mb-8 text-sm">
-              From idea to production. That&apos;s Full Stack Vibe Coder.
+              From idea to open for business. That&apos;s Full Stack Vibe Coder.
             </p>
             <Link
               href="/get-started"

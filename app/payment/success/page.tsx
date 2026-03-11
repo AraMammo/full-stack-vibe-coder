@@ -223,7 +223,7 @@ function PaymentSuccessContent() {
             <ol className="space-y-3 text-fsvc-text-secondary">
               <li className="flex items-start">
                 <span className="flex-shrink-0 w-6 h-6 bg-accent-2 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">1</span>
-                <span>Your project is being built right now &mdash; brand, strategy, and full-stack app</span>
+                <span>Your app is being built right now &mdash; website, user accounts, and payments</span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 w-6 h-6 bg-accent-2 text-white rounded-full flex items-center justify-center mr-3 text-sm font-bold">2</span>
