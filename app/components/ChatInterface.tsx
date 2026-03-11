@@ -38,13 +38,13 @@ export default function ChatInterface({
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const screenshotInputRef = useRef<HTMLInputElement>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   useEffect(() => {
-    if (hasInteracted) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (hasInteracted && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages, analysis, hasInteracted]);
 
@@ -213,7 +213,7 @@ export default function ChatInterface({
   return (
     <div className="w-full">
       {/* Chat Messages */}
-      <div className="rounded-xl bg-raised p-3 mb-3 min-h-[80px] max-h-[400px] overflow-y-auto">
+      <div ref={chatContainerRef} className="rounded-xl bg-raised p-3 mb-3 min-h-[80px] max-h-[400px] overflow-y-auto">
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -336,7 +336,7 @@ export default function ChatInterface({
           </div>
         )}
 
-        <div ref={messagesEndRef} />
+        {/* end of scrollable content */}
       </div>
 
       {/* Screenshot Preview */}
