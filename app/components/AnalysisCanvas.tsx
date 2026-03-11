@@ -118,15 +118,14 @@ export default function AnalysisCanvas({
 }
 
 function PreviewTab({ analysis, selectedName }: { analysis: AnalysisData; selectedName: number }) {
-  const name = analysis.businessNames[selectedName]?.name || "Your Site";
   const domain = analysis.businessNames[selectedName]?.domain || "yoursite.com";
 
   return (
-    <div className="p-4">
+    <div className="p-4 flex flex-col" style={{ height: "calc(100vh - 120px)" }}>
       {/* Browser Chrome */}
-      <div className="rounded-xl overflow-hidden border border-border shadow-2xl">
+      <div className="rounded-xl overflow-hidden border border-border shadow-2xl flex flex-col flex-1 min-h-0">
         {/* Title bar */}
-        <div className="bg-[#1a1a1a] px-4 py-2.5 flex items-center gap-3">
+        <div className="bg-[#1a1a1a] px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
           <div className="flex gap-1.5">
             <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
             <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
@@ -142,19 +141,16 @@ function PreviewTab({ analysis, selectedName }: { analysis: AnalysisData; select
           </div>
         </div>
 
-        {/* Site content */}
-        <div
-          className="bg-white overflow-hidden"
-          style={{ maxHeight: "70vh" }}
-        >
-          <div
-            dangerouslySetInnerHTML={{ __html: analysis.sitePreviewHtml }}
-            style={{ overflow: "hidden" }}
-          />
-        </div>
+        {/* Site content — full HTML rendered in iframe */}
+        <iframe
+          srcDoc={analysis.sitePreviewHtml}
+          className="flex-1 w-full bg-white border-0"
+          sandbox="allow-same-origin"
+          title="Site preview"
+        />
       </div>
 
-      <p className="text-center text-xs text-fsvc-text-disabled mt-4">
+      <p className="text-center text-xs text-fsvc-text-disabled mt-3 flex-shrink-0">
         This is a preview of what your site could look like. The full build includes all pages, user accounts, and payments.
       </p>
     </div>

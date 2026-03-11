@@ -142,7 +142,13 @@ export default function ChatInterface({
       const res = await fetch("/api/shipkit/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: userInputCopy, inputType, screenshotUrl }),
+        body: JSON.stringify({
+          text: userInputCopy,
+          inputType,
+          screenshotUrl,
+          // If we already have an analysis, this is a refinement request
+          ...(analysis ? { previousAnalysis: analysis, refinementMessage: userInputCopy } : {}),
+        }),
       });
 
       if (!res.ok) throw new Error("Failed to analyze");
@@ -247,7 +253,7 @@ export default function ChatInterface({
                   <span className="w-1.5 h-1.5 bg-accent-2 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
                   <span className="w-1.5 h-1.5 bg-success rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
-                Analyzing your business idea...
+                {analysis ? "Refining your preview..." : "Analyzing your business idea..."}
               </div>
             </div>
           </div>
@@ -433,6 +439,8 @@ export default function ChatInterface({
           placeholder={
             isTranscribing
               ? "Transcribing..."
+              : analysis
+              ? "Request changes — \"make it darker\", \"add testimonials\", \"more modern\"..."
               : "What do you sell, who do you serve, and how do they pay?"
           }
           className="flex-1 bg-surface border border-border rounded-lg px-4 py-3 text-fsvc-text text-base placeholder-fsvc-text-disabled focus:outline-none focus:border-accent/50 focus:shadow-[0_0_0_3px_rgba(255,92,53,0.12)] transition-colors"

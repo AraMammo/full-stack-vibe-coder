@@ -17,6 +17,8 @@ import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { CLAUDE_MODEL } from '@/lib/ai-config';
 import { checkRateLimit, getClientIP, rateLimiters } from '@/lib/rate-limit';
+import { classifyIndustry } from '@/lib/intake/classifier';
+import { getIndustryContext, getIndustryName } from '@/lib/industry/context-loader';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -27,7 +29,21 @@ const MAX_TEXT_LENGTH = 5000;
 // Quality criteria extracted from OpenClaw brand-visual + copy-conversion agents.
 // These standards are normally enforced by the 4-agent refinement loop.
 // Baking them into the generation prompt so the first pass already meets the bar.
-const SYSTEM_PROMPT = `You are a world-class web designer who builds bespoke landing pages. Every site you create looks like it was designed by a top agency charging $15k+. You NEVER use templates. Every design is unique to the business.
+function buildSystemPrompt(industryName: string | null, industryContext: string | null): string {
+  const industrySection = industryContext && industryName
+    ? `\n═══════════════════════════════════════════════
+INDUSTRY INTELLIGENCE: ${industryName}
+═══════════════════════════════════════════════
+You have deep research on what this type of business needs. Use it to make the preview
+feel like it was built BY someone in this industry, not just FOR them.
+Show real features, workflows, and terminology that someone in this field would recognize.
+
+${industryContext}
+`
+    : '';
+
+  return `You are a world-class web designer who builds bespoke landing pages. Every site you create looks like it was designed by a top agency charging $15k+. You NEVER use templates. Every design is unique to the business.
+${industrySection}
 
 RESPONSE FORMAT — valid JSON only:
 {
@@ -87,10 +103,14 @@ You are designing a REAL landing page, not filling in a template. Each business
 gets a UNIQUE design that matches its industry, audience, and energy.
 
 TECHNICAL CONSTRAINTS:
-- Self-contained HTML string. INLINE STYLES ONLY. No <style>, no classes, no <script>.
-- Max-width: 680px, margin: 0 auto. Font: system-ui, -apple-system, sans-serif.
+- Output a COMPLETE standalone HTML document as a string. Start with <!DOCTYPE html>.
+- Include a <style> block in <head> with all your CSS. Use classes, not inline styles.
+- Import ONE Google Font via <link> in <head> that fits the brand (Inter, Poppins, Playfair Display, Space Grotesk, DM Sans, etc.)
+- NO <script> tags. CSS-only interactions (hover states via :hover, smooth transitions).
+- The page must be fully responsive. Use max-width containers, fluid typography (clamp()), and media queries.
 - Use modern CSS: gradients, backdrop-filter, box-shadow layering, border-radius variation,
-  subtle transforms, opacity layers, and color mixing for depth.
+  subtle transforms, opacity layers, CSS grid, flexbox, and color mixing for depth.
+- Target 6000-12000 characters of HTML — rich enough to feel like a real page.
 
 DESIGN DIRECTION BY BUSINESS TYPE (choose the right feel):
 
@@ -170,8 +190,10 @@ FINAL RULES:
 - If screenshot was provided, match its visual DNA over everything else.
 - Every hex color must come from colorPalette.
 - Names should be creative and domain-plausible.
-- HTML should be 4000-8000 characters — rich enough to feel like a real page.
-- Include at least 5 distinct visual sections with VARIETY between them.`;
+- The HTML is a COMPLETE document (<!DOCTYPE html><html>...) rendered in an iframe — go all out with CSS.
+- Include at least 5 distinct visual sections with VARIETY between them.
+- Add smooth scroll behavior, hover transitions on cards/buttons, and subtle CSS animations (fade-in, slide-up on load via @keyframes).`;
+}
 
 export async function POST(request: Request) {
   try {
@@ -196,7 +218,8 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { text, inputType = 'text', screenshotUrl } = body;
+    const { text, inputType = 'text', screenshotUrl, previousAnalysis, refinementMessage } = body;
+    const isRefinement = !!(previousAnalysis && refinementMessage);
 
     if (!text) {
       return NextResponse.json(
@@ -215,18 +238,29 @@ export async function POST(request: Request) {
     const sessionId = crypto.randomUUID();
 
     // ═══════════════════════════════════════════════
-    // PROMPT ENRICHMENT — expand vague input into a rich brief
+    // PARALLEL: Classify industry + Enrich input
     // ═══════════════════════════════════════════════
-    // Users often type "a dog walking app" or "candle business".
-    // The enrichment step infers audience, value prop, differentiators,
-    // and revenue model so the main generation prompt has rich context.
+    // Skip for refinements — we already have context from the first pass.
+    // For initial requests, run both in parallel to save time.
+
     let enrichedText = text;
-    if (text.length < 800) {
-      try {
-        const enrichmentResponse = await anthropic.messages.create({
-          model: CLAUDE_MODEL,
-          max_tokens: 1500,
-          system: `You are a business strategist. The user gave a brief description of their business idea. Expand it into a rich 4-8 sentence brief that includes:
+    let industrySlug: string | null = null;
+    let industryContext: string | null = null;
+    let industryName: string | null = null;
+
+    if (!isRefinement) {
+      const classifyPromise = classifyIndustry(text).catch((err) => {
+        console.error('[Analyze] Classification failed:', err);
+        return null;
+      });
+
+      const enrichPromise = (async () => {
+        if (text.length >= 800) return text;
+        try {
+          const enrichmentResponse = await anthropic.messages.create({
+            model: CLAUDE_MODEL,
+            max_tokens: 1500,
+            system: `You are a business strategist. The user gave a brief description of their business idea. Expand it into a rich 4-8 sentence brief that includes:
 1. What the business does (be specific about the product/service)
 2. Who exactly it serves (specific customer segments, not generic)
 3. What makes it different from alternatives
@@ -237,19 +271,32 @@ If the user already provided detailed input, clean it up and fill any gaps.
 Do NOT add fictional details that contradict what the user said.
 Do NOT include any preamble — just output the enriched brief directly.
 Write in third person ("This business..." not "Your business...").`,
-          messages: [{ role: 'user', content: text }],
-        });
-        const enrichedBlock = enrichmentResponse.content.find(
-          (b): b is Anthropic.TextBlock => b.type === 'text'
-        );
-        if (enrichedBlock?.text) {
-          enrichedText = enrichedBlock.text;
-          console.log(`[Analyze] Enriched "${text.substring(0, 60)}..." → ${enrichedText.length} chars`);
+            messages: [{ role: 'user', content: text }],
+          });
+          const enrichedBlock = enrichmentResponse.content.find(
+            (b): b is Anthropic.TextBlock => b.type === 'text'
+          );
+          if (enrichedBlock?.text) {
+            console.log(`[Analyze] Enriched "${text.substring(0, 60)}..." → ${enrichedBlock.text.length} chars`);
+            return enrichedBlock.text;
+          }
+          return text;
+        } catch (enrichErr) {
+          console.error('[Analyze] Enrichment failed, using raw input:', enrichErr);
+          return text;
         }
-      } catch (enrichErr) {
-        console.error('[Analyze] Enrichment failed, using raw input:', enrichErr);
-        // Fall through with original text
-      }
+      })();
+
+      const [classification, enriched] = await Promise.all([classifyPromise, enrichPromise]);
+      enrichedText = enriched;
+
+      industrySlug = classification?.industry || null;
+      industryContext = industrySlug ? getIndustryContext(industrySlug) : null;
+      industryName = industrySlug ? getIndustryName(industrySlug) : null;
+
+      console.log(`[Analyze] Industry: ${industryName || 'unknown'} (${industrySlug || 'none'}) — confidence: ${classification?.confidence || 'n/a'}`);
+    } else {
+      console.log(`[Analyze] Refinement request: "${refinementMessage.substring(0, 80)}..."`);
     }
 
     // Build user message — text + optional screenshot for Claude vision
@@ -296,16 +343,38 @@ Write in third person ("This business..." not "Your business...").`,
       });
     }
 
+    const systemPrompt = buildSystemPrompt(industryName, industryContext);
+
+    // Build messages — single turn for initial, multi-turn for refinement
+    const messages: Anthropic.MessageParam[] = [];
+
+    if (isRefinement) {
+      // First turn: the original analysis (as if the assistant produced it)
+      messages.push({
+        role: 'user',
+        content: userContent,
+      });
+      messages.push({
+        role: 'assistant',
+        content: JSON.stringify(previousAnalysis),
+      });
+      // Second turn: the refinement request
+      messages.push({
+        role: 'user',
+        content: `The user wants changes to the design above. Apply their feedback and return the COMPLETE updated JSON response (same format, all fields). Their request:\n\n"${refinementMessage}"\n\nIMPORTANT: Keep everything they didn't mention. Only change what they asked for. Return the full JSON.`,
+      });
+    } else {
+      messages.push({
+        role: 'user',
+        content: userContent,
+      });
+    }
+
     const message = await anthropic.messages.create({
       model: CLAUDE_MODEL,
-      max_tokens: 8192,
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: userContent,
-        },
-      ],
+      max_tokens: 16384,
+      system: systemPrompt,
+      messages,
     });
 
     const responseText = message.content
@@ -334,7 +403,7 @@ Write in third person ("This business..." not "Your business...").`,
       );
     }
 
-    console.log(`[Analyze] Generated analysis for sessionId: ${sessionId}${screenshotUrl ? ' (with screenshot)' : ''}`);
+    console.log(`[Analyze] ${isRefinement ? 'Refined' : 'Generated'} analysis for sessionId: ${sessionId}${screenshotUrl ? ' (with screenshot)' : ''}${industrySlug ? ` [${industrySlug}]` : ''}`);
 
     return NextResponse.json({
       sessionId,

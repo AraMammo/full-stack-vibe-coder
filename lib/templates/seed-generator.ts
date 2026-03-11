@@ -26,7 +26,7 @@ export function generateSeedSql(profile: IndustryProfile): string {
 
   // ── 3. Services ────────────────────────────────────────────────────────────
   const serviceIds: Map<string, string> = new Map();
-  if (profile.services.length > 0) {
+  if (profile.services && profile.services.length > 0) {
     lines.push(`\n-- Services`);
     for (const svc of profile.services) {
       const svcId = uuid();
@@ -40,7 +40,7 @@ export function generateSeedSql(profile: IndustryProfile): string {
   }
 
   // ── 4. Packages + PackageService junction ──────────────────────────────────
-  if (profile.packages.length > 0) {
+  if (profile.packages && profile.packages.length > 0) {
     lines.push(`\n-- Packages`);
     for (const pkg of profile.packages) {
       const pkgId = uuid();
@@ -65,11 +65,11 @@ export function generateSeedSql(profile: IndustryProfile): string {
 
   // ── 5. Availability ────────────────────────────────────────────────────────
   lines.push(`\n-- Availability`);
-  for (const day of profile.businessHours.daysOfWeek) {
+  for (const day of profile.businessHours?.daysOfWeek ?? [1, 2, 3, 4, 5]) {
     const availId = `default-availability-${day}`;
     lines.push(
       `INSERT INTO "Availability" (id, "userId", "dayOfWeek", "startTime", "endTime", "isActive", "createdAt", "updatedAt")` +
-        ` VALUES (${q(availId)}, ${q(coachId)}, ${day}, ${q(profile.businessHours.startTime)}, ${q(profile.businessHours.endTime)}, true, ${q(now)}, ${q(now)});`
+        ` VALUES (${q(availId)}, ${q(coachId)}, ${day}, ${q(profile.businessHours?.startTime ?? '09:00')}, ${q(profile.businessHours?.endTime ?? '17:00')}, true, ${q(now)}, ${q(now)});`
     );
   }
 
