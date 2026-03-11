@@ -88,7 +88,7 @@ export function Navigation() {
               <span className="font-heading text-lg font-light tracking-wide text-fsvc-text transition-transform group-hover:scale-105">
                 Full Stack
               </span>
-              <span className="font-heading text-lg font-bold tracking-tight text-accent transition-transform group-hover:scale-105">
+              <span className="font-heading text-lg font-bold tracking-tight gradient-text transition-transform group-hover:scale-105">
                 Vibe Coder
               </span>
             </Link>
@@ -121,7 +121,7 @@ export function Navigation() {
                 href={session ? '/dashboard' : '/auth/signin'}
                 className={`px-4 py-2 text-sm font-medium font-body rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-base ${
                   session
-                    ? 'bg-accent text-base hover:bg-accent-hover'
+                    ? 'gradient-bg text-white hover:opacity-90'
                     : 'border border-border hover:border-fsvc-text-disabled bg-white/5 hover:bg-white/10 text-fsvc-text'
                 }`}
               >

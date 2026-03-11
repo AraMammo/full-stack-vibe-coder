@@ -370,7 +370,7 @@ export default function ChatInterface() {
                   type="button"
                   onClick={() => handleCheckout("TURNKEY_SYSTEM")}
                   disabled={!hostingAgreed || checkoutLoading}
-                  className="w-full py-3 px-4 rounded-lg bg-accent text-base font-semibold text-sm hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 px-4 rounded-lg gradient-bg text-white font-semibold text-sm hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {checkoutLoading ? "Processing..." : "Build & Deploy My App — $497"}
                 </button>
@@ -478,7 +478,7 @@ export default function ChatInterface() {
           type="button"
           onClick={handleTextSubmit}
           disabled={!inputText.trim() || isRecording || isTranscribing || isSubmitting}
-          className="px-6 py-3 rounded-lg bg-accent text-base text-base font-bold hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-3 rounded-lg gradient-bg text-white font-bold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? "..." : "Send"}
         </button>

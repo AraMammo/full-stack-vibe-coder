@@ -1,4 +1,12 @@
 <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff0080"/>
+      <stop offset="50%" stop-color="#00ff88"/>
+      <stop offset="100%" stop-color="#00aaff"/>
+    </linearGradient>
+  </defs>
+
   <!-- Background -->
   <rect width="200" height="200" rx="16" fill="#0A0A0A"/>
 
@@ -13,9 +21,9 @@
 
   <!-- V — bottom left, TILTED like the O in LOVE -->
   <g transform="rotate(-16, 58, 168)">
-    <text x="20" y="182" font-family="system-ui, -apple-system, 'Helvetica Neue', sans-serif" font-size="90" font-weight="900" fill="#FF5C35" letter-spacing="-0.03em">V</text>
+    <text x="20" y="182" font-family="system-ui, -apple-system, 'Helvetica Neue', sans-serif" font-size="90" font-weight="900" fill="url(#grad)" letter-spacing="-0.03em">V</text>
   </g>
 
   <!-- C — bottom right -->
-  <text x="106" y="182" font-family="system-ui, -apple-system, 'Helvetica Neue', sans-serif" font-size="90" font-weight="900" fill="#FF5C35" letter-spacing="-0.03em">C</text>
+  <text x="106" y="182" font-family="system-ui, -apple-system, 'Helvetica Neue', sans-serif" font-size="90" font-weight="900" fill="url(#grad)" letter-spacing="-0.03em">C</text>
 </svg>

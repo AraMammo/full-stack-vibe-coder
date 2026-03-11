@@ -27,7 +27,7 @@ export function Footer() {
           <div>
             <div className="flex items-baseline gap-1.5 mb-3">
               <span className="font-heading text-sm font-light tracking-wide text-fsvc-text">Full Stack</span>
-              <span className="font-heading text-sm font-bold tracking-tight text-accent">Vibe Coder</span>
+              <span className="font-heading text-sm font-bold tracking-tight gradient-text">Vibe Coder</span>
             </div>
             <p className="text-body-sm text-fsvc-text-secondary leading-relaxed">
               Describe your business, get a complete website — database, auth, payments, booking — deployed and live. Real code you own.

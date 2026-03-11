@@ -1,9 +1,14 @@
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff0080"/>
+      <stop offset="50%" stop-color="#00ff88"/>
+      <stop offset="100%" stop-color="#00aaff"/>
+    </linearGradient>
+  </defs>
+
   <!-- Background -->
   <rect width="32" height="32" rx="4" fill="#0A0A0A"/>
-
-  <!-- FSVC micro: FS over VC with tilted V -->
-  <!-- At 32px, keep it tight and readable -->
 
   <!-- F — top left -->
   <text x="2" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="900" fill="#F0F0EE">F</text>
@@ -13,9 +18,9 @@
 
   <!-- V — bottom left, tilted -->
   <g transform="rotate(-14, 10, 27)">
-    <text x="2" y="29" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="900" fill="#FF5C35">V</text>
+    <text x="2" y="29" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="900" fill="url(#g)">V</text>
   </g>
 
   <!-- C — bottom right -->
-  <text x="16" y="29" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="900" fill="#FF5C35">C</text>
+  <text x="16" y="29" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="900" fill="url(#g)">C</text>
 </svg>

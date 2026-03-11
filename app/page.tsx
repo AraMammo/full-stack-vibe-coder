@@ -25,16 +25,15 @@ export default function Home() {
     <>
       {/* Subtle background effects */}
       <div className="fixed inset-0 bg-base -z-20" />
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(255,92,53,0.06)_0%,_transparent_60%)] -z-10" />
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(255,0,128,0.05)_0%,_rgba(0,170,255,0.03)_40%,_transparent_70%)] -z-10" />
 
       <main id="main-content" className="min-h-screen pt-20 pb-16">
         {/* Hero Section - Chat Front and Center */}
         <section className="px-4 sm:px-6 py-8 sm:py-16">
           <div className="max-w-4xl mx-auto text-center">
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-black mb-6 leading-[1.1] tracking-tight text-fsvc-text">
-              Describe Your Business.{" "}
-              <span className="text-accent">Get a Working App.</span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-black mb-6 leading-[1.1] tracking-tight gradient-text">
+              Describe Your Business. Get a Working App.
             </h1>
 
             {/* Subheadline */}
@@ -50,8 +49,8 @@ export default function Home() {
 
             {/* Chat Interface — visually prominent */}
             <div className="w-full max-w-3xl mx-auto relative">
-              <div className="absolute -inset-1 bg-accent-glow rounded-2xl blur-xl" />
-              <div className="relative rounded-xl border border-accent/20 bg-surface/80 backdrop-blur-md p-4 shadow-glow-sm">
+              <div className="absolute -inset-1 rounded-2xl blur-xl opacity-40" style={{ background: 'linear-gradient(135deg, rgba(255,0,128,0.3), rgba(0,255,136,0.1), rgba(0,170,255,0.3))' }} />
+              <div className="relative rounded-xl border border-accent/20 bg-surface/80 backdrop-blur-md p-4 gradient-glow">
                 <ChatInterface />
               </div>
             </div>
@@ -73,7 +72,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Step 1 */}
               <div className="text-center p-8 rounded-xl bg-surface border border-border hover:border-accent/30 transition-colors">
-                <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-accent flex items-center justify-center text-xl font-bold text-base">
+                <div className="w-14 h-14 mx-auto mb-5 rounded-full gradient-bg flex items-center justify-center text-xl font-bold text-white">
                   1
                 </div>
                 <h3 className="text-lg font-semibold text-fsvc-text mb-3">You Talk, We Listen</h3>
@@ -84,7 +83,7 @@ export default function Home() {
 
               {/* Step 2 */}
               <div className="text-center p-8 rounded-xl bg-surface border border-border hover:border-accent/30 transition-colors">
-                <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-accent flex items-center justify-center text-xl font-bold text-base">
+                <div className="w-14 h-14 mx-auto mb-5 rounded-full gradient-bg flex items-center justify-center text-xl font-bold text-white">
                   2
                 </div>
                 <h3 className="text-lg font-semibold text-fsvc-text mb-3">AI Builds Your Full-Stack App</h3>
@@ -95,7 +94,7 @@ export default function Home() {
 
               {/* Step 3 */}
               <div className="text-center p-8 rounded-xl bg-surface border border-border hover:border-accent/30 transition-colors">
-                <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-accent flex items-center justify-center text-xl font-bold text-base">
+                <div className="w-14 h-14 mx-auto mb-5 rounded-full gradient-bg flex items-center justify-center text-xl font-bold text-white">
                   3
                 </div>
                 <h3 className="text-lg font-semibold text-fsvc-text mb-3">Your App Goes Live</h3>
@@ -160,7 +159,7 @@ export default function Home() {
             </p>
 
             {/* Single Pricing Card */}
-            <div className="relative p-8 rounded-2xl bg-surface border-2 border-accent/40 max-w-lg mx-auto shadow-glow-sm">
+            <div className="relative p-8 rounded-2xl bg-surface border-2 border-accent/30 max-w-lg mx-auto gradient-glow">
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-fsvc-text mb-2">Build My App</h3>
                 <div className="flex items-baseline justify-center gap-2">
@@ -199,7 +198,7 @@ export default function Home() {
 
               <Link
                 href="/get-started"
-                className="block w-full py-4 text-center rounded-lg bg-accent text-base font-bold text-lg hover:bg-accent-hover transition-colors"
+                className="block w-full py-4 text-center rounded-lg gradient-bg gradient-bg-hover text-white font-bold text-lg transition-all"
               >
                 Build My App &mdash; $497
               </Link>
@@ -240,7 +239,7 @@ export default function Home() {
             </p>
             <Link
               href="/get-started"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-accent text-base font-bold text-lg hover:bg-accent-hover transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg gradient-bg gradient-bg-hover text-white font-bold text-lg transition-all"
             >
               Build My App &mdash; $497
             </Link>
