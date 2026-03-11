@@ -10,7 +10,7 @@
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { CLAUDE_MODEL } from '@/lib/ai-config';
-import { nanoid } from 'nanoid';
+import { randomUUID } from 'crypto';
 import { checkRateLimit, getClientIP, rateLimiters } from '@/lib/rate-limit';
 
 const anthropic = new Anthropic({
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     }
 
     // Generate sessionId for this analysis
-    const sessionId = nanoid(21);
+    const sessionId = randomUUID();
 
     // Call Claude
     const message = await anthropic.messages.create({
