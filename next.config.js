@@ -2,15 +2,14 @@
 const nextConfig = {
   // App Router is enabled by default in Next.js 13+
   
+  // Disable output file tracing to avoid micromatch stack overflow
+  outputFileTracing: false,
+
   // Reduce memory usage during builds
   experimental: {
     // Reduce memory usage by disabling certain optimizations
     workerThreads: false,
     cpus: 1,
-    // Exclude deeply nested reference dirs from build tracing
-    outputFileTracingExcludes: {
-      '*': ['_reference/**', '.claude/**'],
-    },
   },
   
   // Disable source maps in production to save memory
