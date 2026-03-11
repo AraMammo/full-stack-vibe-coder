@@ -7,6 +7,10 @@ const nextConfig = {
     // Reduce memory usage by disabling certain optimizations
     workerThreads: false,
     cpus: 1,
+    // Exclude deeply nested reference dirs from build tracing
+    outputFileTracingExcludes: {
+      '*': ['_reference/**', '.claude/**'],
+    },
   },
   
   // Disable source maps in production to save memory

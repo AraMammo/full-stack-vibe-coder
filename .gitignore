@@ -158,3 +158,9 @@ dataset_*.json
 # Supabase local
 supabase/.temp/
 supabase/.branches/
+
+# Reference codebases (local only)
+_reference/
+
+# Claude Code local config
+.claude/
