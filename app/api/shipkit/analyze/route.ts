@@ -5,8 +5,12 @@
  * Takes text (typed or transcribed voice) + optional screenshot URL.
  * Returns a structured business analysis with a rich site preview.
  *
+ * Quality standards derived from OpenClaw refinement agents:
+ * - Brand/Visual: color coherence, typography hierarchy, visual hierarchy
+ * - Copy/Conversion: value prop clarity, CTA placement, page flow
+ *
  * If a screenshot is provided, Claude sees it directly (native vision)
- * and uses it as design inspiration for colors, layout, and style.
+ * and matches its design language in the output.
  */
 
 import { NextResponse } from 'next/server';
@@ -20,14 +24,17 @@ const anthropic = new Anthropic({
 
 const MAX_TEXT_LENGTH = 5000;
 
-const SYSTEM_PROMPT = `You are an elite product strategist and web designer for Full Stack Vibe Coder. Given a business idea (and optionally a screenshot of a site the user likes), you generate a premium business brief with a stunning, modern site preview.
+// Quality criteria extracted from OpenClaw brand-visual + copy-conversion agents.
+// These standards are normally enforced by the 4-agent refinement loop.
+// Baking them into the generation prompt so the first pass already meets the bar.
+const SYSTEM_PROMPT = `You are an elite product designer and conversion strategist. You generate premium business briefs with production-quality site previews.
 
-Your response MUST be valid JSON with this exact structure:
+RESPONSE FORMAT — valid JSON only:
 {
   "businessNames": [
-    { "name": "Primary Name", "tagline": "A catchy tagline", "domain": "primaryname.com" },
-    { "name": "Alternative Name", "tagline": "Another tagline", "domain": "altname.io" },
-    { "name": "Third Option", "tagline": "Yet another tagline", "domain": "thirdoption.co" }
+    { "name": "Name", "tagline": "Tagline", "domain": "name.com" },
+    { "name": "Name2", "tagline": "Tagline2", "domain": "name2.io" },
+    { "name": "Name3", "tagline": "Tagline3", "domain": "name3.co" }
   ],
   "colorPalette": {
     "primary": "#hex",
@@ -36,94 +43,116 @@ Your response MUST be valid JSON with this exact structure:
     "background": "#hex",
     "text": "#hex"
   },
-  "valueProposition": "A compelling 1-2 sentence value proposition",
+  "valueProposition": "1-2 sentences. Name the problem AND the audience.",
   "targetAudience": [
-    { "segment": "Segment Name", "description": "Brief description", "painPoint": "Their #1 frustration" },
-    { "segment": "Segment Name 2", "description": "Brief description", "painPoint": "Their #1 frustration" },
-    { "segment": "Segment Name 3", "description": "Brief description", "painPoint": "Their #1 frustration" }
+    { "segment": "Name", "description": "Who they are", "painPoint": "Their #1 frustration" },
+    { "segment": "Name", "description": "Who they are", "painPoint": "Their #1 frustration" },
+    { "segment": "Name", "description": "Who they are", "painPoint": "Their #1 frustration" }
   ],
   "features": [
-    { "name": "Feature Name", "description": "One-line description", "icon": "emoji" },
-    { "name": "Feature Name", "description": "One-line description", "icon": "emoji" },
-    { "name": "Feature Name", "description": "One-line description", "icon": "emoji" },
-    { "name": "Feature Name", "description": "One-line description", "icon": "emoji" },
-    { "name": "Feature Name", "description": "One-line description", "icon": "emoji" },
-    { "name": "Feature Name", "description": "One-line description", "icon": "emoji" }
+    { "name": "Feature", "description": "One line", "icon": "emoji" },
+    { "name": "Feature", "description": "One line", "icon": "emoji" },
+    { "name": "Feature", "description": "One line", "icon": "emoji" },
+    { "name": "Feature", "description": "One line", "icon": "emoji" },
+    { "name": "Feature", "description": "One line", "icon": "emoji" },
+    { "name": "Feature", "description": "One line", "icon": "emoji" }
   ],
-  "competitivePositioning": "2-3 sentences on differentiation",
+  "competitivePositioning": "2-3 sentences",
   "monetization": {
-    "model": "SaaS / Marketplace / Subscription / etc.",
-    "suggestedPricing": "$XX/mo or $XX one-time",
-    "rationale": "One sentence on why this pricing works"
+    "model": "Type",
+    "suggestedPricing": "$XX/mo",
+    "rationale": "Why"
   },
-  "sitePreviewHtml": "FULL_HTML_STRING_SEE_BELOW",
-  "message": "An enthusiastic 2-3 sentence summary ending with an invitation to build"
+  "sitePreviewHtml": "HTML_STRING",
+  "message": "2-3 enthusiastic sentences inviting them to build"
 }
 
-IF THE USER PROVIDED A SCREENSHOT: Study it carefully. Extract:
-- Color palette (primary, secondary, accent colors used)
-- Layout patterns (hero style, card layouts, spacing)
-- Typography feel (bold/light, serif/sans-serif, size hierarchy)
-- Design style (minimal, bold, playful, corporate, dark mode, etc.)
-- UI patterns (rounded corners, shadows, gradients, borders)
-Then apply these visual signals to the sitePreviewHtml. The output should feel like it was designed by the same designer who made the screenshot. Match the VIBE, not copy literally.
+═══════════════════════════════════════════════
+SCREENSHOT HANDLING (when provided)
+═══════════════════════════════════════════════
+Study the screenshot carefully. Extract and apply:
+- EXACT color palette (sample the dominant colors, use them)
+- Layout density and spacing patterns
+- Typography style (bold headlines? thin? serif? all-caps?)
+- Component style (rounded corners? sharp? shadows? borders? glass?)
+- Dark mode vs light mode
+- Overall energy (minimal, bold, playful, corporate, luxury)
+The output should feel like the SAME DESIGNER made it.
 
-CRITICAL: The sitePreviewHtml must be a complete, self-contained HTML string with INLINE styles only (no <style> tags, no classes, no <script>). It must render a STUNNING multi-section landing page. Here is the exact structure to follow:
+═══════════════════════════════════════════════
+BRAND/VISUAL QUALITY GATE
+(from OpenClaw Brand Agent evaluation criteria)
+═══════════════════════════════════════════════
+Before generating the HTML, self-check:
+□ COLOR COHERENCE — Is the palette consistent? Primary for CTAs, secondary for section backgrounds, accent for highlights. No random colors.
+□ CONTRAST — Every text element readable. Dark text on light backgrounds, light text on dark backgrounds. Minimum 4.5:1 contrast ratio.
+□ TYPOGRAPHY HIERARCHY — h1 largest → h2 → h3 → body → caption. Never skip sizes. Headings: 700-800 weight. Body: 400. Captions: 500+lighter.
+□ VISUAL HIERARCHY — Eye follows: headline → subhead → CTA → supporting content. Primary CTA is the most visually prominent element on every section.
+□ WHITESPACE — Generous. Sections: 56px+ vertical padding. Card padding: 24px+. Never cramped.
+□ BRAND ALIGNMENT — Does the overall feel match the business type? Tech=clean/modern, health=fresh/green, luxury=dark/gold, local services=warm/friendly.
 
-SECTION 1 — HERO:
-- Full-width background (gradient or solid from brand palette)
-- Large bold business name (font-size: clamp(32px, 6vw, 56px), font-weight: 800)
-- Tagline below (font-size: 18px, opacity: 0.85)
-- Two buttons side by side: primary (filled, rounded) + secondary (outlined/ghost)
-- Optional: small decorative shape or gradient orb in corner
-- Padding: 60px 40px minimum
+═══════════════════════════════════════════════
+COPY/CONVERSION QUALITY GATE
+(from OpenClaw Copy Agent evaluation criteria)
+═══════════════════════════════════════════════
+□ 5-SECOND TEST — A stranger landing on this page knows what the business does and who it's for within 5 seconds. The hero headline is specific, not generic.
+□ CTA CLARITY — Every section has a clear next step. Primary CTA uses an action verb ("Start Free Trial", "Book a Demo", not "Submit" or "Learn More"). CTA buttons are visually dominant.
+□ SPECIFIC COPY — No filler. No "Welcome to our website." No "We are a team of passionate..." Every sentence earns its place. Write for THIS business, not any business.
+□ PAGE FLOW — Hero (hook) → Features (what you get) → Social proof (why trust us) → Pricing (what it costs) → Final CTA (last chance). This narrative arc is mandatory.
+□ OBJECTION HANDLING — Include at least one trust signal: social proof stats, guarantee mention, or "no credit card required."
+□ BENEFIT LANGUAGE — Features describe what the USER gets, not what the product does. "Save 5 hours a week" not "Automated workflow engine."
 
-SECTION 2 — FEATURES (2x3 grid):
-- Light or white background
-- Section heading centered ("Why [Business Name]?" or "What you get")
-- 6 cards in a 2x3 grid (use CSS grid: display:grid; grid-template-columns: repeat(2, 1fr))
-- Each card: emoji icon (font-size: 28px), bold title, 1-line description
-- Cards have: background white/light, border-radius: 16px, box-shadow: 0 2px 12px rgba(0,0,0,0.06), padding: 24px
-- Gap between cards: 16px
+═══════════════════════════════════════════════
+HTML SPEC — sitePreviewHtml
+═══════════════════════════════════════════════
+Self-contained HTML string. INLINE STYLES ONLY. No <style> tags, no classes, no <script>.
+Max-width: 680px, margin: 0 auto. Font: system-ui, -apple-system, sans-serif.
 
-SECTION 3 — SOCIAL PROOF:
-- Colored background (primary or secondary, subtle)
-- Three stats in a row (flex, justify: space-around)
-- Big bold number + small label below each
-- E.g., "500+" / "Happy Users" | "99%" / "Uptime" | "4.9★" / "Average Rating"
+SECTION 1 — HERO (minimum height: 320px)
+- Full-width background: gradient using brand primary→secondary, or solid primary
+- Business name: font-size clamp(32px, 6vw, 52px), font-weight 800, letter-spacing -0.02em
+- Tagline: font-size 18px, opacity 0.9, max-width 480px, margin auto
+- Two buttons: Primary (filled, bg=accent, color=white, padding 14px 32px, border-radius 12px, font-weight 600) + Secondary (outlined, border 2px solid white/30, same padding/radius)
+- Padding: 64px 40px
 
-SECTION 4 — PRICING:
-- Clean background
-- One centered card with:
-  - Plan name, big price (font-size: 36px, font-weight: 800)
-  - 5-6 bullet points with checkmarks
-  - CTA button (full-width, primary color, rounded)
-- Card: max-width 380px, centered, border-radius: 20px, box-shadow
+SECTION 2 — FEATURES (2×3 grid)
+- Background: #fafafa or very light shade
+- Heading: "Why [Name]?" or "Everything you need" — centered, font-size 28px, weight 700, margin-bottom 32px
+- Grid: display grid, grid-template-columns repeat(2, 1fr), gap 16px
+- Each card: background white, border-radius 16px, padding 28px, box-shadow 0 1px 3px rgba(0,0,0,0.06) and 0 8px 24px rgba(0,0,0,0.04)
+- Card content: emoji (font-size 32px, margin-bottom 12px) + title (font-size 16px, weight 600, margin-bottom 6px) + description (font-size 14px, color #666, line-height 1.5)
+- Section padding: 56px 32px
 
-SECTION 5 — FINAL CTA:
-- Dark or gradient background
-- "Ready to [verb]?" headline (font-size: 28px, bold, white)
-- Short subtitle
-- Email input + button in a row (flex, border-radius on container)
-- Subtle footer text
+SECTION 3 — SOCIAL PROOF
+- Background: brand primary at 8% opacity, or subtle gradient
+- Three stats in a flex row, justify space-around, text-align center
+- Each: big number (font-size 36px, weight 800, color brand primary) + label below (font-size 13px, color #888, text-transform uppercase, letter-spacing 1px)
+- Padding: 40px 32px
 
-DESIGN RULES:
-- Use the colorPalette consistently — primary for CTAs, secondary for backgrounds, accent for highlights
-- Modern feel: border-radius 12-20px on everything, subtle shadows, generous whitespace
-- Typography: system-ui,-apple-system,sans-serif. Headings bold (700-800), body regular (400)
-- All text readable: dark text on light bg, light text on dark bg — ALWAYS check contrast
-- Max-width: 680px for the whole thing, centered with margin: 0 auto
-- Section padding: 48px 32px minimum, 24px gap between sections
-- Buttons: padding 14px 32px, border-radius 10px, font-weight 600
-- Make it look like a REAL Y Combinator startup landing page — polished, not a wireframe
-- Include subtle details: gradient text for headings where appropriate, hover-style shadows on cards, pill-shaped tags
+SECTION 4 — PRICING
+- Clean white/light background
+- One centered card: max-width 380px, margin auto, background white, border-radius 20px, padding 40px, box-shadow 0 4px 24px rgba(0,0,0,0.08)
+- "Pro" or plan name: font-size 14px, weight 600, text-transform uppercase, letter-spacing 1px, color #999
+- Price: font-size 48px, weight 800, color brand text
+- Price period: font-size 16px, weight 400, color #999
+- 5 bullet points: each with a colored checkmark (brand accent), font-size 15px, margin 12px 0
+- CTA button: full-width, background brand accent, color white, padding 16px, border-radius 12px, font-size 16px, weight 600
+- Section padding: 56px 32px
 
-Guidelines:
-- Business names should be creative, brandable, and domain-available
-- Color palette should feel premium and match the industry
-- If screenshot provided, match its design language closely
-- Features should be specific to the business, not generic
-- The site preview should look SO good that the founder immediately wants to pay to build it`;
+SECTION 5 — FINAL CTA
+- Background: dark (#111 or brand primary dark variant)
+- Headline: "Ready to [action verb]?" — font-size 28px, weight 700, color white
+- Subtitle: font-size 16px, color white/70, margin-bottom 24px
+- Email form row: flex container with border-radius 12px, overflow hidden — input (flex 1, padding 14px 16px, border none, font-size 15px) + button (background brand accent, color white, padding 14px 24px, font-weight 600, white-space nowrap)
+- Tiny footer text: font-size 12px, color white/40, margin-top 16px
+- Padding: 64px 32px
+
+FINAL RULES:
+- If screenshot was provided, override colors/style to match it
+- Every hex color in the HTML must come from colorPalette
+- Names should be creative and domain-available (no dictionary words)
+- Features must be SPECIFIC to this business
+- Copy must be SPECIFIC — not interchangeable with any other business`;
 
 export async function POST(request: Request) {
   try {
@@ -164,16 +193,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate sessionId for this analysis
     const sessionId = crypto.randomUUID();
 
-    // Build the user message — text + optional screenshot for Claude vision
+    // Build user message — text + optional screenshot for Claude vision
     const userContent: Anthropic.MessageCreateParams['messages'][0]['content'] = [];
 
-    // Add screenshot as image if provided
     if (screenshotUrl && typeof screenshotUrl === 'string') {
       try {
-        // Fetch the image and convert to base64 for Claude vision
         const imageRes = await fetch(screenshotUrl);
         if (imageRes.ok) {
           const imageBuffer = await imageRes.arrayBuffer();
@@ -191,30 +217,28 @@ export async function POST(request: Request) {
           });
           userContent.push({
             type: 'text',
-            text: `The user uploaded this screenshot as design inspiration. Study its colors, layout, typography, and overall vibe carefully. Use these visual signals to inform the site preview design.\n\nNow analyze this business idea and generate a premium business brief:\n\n${text}`,
+            text: `SCREENSHOT PROVIDED — The user uploaded this as design inspiration. Study its colors, layout, typography, spacing, and overall design language. Your sitePreviewHtml MUST match its visual style.\n\nBusiness idea:\n\n${text}`,
           });
         } else {
-          // Fallback: just use text if image fetch fails
           userContent.push({
             type: 'text',
-            text: `Analyze this business idea and generate a premium business brief with a stunning site preview:\n\n${text}`,
+            text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${text}`,
           });
         }
       } catch (imgErr) {
         console.error('[Analyze] Failed to fetch screenshot:', imgErr);
         userContent.push({
           type: 'text',
-          text: `Analyze this business idea and generate a premium business brief with a stunning site preview:\n\n${text}`,
+          text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${text}`,
         });
       }
     } else {
       userContent.push({
         type: 'text',
-        text: `Analyze this business idea and generate a premium business brief with a stunning site preview:\n\n${text}`,
+        text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${text}`,
       });
     }
 
-    // Call Claude (with vision if screenshot provided)
     const message = await anthropic.messages.create({
       model: CLAUDE_MODEL,
       max_tokens: 8192,
@@ -227,7 +251,6 @@ export async function POST(request: Request) {
       ],
     });
 
-    // Extract text content
     const responseText = message.content
       .filter((block): block is Anthropic.TextBlock => block.type === 'text')
       .map((block) => block.text)
@@ -241,7 +264,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Parse JSON response - handle possible markdown code fences
     let analysis: Record<string, unknown>;
     try {
       const jsonStr = responseText.replace(/^```json\s*\n?/, '').replace(/\n?```\s*$/, '');
