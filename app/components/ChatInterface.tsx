@@ -19,7 +19,7 @@ export default function ChatInterface({
     {
       role: "assistant",
       content:
-        "What does your business do? Describe it in a few sentences — or hit the mic.",
+        "Tell me about your business — what do you offer, who are your customers, and how do they pay you? Even a sentence or two is enough to get started.",
     },
   ]);
   const [inputText, setInputText] = useState("");
@@ -210,6 +210,13 @@ export default function ChatInterface({
     }
   };
 
+  const examplePrompts = [
+    "A pet sitting app for busy professionals in Austin",
+    "Online booking system for a barbershop chain",
+    "Subscription meal prep service for fitness enthusiasts",
+    "A marketplace connecting local tutors with parents",
+  ];
+
   return (
     <div className="w-full">
       {/* Chat Messages */}
@@ -339,6 +346,28 @@ export default function ChatInterface({
         {/* end of scrollable content */}
       </div>
 
+      {/* Example prompts — only shown before first interaction */}
+      {!hasInteracted && !analysis && (
+        <div className="mb-2 px-1">
+          <p className="text-xs text-fsvc-text-disabled mb-1.5">Try an example:</p>
+          <div className="flex flex-wrap gap-1.5">
+            {examplePrompts.map((prompt, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => {
+                  setInputText(prompt);
+                  setHasInteracted(true);
+                }}
+                className="px-2.5 py-1 rounded-md bg-surface border border-border text-xs text-fsvc-text-secondary hover:border-accent/40 hover:text-fsvc-text transition-colors"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Screenshot Preview */}
       {screenshotPreview && (
         <div className="mb-2 flex items-center gap-2 px-2">
@@ -404,7 +433,7 @@ export default function ChatInterface({
           placeholder={
             isTranscribing
               ? "Transcribing..."
-              : "Describe your business idea..."
+              : "What do you sell, who do you serve, and how do they pay?"
           }
           className="flex-1 bg-surface border border-border rounded-lg px-4 py-3 text-fsvc-text text-base placeholder-fsvc-text-disabled focus:outline-none focus:border-accent/50 focus:shadow-[0_0_0_3px_rgba(255,92,53,0.12)] transition-colors"
           disabled={isRecording || isTranscribing || isSubmitting}

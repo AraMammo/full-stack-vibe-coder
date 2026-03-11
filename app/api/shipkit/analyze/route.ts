@@ -195,6 +195,44 @@ export async function POST(request: Request) {
 
     const sessionId = crypto.randomUUID();
 
+    // ═══════════════════════════════════════════════
+    // PROMPT ENRICHMENT — expand vague input into a rich brief
+    // ═══════════════════════════════════════════════
+    // Users often type "a dog walking app" or "candle business".
+    // The enrichment step infers audience, value prop, differentiators,
+    // and revenue model so the main generation prompt has rich context.
+    let enrichedText = text;
+    if (text.length < 800) {
+      try {
+        const enrichmentResponse = await anthropic.messages.create({
+          model: CLAUDE_MODEL,
+          max_tokens: 1500,
+          system: `You are a business strategist. The user gave a brief description of their business idea. Expand it into a rich 4-8 sentence brief that includes:
+1. What the business does (be specific about the product/service)
+2. Who exactly it serves (specific customer segments, not generic)
+3. What makes it different from alternatives
+4. How it makes money (revenue model, rough pricing)
+5. The core problem it solves and why it matters
+
+If the user already provided detailed input, clean it up and fill any gaps.
+Do NOT add fictional details that contradict what the user said.
+Do NOT include any preamble — just output the enriched brief directly.
+Write in third person ("This business..." not "Your business...").`,
+          messages: [{ role: 'user', content: text }],
+        });
+        const enrichedBlock = enrichmentResponse.content.find(
+          (b): b is Anthropic.TextBlock => b.type === 'text'
+        );
+        if (enrichedBlock?.text) {
+          enrichedText = enrichedBlock.text;
+          console.log(`[Analyze] Enriched "${text.substring(0, 60)}..." → ${enrichedText.length} chars`);
+        }
+      } catch (enrichErr) {
+        console.error('[Analyze] Enrichment failed, using raw input:', enrichErr);
+        // Fall through with original text
+      }
+    }
+
     // Build user message — text + optional screenshot for Claude vision
     const userContent: Anthropic.MessageCreateParams['messages'][0]['content'] = [];
 
@@ -217,25 +255,25 @@ export async function POST(request: Request) {
           });
           userContent.push({
             type: 'text',
-            text: `SCREENSHOT PROVIDED — The user uploaded this as design inspiration. Study its colors, layout, typography, spacing, and overall design language. Your sitePreviewHtml MUST match its visual style.\n\nBusiness idea:\n\n${text}`,
+            text: `SCREENSHOT PROVIDED — The user uploaded this as design inspiration. Study its colors, layout, typography, spacing, and overall design language. Your sitePreviewHtml MUST match its visual style.\n\nBusiness idea:\n\n${enrichedText}`,
           });
         } else {
           userContent.push({
             type: 'text',
-            text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${text}`,
+            text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${enrichedText}`,
           });
         }
       } catch (imgErr) {
         console.error('[Analyze] Failed to fetch screenshot:', imgErr);
         userContent.push({
           type: 'text',
-          text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${text}`,
+          text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${enrichedText}`,
         });
       }
     } else {
       userContent.push({
         type: 'text',
-        text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${text}`,
+        text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${enrichedText}`,
       });
     }
 
