@@ -10,7 +10,6 @@
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { CLAUDE_MODEL } from '@/lib/ai-config';
-import { prisma } from '@/lib/db';
 import { nanoid } from 'nanoid';
 import { checkRateLimit, getClientIP, rateLimiters } from '@/lib/rate-limit';
 
@@ -130,24 +129,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Save to chat_submissions with sessionId
-    try {
-      await prisma.chat_submissions.create({
-        data: {
-          session_id: sessionId,
-          name: '',
-          email: '',
-          user_input: text,
-          input_type: inputType,
-          ai_recommendation: typeof analysis.message === 'string' ? analysis.message : '',
-          recommended_product: 'fsvc',
-          analysis_json: JSON.parse(JSON.stringify(analysis)),
-        },
-      });
-    } catch (dbError) {
-      console.error('[Analyze] Failed to save to DB:', dbError);
-      // Don't fail the request - still return the analysis
-    }
+    // Log the analysis (chat_submissions table was removed — just log for now)
+    console.log(`[Analyze] Generated analysis for sessionId: ${sessionId}`);
 
     return NextResponse.json({
       sessionId,

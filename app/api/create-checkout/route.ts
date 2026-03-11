@@ -47,30 +47,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Look up business concept from chat analysis
-    let businessConcept = '';
-    if (sessionId) {
-      try {
-        const chatSubmission = await prisma.chat_submissions.findUnique({
-          where: { session_id: sessionId },
-        });
-        if (chatSubmission) {
-          businessConcept = chatSubmission.user_input;
-        }
-      } catch (lookupError) {
-        console.error('[Checkout] Failed to look up chat submission:', lookupError);
-      }
-    }
-
     // Free preview tier — create project directly, no Stripe
     if (tier === 'VALIDATION_PACK') {
       const project = await prisma.project.create({
         data: {
           userId: authSession.user.id,
-          projectName: 'FSVC Preview',
-          biabTier: 'VALIDATION_PACK',
-          businessConcept,
-          status: 'PENDING',
+          name: 'FSVC Preview',
+          status: 'INTAKE',
         },
       });
 
