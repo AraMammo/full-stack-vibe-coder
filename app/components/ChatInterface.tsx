@@ -2,32 +2,18 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useSession, signIn } from "next-auth/react";
-
-interface BusinessName {
-  name: string;
-  tagline: string;
-}
-
-interface AudienceSegment {
-  segment: string;
-  description: string;
-}
-
-interface ShipKitAnalysis {
-  businessNames: BusinessName[];
-  valueProposition: string;
-  targetAudience: AudienceSegment[];
-  competitivePositioning: string;
-  sitePreviewHtml: string;
-  message: string;
-}
+import type { AnalysisData } from "./AnalysisCanvas";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
 
-export default function ChatInterface() {
+export default function ChatInterface({
+  onAnalysis,
+}: {
+  onAnalysis?: (analysis: AnalysisData, sessionId: string) => void;
+}) {
   const { data: session, status: authStatus } = useSession();
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -41,9 +27,9 @@ export default function ChatInterface() {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [analysis, setAnalysis] = useState<ShipKitAnalysis | null>(null);
+  const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [selectedName, setSelectedName] = useState<number | null>(null);
+  const [selectedName, setSelectedName] = useState<number>(0);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
   const [hostingAgreed, setHostingAgreed] = useState(false);
@@ -166,6 +152,11 @@ export default function ChatInterface() {
       setAnalysis(data.analysis);
       setSelectedName(0);
 
+      // Notify parent to open canvas
+      if (onAnalysis) {
+        onAnalysis(data.analysis, data.sessionId);
+      }
+
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: data.analysis.message },
@@ -255,89 +246,45 @@ export default function ChatInterface() {
           </div>
         )}
 
-        {/* Interactive Business Brief */}
-        {analysis && (
-          <div className="mt-4 space-y-4">
-            {/* Business Name Options */}
-            <div>
-              <p className="text-xs font-semibold text-accent uppercase tracking-wide mb-2">
-                Business Name Options
-              </p>
-              <div className="grid gap-2">
-                {analysis.businessNames.map((bn, idx) => (
-                  <button
+        {/* Compact analysis summary (details in canvas) */}
+        {analysis && !isSubmitting && (
+          <div className="mt-3 space-y-3">
+            {/* Selected name badge */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent/10 border border-accent/20">
+              <span className="text-xs text-accent font-semibold uppercase tracking-wide">Selected:</span>
+              <span className="text-sm font-bold text-fsvc-text">{analysis.businessNames[selectedName]?.name}</span>
+              <span className="text-xs text-fsvc-text-disabled">— {analysis.businessNames[selectedName]?.tagline}</span>
+            </div>
+
+            {/* Quick feature pills */}
+            {analysis.features && analysis.features.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {analysis.features.slice(0, 6).map((f, idx) => (
+                  <span
                     key={idx}
-                    type="button"
-                    onClick={() => setSelectedName(idx)}
-                    className={`text-left p-3 rounded-lg border transition-all ${
-                      selectedName === idx
-                        ? "border-accent/50 bg-accent/10"
-                        : "border-border bg-surface hover:border-border"
-                    }`}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-surface border border-border text-xs text-fsvc-text-secondary"
                   >
-                    <p className="font-semibold text-fsvc-text text-sm">{bn.name}</p>
-                    <p className="text-xs text-fsvc-text-disabled">{bn.tagline}</p>
-                  </button>
+                    {f.icon && <span>{f.icon}</span>}
+                    {f.name}
+                  </span>
                 ))}
               </div>
-            </div>
+            )}
 
-            {/* Value Proposition */}
-            <div className="p-3 rounded-lg bg-accent/5 border border-border">
-              <p className="text-xs font-semibold text-accent-2 uppercase tracking-wide mb-1">
-                Value Proposition
-              </p>
-              <p className="text-fsvc-text text-sm leading-relaxed">
-                {analysis.valueProposition}
-              </p>
-            </div>
-
-            {/* Target Audience */}
-            <div>
-              <p className="text-xs font-semibold text-success uppercase tracking-wide mb-2">
-                Target Audience
-              </p>
-              <div className="grid gap-2">
-                {analysis.targetAudience.map((seg, idx) => (
-                  <div
-                    key={idx}
-                    className="p-2 rounded-lg bg-surface border border-border"
-                  >
-                    <p className="font-medium text-fsvc-text text-sm">{seg.segment}</p>
-                    <p className="text-xs text-fsvc-text-disabled">{seg.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Competitive Positioning */}
-            <div className="p-3 rounded-lg bg-surface border border-border">
-              <p className="text-xs font-semibold text-fsvc-text-secondary uppercase tracking-wide mb-1">
-                Competitive Edge
-              </p>
-              <p className="text-fsvc-text-secondary text-sm leading-relaxed">
-                {analysis.competitivePositioning}
-              </p>
-            </div>
-
-            {/* Site Preview */}
-            <div>
-              <p className="text-xs font-semibold text-warning uppercase tracking-wide mb-2">
-                Site Preview
-              </p>
-              <div
-                className="rounded-lg overflow-hidden border border-border"
-                dangerouslySetInnerHTML={{ __html: analysis.sitePreviewHtml }}
-              />
-            </div>
-
-            {/* Inline Checkout Panel */}
+            {/* Checkout Panel */}
             <div className="p-4 rounded-lg bg-surface border border-accent/30 space-y-3">
-              <p className="text-xs text-fsvc-text-disabled uppercase tracking-wide font-semibold">
-                This is your free business brief
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-fsvc-text-disabled uppercase tracking-wide font-semibold">
+                  Ready to build?
+                </p>
+                {analysis.monetization && (
+                  <span className="text-xs text-success font-medium">
+                    {analysis.monetization.model} — {analysis.monetization.suggestedPricing}
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-fsvc-text-secondary leading-relaxed">
-                Full build adds: live website, database, auth, payments, email, GitHub repo — all deployed and running.
+                Full build includes: live website, database, auth, payments, email, GitHub repo — all deployed and running.
               </p>
 
               {checkoutError && (

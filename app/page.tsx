@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import ChatInterface from "./components/ChatInterface";
+import AnalysisCanvas, { type AnalysisData } from "./components/AnalysisCanvas";
 import ShowcaseSection from "@/components/ShowcaseSection";
 import Link from "next/link";
 
 export default function Home() {
   const [appsDeployed, setAppsDeployed] = useState<number | null>(null);
+  const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
+  const [canvasOpen, setCanvasOpen] = useState(false);
+  const [selectedName, setSelectedName] = useState(0);
 
   // Ensure page loads at top
   useEffect(() => {
@@ -21,16 +25,54 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
+  const handleAnalysis = useCallback((data: AnalysisData) => {
+    setAnalysis(data);
+    setSelectedName(0);
+    setCanvasOpen(true);
+  }, []);
+
   return (
     <>
       {/* Subtle background effects */}
       <div className="fixed inset-0 bg-base -z-20" />
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(255,0,128,0.05)_0%,_rgba(0,170,255,0.03)_40%,_transparent_70%)] -z-10" />
 
-      <main id="main-content" className="min-h-screen pt-20 pb-16">
+      {/* Canvas overlay for mobile, side panel for desktop */}
+      {canvasOpen && analysis && (
+        <>
+          {/* Mobile: full-screen overlay */}
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <div className="absolute inset-0 bg-base/95 backdrop-blur-sm" onClick={() => setCanvasOpen(false)} />
+            <div className="absolute inset-2 top-16 bottom-2 rounded-xl overflow-hidden border border-border shadow-2xl">
+              <AnalysisCanvas
+                analysis={analysis}
+                selectedName={selectedName}
+                onSelectName={setSelectedName}
+                onClose={() => setCanvasOpen(false)}
+              />
+            </div>
+          </div>
+
+          {/* Desktop: side panel */}
+          <div className="hidden lg:block fixed top-16 right-0 bottom-0 w-[520px] z-40 shadow-2xl">
+            <AnalysisCanvas
+              analysis={analysis}
+              selectedName={selectedName}
+              onSelectName={setSelectedName}
+              onClose={() => setCanvasOpen(false)}
+            />
+          </div>
+        </>
+      )}
+
+      <main
+        id="main-content"
+        className="min-h-screen pt-20 pb-16 transition-all duration-300"
+        style={{ marginRight: canvasOpen ? "520px" : "0" }}
+      >
         {/* Hero Section - Chat Front and Center */}
         <section className="px-4 sm:px-6 py-8 sm:py-16">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className={`mx-auto text-center transition-all duration-300 ${canvasOpen ? "max-w-2xl" : "max-w-4xl"}`}>
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-black mb-6 leading-[1.1] tracking-tight gradient-text">
               Describe Your Business. Get a Working App.
@@ -51,14 +93,30 @@ export default function Home() {
             <div className="w-full max-w-3xl mx-auto relative">
               <div className="absolute -inset-1 rounded-2xl blur-xl opacity-40" style={{ background: 'linear-gradient(135deg, rgba(255,0,128,0.3), rgba(0,255,136,0.1), rgba(0,170,255,0.3))' }} />
               <div className="relative rounded-xl border border-accent/20 bg-surface/80 backdrop-blur-md p-4 gradient-glow">
-                <ChatInterface />
+                <ChatInterface onAnalysis={handleAnalysis} />
               </div>
             </div>
 
+            {/* Canvas toggle button (when analysis exists but canvas is closed) */}
+            {analysis && !canvasOpen && (
+              <button
+                onClick={() => setCanvasOpen(true)}
+                className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent/10 border border-accent/20 text-accent text-sm font-medium hover:bg-accent/20 transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                View Site Preview & Business Brief
+              </button>
+            )}
+
             {/* Sub-CTA */}
-            <p className="mt-6 text-sm text-fsvc-text-disabled">
-              Try it free — describe your idea and see what gets built in 60 seconds
-            </p>
+            {!analysis && (
+              <p className="mt-6 text-sm text-fsvc-text-disabled">
+                Try it free — describe your idea and see what gets built in 60 seconds
+              </p>
+            )}
           </div>
         </section>
 
