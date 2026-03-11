@@ -34,7 +34,7 @@ export const allBlogPosts: BlogPost[] = [
   {
     slug: 'building-fullstack-vibe-coder-48-hours',
     title: 'I Built This Entire Platform in 48 Hours (Here\'s How)',
-    excerpt: 'The complete build log of ShipKit. What worked, what broke, and how AI did 90% of the heavy lifting.',
+    excerpt: 'The complete build log of Full Stack Vibe Coder. What worked, what broke, and how AI did 90% of the heavy lifting.',
     date: '2025-01-20',
     readTime: '12 min read',
     category: 'Building in Public',

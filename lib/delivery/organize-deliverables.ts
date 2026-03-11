@@ -486,7 +486,7 @@ function generateMainReadme(
     .join('\n');
 
   return `
-# ${projectName} - ShipKit
+# ${projectName} - Full Stack Vibe Coder
 
 Welcome to your complete business package! This contains everything you need to launch **${projectName}**.
 
@@ -555,7 +555,7 @@ Good luck! 🚀
 
 ---
 
-Generated with [ShipKit](https://shipkit.io) - ShipKit
+Generated with [Full Stack Vibe Coder](https://fullstackvibecoder.com)
   `.trim();
 }
 
@@ -573,7 +573,7 @@ function generateGetStartedGuide(
   return `
 # 🚀 GET STARTED - ${projectName}
 
-**Congratulations!** You've received your complete **ShipKit** package.
+**Congratulations!** You've received your complete **Full Stack Vibe Coder** package.
 
 This quick guide will help you make the most of your documents in the next 7 days.
 
@@ -691,6 +691,6 @@ Book a call: calendly.com/shipkit/support
 
 The difference between dreamers and builders is action. You've done the planning. Now go build something people want.
 
-— Team ShipKit
+— Team Full Stack Vibe Coder
   `.trim();
 }

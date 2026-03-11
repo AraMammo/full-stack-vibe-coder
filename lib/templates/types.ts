@@ -1,5 +1,13 @@
+/**
+ * Industry Profile — generic shape for any business type.
+ *
+ * Universal fields (businessName, colors, etc.) are typed.
+ * Industry-specific fields live in `industryData` — Claude decides
+ * what goes there based on the business type.
+ */
+
 export interface IndustryProfile {
-  // Business identity
+  // Business identity (universal)
   businessName: string;
   ownerName: string;
   ownerEmail: string;
@@ -7,51 +15,58 @@ export interface IndustryProfile {
   about?: string;
   phone?: string;
 
-  // Brand
+  // Brand (universal)
   primaryColor: string; // hex
   accentColor: string; // hex
   timezone: string; // IANA timezone
 
-  // Services (coaching-specific for now)
-  services: Array<{
-    name: string;
-    description: string;
-    duration: number; // minutes
-    price: number; // cents
-    type: "INDIVIDUAL" | "GROUP" | "DISCOVERY" | "WORKSHOP";
-  }>;
+  // Industry classification
+  industrySlug?: string; // e.g., "real_estate", "home_services"
 
-  // Packages
-  packages: Array<{
+  // Industry-specific data — shape varies by business type.
+  // For a coaching business: { services, packages, cancellationPolicyHours }
+  // For real estate: { serviceAreas, listingTypes, mlsIntegration }
+  // For a restaurant: { menuCategories, tableCount, reservationPolicy }
+  // Claude extracts whatever fields are relevant.
+  industryData?: Record<string, unknown>;
+
+  // Legacy fields — kept for backward compat with existing coaching projects.
+  // New projects should use industryData instead.
+  services?: Array<{
     name: string;
     description: string;
-    price: number; // cents
+    duration: number;
+    price: number;
+    type: string;
+  }>;
+  packages?: Array<{
+    name: string;
+    description: string;
+    price: number;
     totalSessions: number;
     validityDays: number;
-    serviceNames: string[]; // which services are included
+    serviceNames: string[];
   }>;
-
-  // Availability
-  businessHours: {
-    startTime: string; // "09:00"
-    endTime: string; // "17:00"
-    daysOfWeek: number[]; // 1=Mon, 5=Fri
+  businessHours?: {
+    startTime: string;
+    endTime: string;
+    daysOfWeek: number[];
   };
+  cancellationPolicyHours?: number;
 
   // Optional
   credentials?: string[];
   socialLinks?: Record<string, string>;
-  cancellationPolicyHours?: number;
 }
 
 export interface TemplateConfig {
-  templateSlug: string; // e.g., "coaching"
-  templatePath: string; // absolute path to template source
+  templateSlug: string;
+  templatePath: string;
   profile: IndustryProfile;
 }
 
 export interface TemplateResult {
   files: Map<string, string>;
-  migrationSql: string; // for Neon provisioning
-  seedSql: string; // INSERT statements for seed data
+  migrationSql: string;
+  seedSql: string;
 }

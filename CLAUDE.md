@@ -1,297 +1,245 @@
-# ShipKit Build Spec
-## Claude Code Execution Document — fullstackvibecoder.com
+# Full Stack Vibe Coder (FSVC)
 
-This document is the authoritative instruction set for building the next phase of ShipKit.
-Execute each phase in order. Do not skip ahead. Verify each phase before proceeding.
+## What This Is
 
----
+FSVC is a provisioning factory at fullstackvibecoder.com. A customer describes their business idea (text, voice, or screenshot), and we build and deploy a full-stack web app — website, user accounts, payments — live on their own URL.
 
-## Context
-
-ShipKit is a provisioning factory at fullstackvibecoder.com. The existing pipeline is complete
-and production-ready for the $497 Builder product (SaaS codebase, Supabase, Stripe Connect,
-GitHub, Vercel). This build adds a second product line, a visual intake layer, and an
-iteration loop on top of the same infrastructure.
-
-Do not touch the existing provisioning pipeline unless a task explicitly targets it.
+**$497 one-time build. $49/mo hosting (30-day free trial). Cancel anytime — you keep everything.**
 
 ---
 
-## Current Stack
+## Stack
 
-- **Framework:** Next.js 14 (App Router)
-- **ORM:** Prisma
-- **Database:** Supabase (PostgreSQL)
-- **Payments:** Stripe (Connect + Subscriptions)
-- **Deploy:** Vercel
-- **AI:** Claude API (prompt_templates table in DB)
-- **Logo Gen:** Dumpling AI
-- **Styling:** Tailwind CSS v3 + shadcn/ui
-
----
-
-## Phase 1 — Static Site Prompt Engine
-
-### Goal
-Create `sk_landing_deploy_01`: a new prompt template that generates a complete static
-Next.js site export. No database. No auth. No Stripe. Formspree contact form. Email capture.
-
-### Tasks
-
-1. **Add prompt to DB**
-   - Insert new row into `prompt_templates` table:
-     - `key`: `sk_landing_deploy_01`
-     - `version`: `01`
-     - `description`: Static landing page generator for service businesses
-     - `variables`: `{{business_name}}`, `{{value_prop}}`, `{{target_audience}}`,
-       `{{primary_color}}`, `{{accent_color}}`, `{{font_pair}}`, `{{visual_dna}}`
-       (visual_dna optional, gracefully skipped if null)
-   - Prompt instruction: Generate a complete static Next.js export. Pages: `/`, `/about`,
-     `/services`, `/contact`. Tailwind CSS v3 only. No DB, no auth, no Stripe.
-     Contact form via Formspree (`NEXT_PUBLIC_FORMSPREE_ID` env var). Email capture
-     POST to `/api/subscribe` stub. Output as full file tree with contents.
-
-2. **Create static deploy path**
-   - New file: `lib/provisioning/staticDeploy.ts`
-   - Function: `deployStaticSite(projectId: string)`
-   - Steps:
-     1. Pull generated code from project record
-     2. Create GitHub repo under org (reuse existing GitHub util)
-     3. Push generated files
-     4. Create Vercel project linked to repo
-     5. Set env vars: `NEXT_PUBLIC_FORMSPREE_ID`, `NEXT_PUBLIC_SITE_NAME`
-     6. Trigger deploy
-     7. Poll until HTTP 200
-     8. Return live URL
-   - This is a simplified fork of the existing provisioning pipeline.
-     Do not merge them. Keep separate.
-
-3. **Add product type flag**
-   - Add `product_type` enum to `projects` table: `BUILDER` | `PRESENCE`
-   - Default existing records to `BUILDER`
-   - Route `/api/shipkit/execute` to correct pipeline based on `product_type`
-
-4. **Create ShipKit Presence checkout**
-   - New Stripe price: $97 (Presence - Static Site)
-   - New route: `/api/checkout/presence`
-   - Webhook handler: same pattern as Builder, sets `product_type: PRESENCE`
-
-### Verification
-- [ ] `sk_landing_deploy_01` prompt exists in DB and returns valid file tree
-- [ ] Static deploy path creates a live Vercel URL with no DB/auth dependencies
-- [ ] Presence checkout triggers correct pipeline
-- [ ] Builder pipeline unchanged and still passing
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 14.2 (App Router), TypeScript, Tailwind CSS v3 |
+| Database | PostgreSQL via Neon (Prisma ORM) |
+| Auth | NextAuth.js (Google OAuth) |
+| Payments | Stripe (Checkout + Connect Standard accounts for customer apps) |
+| AI | Anthropic Claude (`CLAUDE_MODEL` env var, default `claude-sonnet-4-20250514`) |
+| Voice | OpenAI Whisper (transcription) |
+| Refinement | OpenClaw — 4 specialist agents x 3 cycles (brand-visual, copy-conversion, structure, code-quality) |
+| Storage | Supabase Storage (screenshots, voice notes, deliverables) |
+| Hosting | Vercel (FSVC team account for customer deploys) |
+| Logo | Dumpling AI |
+| Email | Resend (domain provisioning) |
+| Fonts | Syne (headings), Plus Jakarta Sans (body), JetBrains Mono (code) |
 
 ---
 
-## Phase 2 — Visual DNA Intake
+## Core Flow
 
-### Goal
-Accept screenshot uploads. Extract visual direction. Inject into brand identity prompt
-as a structured `{{visual_dna}}` block.
-
-### Tasks
-
-1. **Add `{{visual_dna}}` to `sk_brand_identity_03`**
-   - Update existing prompt template in DB
-   - Append to variable list: `{{visual_dna}}`
-   - Instruction: "If visual_dna is provided, use it as the primary signal for color,
-     layout, and typography decisions. Override your own defaults where signals are present."
-   - visual_dna block format:
-     ```
-     COLOR SIGNALS: [dominant hex values, contrast style]
-     LAYOUT SIGNALS: [density, nav pattern, hero pattern]
-     TYPOGRAPHY SIGNALS: [heading weight, body style]
-     COMPONENT PATTERNS: [card style, button style, imagery]
-     ```
-
-2. **Build Vision API integration**
-   - New file: `lib/intake/visionAnalysis.ts`
-   - Function: `extractVisualDNA(imageBuffer: Buffer): Promise<VisualDNABlock>`
-   - Use Google Cloud Vision API:
-     - `IMAGE_ANNOTATE` with features: `IMAGE_PROPERTIES`, `LABEL_DETECTION`
-   - After Vision API call, pass raw output to Claude with prompt:
-     "Analyze these visual properties and return a structured Visual DNA block.
-      Return only the block, no explanation."
-   - Return typed `VisualDNABlock` object
-   - Env vars required: `GOOGLE_CLOUD_VISION_API_KEY`
-
-3. **Add screenshot upload to intake form**
-   - Update intake UI (chat or form component, wherever intake currently lives)
-   - Add optional file upload field: accepts `image/png`, `image/jpeg`, `image/webp`
-   - Max file size: 5MB
-   - On submit: upload to Supabase Storage bucket `intake-screenshots`
-   - Pass Storage URL into project record as `reference_screenshot_url`
-   - Before orchestrator runs: if URL exists, call `extractVisualDNA`, store result
-     as `visual_dna` on project record, inject into `sk_brand_identity_03` variables
-
-4. **Graceful fallback**
-   - If no screenshot uploaded: `visual_dna` is null
-   - Prompt handles null gracefully — do not inject empty block
-
-### Verification
-- [ ] Upload a screenshot → Visual DNA block is generated and stored on project record
-- [ ] `sk_brand_identity_03` receives `visual_dna` when present
-- [ ] Brand output visually reflects screenshot signals
-- [ ] No screenshot → pipeline runs as before, no errors
-
----
-
-## Phase 3 — Iteration Loop
-
-### Goal
-Let users request changes after delivery without buying again. One plain-language
-message triggers a targeted file regeneration and redeploy. This is what justifies
-the $49/mo hosting subscription.
-
-### Tasks
-
-1. **Create change request data model**
-   - New table: `change_requests`
-     - `id`, `project_id`, `user_message`, `status` (PENDING | PROCESSING | COMPLETE | FAILED),
-       `affected_files`, `diff_summary`, `created_at`, `completed_at`
-
-2. **Build change request handler**
-   - New file: `lib/iteration/changeHandler.ts`
-   - Function: `processChangeRequest(projectId: string, userMessage: string)`
-   - Steps:
-     1. Call Claude with current project context + user message
-        Prompt: "Given this project's current file tree and the user's change request,
-        identify which files need to change and output only those files regenerated.
-        Format: JSON array of `{filename, content}` objects."
-     2. Parse response → array of file changes
-     3. Pull current GitHub repo
-     4. Apply file changes via GitHub API (commit directly to main)
-     5. Vercel auto-deploys on push
-     6. Poll for new deploy HTTP 200
-     7. Update `change_requests` record as COMPLETE
-     8. Return new deploy URL
-
-3. **Expose change request endpoint**
-   - New route: `POST /api/projects/[id]/change`
-   - Auth: project owner only (match `user_id` on project)
-   - Body: `{ message: string }`
-   - Returns: `{ status, deployUrl, diff_summary }`
-
-4. **Add change request UI to customer dashboard**
-   - Add text input: "Request a change"
-   - Show history of past requests with status badges
-   - On complete: show updated live URL
-
-5. **Gate behind active subscription**
-   - Only allow change requests if project has active `$49/mo` Stripe subscription
-   - Return 402 if subscription is inactive or cancelled
-
-### Verification
-- [ ] "Make the background darker" → correct file regenerated → redeploy → new URL returned
-- [ ] Change request history visible in dashboard
-- [ ] Inactive subscription → 402 response, no changes processed
-- [ ] Change does not wipe unaffected files
-
----
-
-## Phase 4 — OpenClaw Messaging Intake (Telegram)
-
-### Goal
-Expose the full ShipKit Presence pipeline via Telegram. User sends a message +
-optional screenshots. Gets a live URL back. Never opens a browser.
-
-### Tasks
-
-1. **Set up Telegram bot**
-   - Create bot via BotFather
-   - Store token as `TELEGRAM_BOT_TOKEN` env var
-   - New file: `lib/openclaw/telegramBot.ts`
-
-2. **Build state machine**
-   - States: `AWAITING_SCREENSHOTS` → `AWAITING_DESCRIPTION` → `GENERATING` → `LIVE` → `ITERATING`
-   - Persist state per `chat_id` in new table: `openclaw_sessions`
-     - `chat_id`, `state`, `project_id`, `screenshots` (json array of URLs), `created_at`
-
-3. **Webhook handler**
-   - New route: `POST /api/openclaw/telegram`
-   - Register as Telegram webhook on deploy
-   - Handle message types: text, photo, document
-   - State transitions:
-     - Any message → if no active session → create session, set `AWAITING_SCREENSHOTS`,
-       reply: "Send me screenshots of sites you like, or type 'skip' to continue."
-     - Photo/document received in `AWAITING_SCREENSHOTS` → store to Supabase Storage,
-       append URL to session screenshots, reply: "Got it. Send more or type 'done'."
-     - 'done' or 'skip' in `AWAITING_SCREENSHOTS` → set `AWAITING_DESCRIPTION`,
-       reply: "Describe your business in one message. What do you do and who do you serve?"
-     - Text in `AWAITING_DESCRIPTION` → set `GENERATING`, create project record,
-       run full Presence pipeline async, reply: "Building now. I'll send your URL when it's live."
-     - Pipeline complete → set `LIVE`, reply: "Your site is live: [URL]\n\nTo request changes,
-       reply with what you want updated."
-     - Text in `LIVE` → set `ITERATING`, run change request handler, reply with new URL when done
-
-4. **User identity**
-   - On first message: create or find user record by `telegram_chat_id`
-   - Link to Stripe customer for subscription management
-   - Presence pipeline requires active $97 payment — send Stripe payment link if no purchase
-
-### Verification
-- [ ] Full flow from Telegram message → live URL without browser
-- [ ] Screenshots processed through Visual DNA → reflected in output
-- [ ] Change request via reply works end to end
-- [ ] No active payment → Stripe payment link sent before pipeline runs
-
----
-
-## Environment Variables Required (Full List)
-
-```bash
-# Existing
-DATABASE_URL=
-NEXT_PUBLIC_SUPABASE_URL=
-SUPABASE_SERVICE_ROLE_KEY=
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-ANTHROPIC_API_KEY=
-DUMPLING_API_KEY=
-GITHUB_ORG=
-GITHUB_TOKEN=
-VERCEL_TOKEN=
-VERCEL_TEAM_ID=
-
-# New — Phase 1
-STRIPE_PRESENCE_PRICE_ID=
-NEXT_PUBLIC_FORMSPREE_ID=
-
-# New — Phase 2
-GOOGLE_CLOUD_VISION_API_KEY=
-
-# New — Phase 4
-TELEGRAM_BOT_TOKEN=
+```
+User describes idea (chat/voice/screenshot)
+  → /api/shipkit/analyze (Claude with OpenClaw quality gates baked in)
+  → Returns: business brief + live site preview HTML + brand palette
+  → Canvas panel shows preview (AnalysisCanvas.tsx)
+  → User clicks "Build & Deploy" ($497)
+  → /api/create-checkout → Stripe
+  → Stripe webhook → creates Project → triggers runBuild()
+  → Orchestrator runs 8 prompts sequentially
+  → Provisioning pipeline: Neon DB → Stripe Connect → GitHub → Vercel → verify live
+  → Customer gets: live URL, GitHub repo, Stripe onboarding, admin dashboard
 ```
 
 ---
 
-## Build Order
+## Project Structure
 
-| Phase | Dependency | Estimated Scope |
-|---|---|---|
-| Phase 1 — Static Site Engine | None | Core new product |
-| Phase 2 — Visual DNA | Phase 1 complete | High leverage, one prompt edit + new lib |
-| Phase 3 — Iteration Loop | Phase 1 complete | Required to justify $49/mo |
-| Phase 4 — Telegram (OpenClaw) | Phase 1 + 2 complete | Volume acquisition layer |
+```
+app/
+  page.tsx                          # Landing page (chat + canvas split-screen)
+  components/
+    ChatInterface.tsx               # Chat with voice + screenshot upload
+    AnalysisCanvas.tsx              # 3-tab preview panel (site, brief, brand)
+  api/
+    shipkit/analyze/                # AI intake analysis (Claude vision + quality gates)
+    create-checkout/                # Stripe session creation
+    checkout/build/                 # Build-specific checkout
+    checkout/presence/              # $97 static site checkout
+    webhooks/stripe/                # Payment lifecycle → triggers builds
+    payment/verify/                 # Post-payment verification
+    projects/[id]/
+      build/                        # Trigger full build pipeline
+      refine/                       # OpenClaw refinement cycles
+      status/                       # Project status polling
+      change/                       # Iteration loop (change requests)
+    project/[id]/
+      domain/                       # Custom domain management
+      hosting/                      # Hosting subscription management
+      redeploy/                     # Manual redeploy trigger
+      eject/                        # Self-hosting migration
+      transfer/                     # Ownership transfer
+    upload-screenshot/              # Screenshot upload to Supabase Storage
+    transcribe/                     # Voice → text (Whisper)
+    billing/{portal,upgrade}/       # Stripe customer portal
+    conversations/message/          # Streaming chat
+    contact/                        # Marketing contact form
+    stats/                          # Public stats
+  dashboard/                        # Customer project management
+    project/[id]/                   # Individual project detail + hosting controls
+  auth/{signin,verify,error}/       # Auth pages
+  checkout/                         # Pre-payment review page
+  payment/success/                  # Post-payment redirect
+  get-started/                      # Pricing page
+  shipkit/[projectId]/              # Project refinement interface
+
+lib/
+  ai-config.ts                      # CLAUDE_MODEL (env var driven)
+  db.ts                             # Prisma client
+  auth.ts                           # NextAuth config
+  stripe.ts                         # Stripe client
+  storage.ts                        # Supabase Storage helpers
+  rate-limit.ts                     # Request throttling
+
+  agents/
+    shipkit-orchestrator.ts         # 8-prompt sequential execution engine
+
+  openclaw/                         # Multi-agent refinement framework
+    agent.ts                        # evaluate() — individual agent evals
+    refinement-runner.ts            # runRefinementPipeline() — 4 agents x 3 cycles
+    synthesizer.ts                  # Consolidate agent feedback
+    regenerator.ts                  # Apply changes back to files
+    skills/
+      brand-visual.ts               # Color, typography, visual hierarchy
+      copy-conversion.ts            # Value prop, CTAs, benefit language
+      structure.ts                  # Page flow, component organization
+      code-quality.ts               # Code standards, accessibility
+
+  orchestrator/
+    build-orchestrator.ts           # runBuild() — main build entry point
+
+  services/
+    provisioning-pipeline.ts        # 8-step infra deployment (Neon→GitHub→Vercel→Stripe→Resend)
+    neon-provisioning.ts            # PostgreSQL database provisioning
+    vercel-provisioning.ts          # Vercel project + env vars + deploy
+    stripe-connect.ts               # Standard accounts for customer payments
+    claude-codegen.ts               # Code generation + GitHub push (pushToGitHubOrg)
+    resend-provisioning.ts          # Email domain setup
+    eject-service.ts                # Self-hosting migration + guide generation
+    transfer-service.ts             # Multi-service ownership transfer
+    code-validator.ts               # Validate generated code
+    embedding-service.ts            # Claude embeddings
+    dumpling-client.ts              # Logo generation
+
+  intake/
+    classifier.ts                   # classifyIndustry()
+    profile-extractor.ts            # extractProfile()
+    visionAnalysis.ts               # extractVisualDNA() — image → design signals
+
+  iteration/
+    changeHandler.ts                # processChangeRequest() — user-requested changes
+
+  provisioning/
+    staticDeploy.ts                 # deployStaticSite() — Presence product
+
+  templates/
+    engine.ts                       # buildFromTemplate()
+    registry.ts                     # Template catalog
+    types.ts                        # IndustryProfile, TemplateConfig
+
+  delivery/
+    organize-deliverables.ts        # Package deliverables for download
+    convert-to-pdf.ts               # Markdown → PDF conversion
+
+prisma/
+  schema.prisma                     # Data models + enums
+  seed-shipkit-prompts.ts           # 8 prompt templates
+```
 
 ---
 
-## What Not to Touch
+## Key Data Models
 
-- Existing `sk_business_brief_01` through `sk_nextjs_codebase_08` prompts
-- Existing Builder provisioning pipeline (`/api/shipkit/execute` Builder path)
-- Existing Stripe Builder pricing
-- Existing GitHub/Vercel provisioning utilities (extend, don't replace)
+| Model | Purpose |
+|-------|---------|
+| User | Identity + auth (Google OAuth) |
+| Project | Customer project (status, URLs, industry profile, error tracking) |
+| DeployedApp | Infrastructure record (Neon, Vercel, GitHub, Stripe Connect, domain, Resend) |
+| HostingSubscription | $49/mo recurring billing per deployed app |
+| Conversation | Chat session with extracted profile data |
+| ConversationMessage | Individual chat turns |
+| ChangeRequest | Iteration: user message → file changes → redeploy |
+| RefinementCycle | OpenClaw evaluation tracking (agent scores, findings, regeneration) |
+| AgentEvaluation | Individual agent scores per cycle |
+| Payment | Transaction records (BUILD, HOSTING, REFUND) |
+| TransferRequest | Ownership transfer workflows |
+
+**Key Enums:**
+- `ProjectStatus`: INTAKE → CUSTOMIZING → PREVIEWING → PROVISIONING → LIVE / FAILED
+- `HostingStatus`: PROVISIONING → ACTIVE → SUSPENDED / CANCELLED / EJECTED / TRANSFERRED
+- Tier values: `VALIDATION_PACK` (free preview), `TURNKEY_SYSTEM` ($497 build). `LAUNCH_BLUEPRINT` exists in schema but is deprecated.
 
 ---
 
-## Definition of Done
+## Environment Variables
 
-Each phase is done when:
-1. All verification checkboxes pass
-2. No TypeScript errors (`tsc --noEmit`)
-3. No broken existing Builder flow
-4. New env vars documented in `.env.example`
-5. New DB changes have a Prisma migration file committed
+See `.env.example` for the full list. Critical:
+
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | Neon PostgreSQL |
+| `ANTHROPIC_API_KEY` | Claude AI |
+| `CLAUDE_MODEL` | Model ID override (optional) |
+| `STRIPE_SECRET_KEY` | Payment processing |
+| `STRIPE_WEBHOOK_SECRET` | Webhook verification |
+| `STRIPE_HOSTING_PRICE_ID` | $49/mo recurring |
+| `STRIPE_PRESENCE_PRICE_ID` | $97 static site |
+| `GITHUB_TOKEN` / `GITHUB_PAT` | GitHub repo creation + code push |
+| `GITHUB_ORG_NAME` | GitHub org for customer repos |
+| `VERCEL_TOKEN` | Vercel project deploy |
+| `VERCEL_TEAM_ID` | Vercel team for customer projects |
+| `NEON_API_KEY` | Neon Management API |
+| `OPENAI_API_KEY` | Whisper transcription |
+| `RESEND_API_KEY` | Email domain provisioning |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Storage |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase admin access |
+
+---
+
+## Commands
+
+```bash
+npm run dev          # Local development
+npm run build        # prisma generate + next build (NODE_OPTIONS=--max-old-space-size=4096)
+npm run db:push      # Push schema changes to DB
+npm run db:sync      # Alias for db:push
+npx prisma db seed   # Seed prompt templates
+```
+
+---
+
+## Rules
+
+### Code Style
+- TypeScript strict mode. No `any` unless unavoidable.
+- Tailwind CSS for all styling. Custom theme tokens defined in `tailwind.config.ts`.
+- Use the semantic color tokens: `bg-base`, `bg-surface`, `bg-raised`, `text-fsvc-text`, `text-fsvc-text-secondary`, `text-fsvc-text-disabled`, `border-border`, `text-accent`, `text-accent-2`, `text-success`, `text-error`, `text-warning`.
+- All AI calls go through `CLAUDE_MODEL` from `lib/ai-config.ts`. Never hardcode model IDs.
+
+### Copy & UX
+- All customer-facing text uses **benefit language**, never technical jargon.
+- Users don't know "auth", "database", "GitHub", "eject", "ORM", etc.
+- Say: "user accounts", "your own website", "accept payments", "you keep everything", "cancel anytime".
+- No filler copy. Every sentence earns its place.
+
+### Architecture
+- Do NOT touch the existing Builder provisioning pipeline unless a task explicitly targets it.
+- Prisma is the primary ORM. Some legacy routes still use Drizzle — migrate them when touching those files.
+- OpenClaw quality standards (brand-visual + copy-conversion) are baked into the `/api/shipkit/analyze` prompt. The full 4-agent refinement loop runs post-build via `/api/projects/[id]/refine`.
+- Screenshots are sent to Claude as base64 vision input (native multimodal), not through a separate Vision API.
+- The landing page uses a split-screen layout: chat on left, canvas preview panel on right.
+
+### What Not to Touch
+- Prompt templates `sk_business_brief_01` through `sk_nextjs_codebase_08` in the DB
+- Builder provisioning pipeline (`lib/services/provisioning-pipeline.ts`) unless explicitly asked
+- Stripe pricing configuration
+
+### Build Phases (Roadmap)
+
+| Phase | Status | Description |
+|-------|--------|-------------|
+| Phase 1 — Static Site Engine | Partial | `sk_landing_deploy_01` prompt, `staticDeploy.ts`, Presence checkout |
+| Phase 2 — Visual DNA | Partial | `visionAnalysis.ts` exists, screenshot upload works, Claude vision active in analyze |
+| Phase 3 — Iteration Loop | Partial | `changeHandler.ts` exists, `ChangeRequest` model in schema, needs dashboard UI |
+| Phase 4 — Telegram (OpenClaw) | Not started | Telegram bot intake for Presence product |

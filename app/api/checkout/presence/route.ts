@@ -2,7 +2,7 @@
  * Presence Checkout API
  *
  * POST /api/checkout/presence
- * Creates a Stripe checkout session for ShipKit Presence ($97 static site).
+ * Creates a Stripe checkout session for FSVC Presence ($97 static site).
  */
 
 import { NextRequest, NextResponse } from 'next/server';

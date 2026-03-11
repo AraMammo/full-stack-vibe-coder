@@ -1,18 +1,19 @@
 /**
  * Industry Classifier
  *
- * Takes a user's business description and classifies it into a known
- * industry vertical. Returns the template slug if a match exists.
+ * Takes a user's business description and classifies it into one of
+ * 28 industry verticals. Returns the industry slug so downstream
+ * systems can load the right context for code generation.
  */
 
 import Anthropic from "@anthropic-ai/sdk";
 import { CLAUDE_MODEL } from "@/lib/ai-config";
-import { listTemplates } from "@/lib/templates/registry";
+import { getIndustryList } from "@/lib/industry/context-loader";
 
 export interface ClassificationResult {
-  industry: string; // e.g., "coaching", "home_services"
+  industry: string; // e.g., "real_estate", "home_services"
   confidence: "high" | "medium" | "low";
-  templateSlug: string | null; // null if no matching template
+  templateSlug: string | null; // backward compat — same as industry
   reasoning: string;
 }
 
@@ -21,10 +22,7 @@ const anthropic = new Anthropic();
 export async function classifyIndustry(
   userMessage: string
 ): Promise<ClassificationResult> {
-  const templates = listTemplates();
-  const availableTemplates = templates
-    .map((t) => `- "${t.slug}": ${t.name} — ${t.description}`)
-    .join("\n");
+  const industryList = getIndustryList();
 
   const response = await anthropic.messages.create({
     model: CLAUDE_MODEL,
@@ -35,25 +33,25 @@ export async function classifyIndustry(
         content: userMessage,
       },
     ],
-    system: `You are an industry classifier for a website builder platform. Given a user's description of their business, classify it into an industry vertical.
+    system: `You are an industry classifier for a software builder platform. Given a user's description of their business, classify it into the closest industry vertical.
 
-Available templates:
-${availableTemplates}
+Available industry verticals:
+${industryList}
 
 Respond with ONLY valid JSON (no markdown, no code fences):
 {
-  "industry": "<industry_key>",
+  "industry": "<industry_slug>",
   "confidence": "high" | "medium" | "low",
-  "templateSlug": "<matching template slug or null>",
-  "reasoning": "<one sentence>"
+  "reasoning": "<one sentence explaining your choice>"
 }
 
 Rules:
-- If the business clearly matches a template, set templateSlug to that slug and confidence to "high"
-- If it's a close match (e.g., "life coach" matches "coaching"), still set the slug and "high"
-- If it's adjacent but not exact (e.g., "therapist" could use coaching template), set "medium"
-- If no template fits, set templateSlug to null
-- The industry field should be a snake_case key like "coaching", "home_services", "fitness"`,
+- Pick the CLOSEST match even if it's not exact. A "dog walking app" → "pet_services". A "life coach" → "consultant_coach".
+- Use "high" confidence when the match is obvious.
+- Use "medium" when the business could fit multiple categories — pick the best one.
+- Use "low" only when the business is truly unlike anything listed. Still pick the closest match.
+- If a business is a SaaS TOOL for a specific industry (e.g., "CRM for real estate agents"), classify by the TOOL type (saas_startup or agency_saas), not the industry it serves.
+- The industry slug must be one of the listed slugs exactly.`,
   });
 
   const text =
@@ -61,17 +59,18 @@ Rules:
 
   try {
     const result = JSON.parse(text);
+    const industry = result.industry || "consultant_coach";
     return {
-      industry: result.industry || "unknown",
+      industry,
       confidence: result.confidence || "low",
-      templateSlug: result.templateSlug || null,
+      templateSlug: industry, // backward compat
       reasoning: result.reasoning || "",
     };
   } catch {
     return {
-      industry: "unknown",
+      industry: "consultant_coach",
       confidence: "low",
-      templateSlug: null,
+      templateSlug: "consultant_coach",
       reasoning: "Failed to parse classification response",
     };
   }

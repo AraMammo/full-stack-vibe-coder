@@ -7,7 +7,7 @@
  * Flow:
  * 1. GitHub — transfer repo to customer's account
  * 2. Neon — create transfer request (customer receives claim email)
- * 3. Vercel — delete ShipKit's project, provide re-import URL
+ * 3. Vercel — delete FSVC's project, provide re-import URL
  * 4. Stripe — disconnect Standard account (customer keeps everything)
  * 5. Cancel hosting subscription
  * 6. Set hostingStatus = TRANSFERRED

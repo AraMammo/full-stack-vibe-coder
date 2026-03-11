@@ -1,7 +1,7 @@
 /**
  * Blog Configuration
  *
- * Content categories and metadata for the ShipKit blog.
+ * Content categories and metadata for the FSVC blog.
  * No BS. Real experiences. Actual results.
  */
 

@@ -8,7 +8,7 @@
  * 1. Create Neon project → DATABASE_URL
  * 2. Run database migrations → uses DATABASE_URL from step 1
  * 3. Create Stripe Connect Standard account → STRIPE_CONNECT_ACCOUNT_ID
- * 4. Push code to GitHub (ShipKit org) → GITHUB_REPO_URL
+ * 4. Push code to GitHub (FSVC org) → GITHUB_REPO_URL
  * 5. Create Vercel project → inject all env vars from steps 1-3
  * 6. Trigger deployment → wait for READY
  * 7. Verify live (HTTP 200 check) → PRODUCTION_URL confirmed
@@ -124,7 +124,7 @@ export async function provisionInfrastructure(
     });
 
     // ========================================
-    // Step 4: Push code to GitHub (ShipKit org)
+    // Step 4: Push code to GitHub (FSVC org)
     // ========================================
     logStep('github_push', 'running');
     const githubResult = await pushToGitHubOrg(input.codeFiles, input.projectName);
@@ -154,12 +154,12 @@ export async function provisionInfrastructure(
       { key: 'STRIPE_CONNECT_ACCOUNT_ID', value: connectResult.accountId, target: ['production', 'preview'], type: 'encrypted' },
     ];
 
-    // Add RESEND_API_KEY if available (ShipKit's key, shared across customer apps)
+    // Add RESEND_API_KEY if available (FSVC's key, shared across customer apps)
     if (process.env.RESEND_API_KEY) {
       envVars.push({ key: 'RESEND_API_KEY', value: process.env.RESEND_API_KEY, target: ['production', 'preview'], type: 'encrypted' });
     }
 
-    // Platform fee: inject ShipKit's Stripe key and fee percentage so generated apps
+    // Platform fee: inject FSVC's Stripe key and fee percentage so generated apps
     // route payments through Stripe Connect with a 2% application fee
     if (process.env.STRIPE_SECRET_KEY) {
       envVars.push({ key: 'STRIPE_SECRET_KEY', value: process.env.STRIPE_SECRET_KEY, target: ['production', 'preview'], type: 'encrypted' });

@@ -1,12 +1,12 @@
 /**
  * Build Orchestrator
  *
- * Connects the conversation intake to the template engine and provisioning pipeline.
+ * Connects the conversation intake to AI-powered code generation and provisioning.
  *
  * Flow:
  * 1. Load project + extracted IndustryProfile
- * 2. Match to template from registry
- * 3. Build customized codebase via template engine
+ * 2. Resolve industry context from the 28 industry profiles
+ * 3. Generate codebase via Claude with industry context injected
  * 4. Run OpenClaw refinement (optional, for paid builds)
  * 5. Hand off to provisioning pipeline (Neon, GitHub, Vercel, Stripe Connect)
  * 6. Update project status throughout
@@ -14,9 +14,9 @@
 
 import { prisma } from "@/lib/db";
 import { Prisma } from "@/app/generated/prisma";
-import { IndustryProfile, TemplateConfig } from "@/lib/templates/types";
-import { buildFromTemplate } from "@/lib/templates/engine";
-import { getTemplate } from "@/lib/templates/registry";
+import { IndustryProfile } from "@/lib/templates/types";
+import { getIndustryContext, getIndustryName } from "@/lib/industry/context-loader";
+import { generateCodebase, CodegenInput } from "@/lib/services/claude-codegen";
 import {
   provisionInfrastructure,
   ProvisioningProgressCallback,
@@ -24,7 +24,7 @@ import {
 
 export interface BuildInput {
   projectId: string;
-  /** If true, skip provisioning and just return the template output */
+  /** If true, skip provisioning and just return the generated output */
   previewOnly?: boolean;
 }
 
@@ -59,7 +59,7 @@ export async function runBuild(
 
     const project = await prisma.project.findUnique({
       where: { id: projectId },
-      include: { user: true, template: true },
+      include: { user: true },
     });
 
     if (!project) {
@@ -77,65 +77,61 @@ export async function runBuild(
     const profile = project.industryProfile as unknown as IndustryProfile;
     onProgress?.("load_project", "completed");
 
-    // ── Step 2: Match template ────────────────────────────────
-    onProgress?.("match_template", "running");
+    // ── Step 2: Resolve industry context ────────────────────
+    onProgress?.("resolve_industry", "running");
 
-    // Find template from conversation classification or project's linked template
-    const conversation = await prisma.conversation.findFirst({
-      where: { projectId },
-      orderBy: { createdAt: "desc" },
-    });
+    const industrySlug = profile.industrySlug || "consultant_coach";
+    const industryContext = getIndustryContext(industrySlug);
+    const industryName = getIndustryName(industrySlug) || industrySlug;
 
-    const classification = conversation?.extractedProfile as Record<string, unknown> | null;
-    const templateSlug =
-      project.template?.slug ||
-      (classification?.classification as Record<string, unknown>)?.templateSlug as string ||
-      "coaching"; // fallback to coaching for now
+    console.log(
+      `[BuildOrchestrator] Industry: ${industryName} (${industrySlug})` +
+      (industryContext ? ` — ${industryContext.length} chars of context loaded` : " — no context file found")
+    );
 
-    const template = getTemplate(templateSlug);
-    if (!template) {
-      return {
-        success: false,
-        projectId,
-        error: `No template found for slug: ${templateSlug}`,
-      };
-    }
+    onProgress?.("resolve_industry", "completed", industryName);
 
-    // Link template to project if not already linked
-    if (!project.templateId) {
-      const dbTemplate = await prisma.industryTemplate.findUnique({
-        where: { slug: templateSlug },
-      });
-      if (dbTemplate) {
-        await prisma.project.update({
-          where: { id: projectId },
-          data: { templateId: dbTemplate.id },
-        });
-      }
-    }
-
-    onProgress?.("match_template", "completed", template.name);
-
-    // ── Step 3: Build from template ───────────────────────────
-    onProgress?.("build_template", "running");
+    // ── Step 3: Generate codebase via Claude ─────────────────
+    onProgress?.("generate_code", "running");
 
     await prisma.project.update({
       where: { id: projectId },
       data: { status: "CUSTOMIZING" },
     });
 
-    const config: TemplateConfig = {
-      templateSlug,
-      templatePath: template.templatePath,
-      profile,
+    // Build the business concept from the profile
+    const businessConcept = buildBusinessConcept(profile, industryName);
+
+    // Build a brand identity summary from the profile
+    const brandIdentity = buildBrandIdentity(profile);
+
+    // Build the architecture + codebase spec with industry context
+    const appArchitecture = buildArchitectureSpec(profile, industryName, industryContext);
+    const codebaseSpec = buildCodebaseSpec(profile, industryName, industryContext);
+
+    const codegenInput: CodegenInput = {
+      projectName: profile.businessName || project.name,
+      businessConcept,
+      brandIdentity,
+      appArchitecture,
+      codebaseSpec,
     };
 
-    const templateResult = await buildFromTemplate(config);
+    const codegenResult = await generateCodebase(codegenInput);
+
+    if (!codegenResult.success || !codegenResult.files) {
+      onProgress?.("generate_code", "failed", codegenResult.error);
+      return {
+        success: false,
+        projectId,
+        error: `Code generation failed: ${codegenResult.error}`,
+      };
+    }
 
     onProgress?.(
-      "build_template",
+      "generate_code",
       "completed",
-      `${templateResult.files.size} files generated`
+      `${codegenResult.files.size} files generated`
     );
 
     // ── Step 4: Preview-only mode ─────────────────────────────
@@ -145,7 +141,7 @@ export async function runBuild(
         data: {
           status: "PREVIEWING",
           customizations: JSON.parse(
-            JSON.stringify({ fileCount: templateResult.files.size })
+            JSON.stringify({ fileCount: codegenResult.files.size })
           ) as Prisma.InputJsonValue,
         },
       });
@@ -153,7 +149,6 @@ export async function runBuild(
       return {
         success: true,
         projectId,
-        // Preview URL will be set by a separate preview deploy mechanism
       };
     }
 
@@ -179,8 +174,7 @@ export async function runBuild(
         projectName: project.name,
         userId: project.userId,
         userEmail: project.user.email || "",
-        codeFiles: templateResult.files,
-        migrationSql: templateResult.migrationSql || undefined,
+        codeFiles: codegenResult.files,
       },
       provisionCallback
     );
@@ -195,27 +189,6 @@ export async function runBuild(
     }
 
     onProgress?.("provision", "completed", provisionResult.productionUrl);
-
-    // ── Step 6: Run seed SQL via Neon ─────────────────────────
-    if (templateResult.seedSql) {
-      onProgress?.("seed_database", "running");
-      try {
-        const deployedApp = await prisma.deployedApp.findUnique({
-          where: { projectId },
-        });
-        if (deployedApp?.neonDatabaseUrl) {
-          const { runMigration } = await import(
-            "@/lib/services/neon-provisioning"
-          );
-          await runMigration(deployedApp.neonDatabaseUrl, templateResult.seedSql);
-          onProgress?.("seed_database", "completed");
-        }
-      } catch (seedError) {
-        // Non-fatal — app works, just no seed data
-        console.error("[BuildOrchestrator] Seed failed:", seedError);
-        onProgress?.("seed_database", "failed", String(seedError));
-      }
-    }
 
     return {
       success: true,
@@ -245,4 +218,148 @@ export async function runBuild(
     onProgress?.("build", "failed", errorMessage);
     return { success: false, projectId, error: errorMessage };
   }
+}
+
+// ── Helpers: Build prompts from profile + industry context ────────────────
+
+function buildBusinessConcept(profile: IndustryProfile, industryName: string): string {
+  const parts: string[] = [];
+
+  parts.push(`Business: ${profile.businessName}`);
+  parts.push(`Industry: ${industryName}`);
+
+  if (profile.ownerName) parts.push(`Owner: ${profile.ownerName}`);
+  if (profile.tagline) parts.push(`Tagline: ${profile.tagline}`);
+  if (profile.about) parts.push(`About: ${profile.about}`);
+  if (profile.phone) parts.push(`Phone: ${profile.phone}`);
+
+  // Include industry-specific data
+  if (profile.industryData && Object.keys(profile.industryData).length > 0) {
+    parts.push(`\nIndustry-Specific Details:`);
+    for (const [key, value] of Object.entries(profile.industryData)) {
+      if (Array.isArray(value)) {
+        parts.push(`  ${key}: ${value.join(", ")}`);
+      } else if (typeof value === "object" && value !== null) {
+        parts.push(`  ${key}: ${JSON.stringify(value)}`);
+      } else {
+        parts.push(`  ${key}: ${value}`);
+      }
+    }
+  }
+
+  // Legacy: include services/packages if present
+  if (profile.services?.length) {
+    parts.push(`\nServices:`);
+    for (const s of profile.services) {
+      parts.push(`  - ${s.name}: ${s.description} ($${(s.price / 100).toFixed(0)}, ${s.duration}min)`);
+    }
+  }
+  if (profile.packages?.length) {
+    parts.push(`\nPackages:`);
+    for (const p of profile.packages) {
+      parts.push(`  - ${p.name}: ${p.description} ($${(p.price / 100).toFixed(0)}, ${p.totalSessions} sessions)`);
+    }
+  }
+
+  return parts.join("\n");
+}
+
+function buildBrandIdentity(profile: IndustryProfile): string {
+  const parts: string[] = [];
+
+  parts.push(`Brand Name: ${profile.businessName}`);
+  parts.push(`Primary Color: ${profile.primaryColor}`);
+  parts.push(`Accent Color: ${profile.accentColor}`);
+  parts.push(`Timezone: ${profile.timezone}`);
+
+  if (profile.tagline) parts.push(`Tagline: ${profile.tagline}`);
+
+  if (profile.socialLinks) {
+    for (const [platform, url] of Object.entries(profile.socialLinks)) {
+      parts.push(`${platform}: ${url}`);
+    }
+  }
+
+  return parts.join("\n");
+}
+
+function buildArchitectureSpec(
+  profile: IndustryProfile,
+  industryName: string,
+  industryContext: string | null
+): string {
+  let spec = `Build a complete Next.js 14 web application for a ${industryName} business called "${profile.businessName}".
+
+Tech stack:
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS v3
+- Prisma ORM + PostgreSQL
+- NextAuth.js (Google OAuth)
+- Stripe (payments + subscriptions)
+
+The app must include:
+- Public-facing marketing pages (/, /about, /services, /contact)
+- Authentication (NextAuth with Google provider)
+- Customer dashboard
+- Admin dashboard
+- Stripe payment integration
+- Mobile-responsive design
+- SEO meta tags`;
+
+  if (industryContext) {
+    spec += `\n\n═══ INDUSTRY RESEARCH: ${industryName} ═══\nUse this research to inform the architecture. Build the features and workflows that THIS industry actually needs:\n\n${industryContext}`;
+  }
+
+  return spec;
+}
+
+function buildCodebaseSpec(
+  profile: IndustryProfile,
+  industryName: string,
+  industryContext: string | null
+): string {
+  let spec = `Generate a complete Next.js 14 codebase for "${profile.businessName}" — a ${industryName} business.
+
+Owner: ${profile.ownerName}
+${profile.tagline ? `Tagline: ${profile.tagline}` : ""}
+${profile.about ? `About: ${profile.about}` : ""}
+
+Brand:
+- Primary color: ${profile.primaryColor}
+- Accent color: ${profile.accentColor}
+
+Output EVERY file as:
+\`\`\`filepath: path/to/file.ext
+file contents
+\`\`\`
+
+Required files:
+- package.json (with all dependencies)
+- tsconfig.json
+- next.config.js
+- tailwind.config.ts (using brand colors)
+- prisma/schema.prisma (with models for this industry)
+- app/layout.tsx
+- app/page.tsx (landing page — premium design, not generic)
+- app/globals.css (with Tailwind directives + brand CSS variables)
+- app/about/page.tsx
+- app/contact/page.tsx
+- components/Navigation.tsx
+- components/Footer.tsx
+- .env.example`;
+
+  // Add industry-specific feature requirements
+  if (profile.industryData && Object.keys(profile.industryData).length > 0) {
+    spec += `\n\nIndustry-specific data to incorporate:\n`;
+    for (const [key, value] of Object.entries(profile.industryData)) {
+      spec += `- ${key}: ${JSON.stringify(value)}\n`;
+    }
+  }
+
+  if (industryContext) {
+    spec += `\n\n═══ INDUSTRY CONTEXT: ${industryName} ═══\nUse this to generate the RIGHT features, database schema, pages, and workflows for this type of business. Do NOT generate generic placeholder pages — build what this industry actually needs.\n\n${industryContext}`;
+  }
+
+  return spec;
 }

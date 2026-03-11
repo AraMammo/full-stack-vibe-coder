@@ -1,7 +1,7 @@
 {
-  "name": "ShipKit - Vibe Coding Development",
-  "short_name": "VibeCoding",
-  "description": "AI-powered development agency specializing in vibe coding. Build production-ready applications 10x faster.",
+  "name": "Full Stack Vibe Coder",
+  "short_name": "FSVC",
+  "description": "Describe your business, get a live app. Website, user accounts, and payments — built and deployed in minutes.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
