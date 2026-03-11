@@ -155,7 +155,7 @@ function PreviewTab({ analysis, selectedName }: { analysis: AnalysisData; select
       </div>
 
       <p className="text-center text-xs text-fsvc-text-disabled mt-4">
-        This is a preview of what your site could look like. The full build includes all pages, database, auth, and payments.
+        This is a preview of what your site could look like. The full build includes all pages, user accounts, and payments.
       </p>
     </div>
   );
