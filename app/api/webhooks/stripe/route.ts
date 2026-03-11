@@ -149,7 +149,7 @@ async function handleCheckoutCompleted(
 
       if (existingPayment) {
         console.log(`[Stripe Webhook] Payment already exists: ${existingPayment.id} (idempotent)`);
-        return { payment: existingPayment, isNew: false };
+        return { payment: existingPayment, isNew: false, projectId: existingPayment.projectId };
       }
 
       // Find or create user
@@ -168,8 +168,20 @@ async function handleCheckoutCompleted(
         console.log(`[Stripe Webhook] User created: ${user.id}`);
       }
 
-      // Create project if not already provided
+      // Use existing project from checkout (created at /api/create-checkout)
+      // or create one as fallback
       let resolvedProjectId = projectId;
+      if (resolvedProjectId) {
+        // Link existing project to this user if needed
+        const existing = await tx.project.findUnique({ where: { id: resolvedProjectId } });
+        if (existing) {
+          console.log(`[Stripe Webhook] Using existing project: ${resolvedProjectId}`);
+        } else {
+          console.warn(`[Stripe Webhook] Project ${resolvedProjectId} not found, creating new`);
+          resolvedProjectId = undefined;
+        }
+      }
+
       if (!resolvedProjectId && resolvedPaymentType === 'BUILD') {
         const project = await tx.project.create({
           data: {
@@ -179,7 +191,7 @@ async function handleCheckoutCompleted(
           },
         });
         resolvedProjectId = project.id;
-        console.log(`[Stripe Webhook] Project created: ${project.id}`);
+        console.log(`[Stripe Webhook] Fallback project created: ${project.id}`);
       }
 
       // Create payment record
@@ -201,12 +213,28 @@ async function handleCheckoutCompleted(
 
       console.log(`[Stripe Webhook] Payment created: ${payment.id} ($${amount / 100} ${resolvedPaymentType})`);
 
-      return { user, payment, isNew: true };
+      return { user, payment, isNew: true, projectId: resolvedProjectId };
     });
 
     if (!result.isNew) {
       console.log(`[Stripe Webhook] Skipping execution (duplicate webhook)`);
       return;
+    }
+
+    // Trigger build for paid BUILD purchases
+    if (resolvedPaymentType === 'BUILD' && result.projectId) {
+      try {
+        console.log(`[Stripe Webhook] Triggering build for project: ${result.projectId}`);
+        // Dynamic import to avoid loading build deps on every webhook call
+        const { runBuild } = await import('@/lib/orchestrator/build-orchestrator');
+        // Fire and forget — build runs async
+        runBuild({ projectId: result.projectId }).catch((err: Error) => {
+          console.error(`[Stripe Webhook] Build failed for ${result.projectId}:`, err);
+        });
+      } catch (buildErr) {
+        console.error(`[Stripe Webhook] Failed to start build:`, buildErr);
+        // Don't throw — payment is recorded, build can be retried manually
+      }
     }
 
     console.log(`[Stripe Webhook] Checkout processed successfully`);

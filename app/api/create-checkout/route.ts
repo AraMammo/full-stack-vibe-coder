@@ -4,6 +4,10 @@
  * POST /api/create-checkout
  * Creates Stripe checkout session for FSVC tiers.
  * Free tier (VALIDATION_PACK) creates a project directly.
+ *
+ * Flow: Frontend passes the analysis data from /api/shipkit/analyze.
+ * We create the project FIRST (with industryProfile populated),
+ * then pass projectId into Stripe metadata so the webhook can find it.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -25,12 +29,22 @@ const CheckoutSchema = z.object({
   userEmail: z.string().email().optional(),
   sessionId: z.string().optional(),
   hostingAgreed: z.boolean().optional(),
+  // Analysis data from /api/shipkit/analyze — passed through so we can store on project
+  analysis: z.object({
+    businessNames: z.array(z.object({ name: z.string(), tagline: z.string() })).optional(),
+    valueProposition: z.string().optional(),
+    targetAudience: z.array(z.object({ segment: z.string(), description: z.string() })).optional(),
+    competitivePositioning: z.string().optional(),
+    sitePreviewHtml: z.string().optional(),
+    message: z.string().optional(),
+  }).optional(),
+  selectedNameIndex: z.number().optional(),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { tier, userEmail, sessionId, hostingAgreed } = CheckoutSchema.parse(body);
+    const { tier, userEmail, sessionId, hostingAgreed, analysis, selectedNameIndex } = CheckoutSchema.parse(body);
 
     if (tier === 'TURNKEY_SYSTEM' && hostingAgreed !== true) {
       return NextResponse.json(
@@ -47,13 +61,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Determine business name from analysis
+    const selectedName = analysis?.businessNames?.[selectedNameIndex ?? 0];
+    const businessName = selectedName?.name || 'New Project';
+
+    // Build industryProfile from analysis data
+    const industryProfile = analysis ? {
+      businessName,
+      tagline: selectedName?.tagline || '',
+      valueProposition: analysis.valueProposition || '',
+      targetAudience: analysis.targetAudience || [],
+      competitivePositioning: analysis.competitivePositioning || '',
+      sitePreviewHtml: analysis.sitePreviewHtml || '',
+    } : null;
+
     // Free preview tier — create project directly, no Stripe
     if (tier === 'VALIDATION_PACK') {
       const project = await prisma.project.create({
         data: {
           userId: authSession.user.id,
-          name: 'FSVC Preview',
+          name: businessName,
           status: 'INTAKE',
+          ...(industryProfile ? { industryProfile } : {}),
         },
       });
 
@@ -65,7 +94,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Paid: $497 build + $49/mo hosting (30 days free)
+    // Paid: Create the project NOW so it exists when webhook fires
+    const project = await prisma.project.create({
+      data: {
+        userId: authSession.user.id,
+        name: businessName,
+        status: 'INTAKE',
+        ...(industryProfile ? { industryProfile } : {}),
+      },
+    });
+
+    // $497 build + $49/mo hosting (30 days free)
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -86,8 +125,10 @@ export async function POST(request: NextRequest) {
       customer_email: userEmail,
       metadata: {
         tier: 'TURNKEY_SYSTEM',
-        ...(sessionId ? { sessionId } : {}),
+        projectId: project.id,
+        businessName,
         hostingAgreed: 'true',
+        ...(sessionId ? { analyzeSessionId: sessionId } : {}),
       },
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/get-started`,
@@ -96,6 +137,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       sessionId: session.id,
       url: session.url,
+      projectId: project.id,
     });
 
   } catch (error: unknown) {

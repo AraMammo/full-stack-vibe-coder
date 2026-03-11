@@ -200,6 +200,7 @@ export default function ChatInterface() {
           userEmail: session.user?.email,
           ...(sessionId ? { sessionId } : {}),
           ...(tier === "TURNKEY_SYSTEM" ? { hostingAgreed } : {}),
+          ...(analysis ? { analysis, selectedNameIndex: selectedName } : {}),
         }),
       });
       const data = await response.json();
