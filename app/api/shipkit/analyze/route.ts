@@ -299,71 +299,72 @@ Write in third person ("This business..." not "Your business...").`,
       console.log(`[Analyze] Refinement request: "${refinementMessage.substring(0, 80)}..."`);
     }
 
-    // Build user message — text + optional screenshot for Claude vision
-    const userContent: Anthropic.MessageCreateParams['messages'][0]['content'] = [];
-
-    if (screenshotUrl && typeof screenshotUrl === 'string') {
-      try {
-        const imageRes = await fetch(screenshotUrl);
-        if (imageRes.ok) {
-          const imageBuffer = await imageRes.arrayBuffer();
-          const base64 = Buffer.from(imageBuffer).toString('base64');
-          const contentType = imageRes.headers.get('content-type') || 'image/png';
-          const mediaType = contentType.split(';')[0] as 'image/png' | 'image/jpeg' | 'image/webp' | 'image/gif';
-
-          userContent.push({
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: mediaType,
-              data: base64,
-            },
-          });
-          userContent.push({
-            type: 'text',
-            text: `SCREENSHOT PROVIDED — The user uploaded this as design inspiration. Study its colors, layout, typography, spacing, and overall design language. Your sitePreviewHtml MUST match its visual style.\n\nBusiness idea:\n\n${enrichedText}`,
-          });
-        } else {
-          userContent.push({
-            type: 'text',
-            text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${enrichedText}`,
-          });
-        }
-      } catch (imgErr) {
-        console.error('[Analyze] Failed to fetch screenshot:', imgErr);
-        userContent.push({
-          type: 'text',
-          text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${enrichedText}`,
-        });
-      }
-    } else {
-      userContent.push({
-        type: 'text',
-        text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${enrichedText}`,
-      });
-    }
-
     const systemPrompt = buildSystemPrompt(industryName, industryContext);
 
-    // Build messages — single turn for initial, multi-turn for refinement
+    // Build messages based on whether this is initial analysis or refinement
     const messages: Anthropic.MessageParam[] = [];
 
     if (isRefinement) {
-      // First turn: the original analysis (as if the assistant produced it)
+      // ── Refinement: 2-turn conversation ──────────────────────
+      // Turn 1: "Here's what you built" (previous analysis as assistant output)
+      // Turn 2: "Now change this specific thing"
       messages.push({
         role: 'user',
-        content: userContent,
+        content: 'Generate a premium business brief and site preview for this business.',
       });
       messages.push({
         role: 'assistant',
         content: JSON.stringify(previousAnalysis),
       });
-      // Second turn: the refinement request
       messages.push({
         role: 'user',
-        content: `The user wants changes to the design above. Apply their feedback and return the COMPLETE updated JSON response (same format, all fields). Their request:\n\n"${refinementMessage}"\n\nIMPORTANT: Keep everything they didn't mention. Only change what they asked for. Return the full JSON.`,
+        content: `The user wants to REFINE the design above — NOT build a new site. This is an iteration on the existing design.\n\nTheir feedback: "${refinementMessage}"\n\nRules:\n- Keep the same business name, value proposition, audience, and features UNLESS they explicitly asked to change them.\n- Only modify what they requested. Everything else stays the same.\n- Return the COMPLETE updated JSON (same format, all fields).`,
       });
     } else {
+      // ── Initial analysis: single turn with enriched input ────
+      const userContent: Anthropic.MessageCreateParams['messages'][0]['content'] = [];
+
+      if (screenshotUrl && typeof screenshotUrl === 'string') {
+        try {
+          const imageRes = await fetch(screenshotUrl);
+          if (imageRes.ok) {
+            const imageBuffer = await imageRes.arrayBuffer();
+            const base64 = Buffer.from(imageBuffer).toString('base64');
+            const contentType = imageRes.headers.get('content-type') || 'image/png';
+            const mediaType = contentType.split(';')[0] as 'image/png' | 'image/jpeg' | 'image/webp' | 'image/gif';
+
+            userContent.push({
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: mediaType,
+                data: base64,
+              },
+            });
+            userContent.push({
+              type: 'text',
+              text: `SCREENSHOT PROVIDED — The user uploaded this as design inspiration. Study its colors, layout, typography, spacing, and overall design language. Your sitePreviewHtml MUST match its visual style.\n\nBusiness idea:\n\n${enrichedText}`,
+            });
+          } else {
+            userContent.push({
+              type: 'text',
+              text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${enrichedText}`,
+            });
+          }
+        } catch (imgErr) {
+          console.error('[Analyze] Failed to fetch screenshot:', imgErr);
+          userContent.push({
+            type: 'text',
+            text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${enrichedText}`,
+          });
+        }
+      } else {
+        userContent.push({
+          type: 'text',
+          text: `Generate a premium business brief and stunning site preview for this business idea:\n\n${enrichedText}`,
+        });
+      }
+
       messages.push({
         role: 'user',
         content: userContent,
