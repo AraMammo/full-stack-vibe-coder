@@ -15,7 +15,6 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import { Octokit } from '@octokit/rest';
-import { validateCodeFiles } from './code-validator';
 
 // ============================================
 // TYPES
@@ -81,15 +80,6 @@ export async function generateCodebase(input: CodegenInput): Promise<CodegenResu
 
     // Step 2: Ensure critical files exist
     await ensureCriticalFiles(files, input);
-
-    // Step 2.5: Validate files before deployment
-    const validation = validateCodeFiles(files);
-    if (validation.removedFiles.length > 0) {
-      console.warn(`[Codegen] Removed ${validation.removedFiles.length} invalid files: ${validation.removedFiles.join(', ')}`);
-    }
-    if (validation.warnings.length > 0) {
-      console.warn(`[Codegen] Validation warnings: ${validation.warnings.join('; ')}`);
-    }
 
     console.log(`[Codegen] Final file count: ${files.size}`);
 
@@ -476,7 +466,7 @@ export async function pushToGitHubOrg(
   projectName: string
 ): Promise<{ repoUrl: string; repoName: string }> {
   const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN || process.env.GITHUB_PAT });
-  const org = process.env.GITHUB_ORG_NAME || 'shipkit-apps';
+  const org = process.env.GITHUB_ORG_NAME || 'fsvc-apps';
 
   const repoName = projectName
     .toLowerCase()
@@ -572,7 +562,7 @@ export async function pushToGitHubOrg(
 
 /**
  * Delete a GitHub repository (for cleanup on provisioning failure).
- * Takes a full name like "shipkit-apps/my-project".
+ * Takes a full name like "fsvc-apps/my-project".
  */
 export async function deleteGitHubRepo(repoFullName: string): Promise<void> {
   const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN || process.env.GITHUB_PAT });

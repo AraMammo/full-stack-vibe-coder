@@ -197,7 +197,7 @@ Point your domain's DNS to your hosting provider.
 
 ## Support
 
-If you need help migrating, contact support@shipkit.io
+If you need help migrating, contact support@fullstackvibecoder.com
 
 ---
 

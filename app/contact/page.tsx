@@ -149,10 +149,10 @@ export default function ContactPage() {
             <p className="text-fsvc-text-secondary text-sm">
               Or email us directly at{' '}
               <a 
-                href="mailto:hello@shipkit.io" 
+                href="mailto:hello@fullstackvibecoder.com" 
                 className="text-accent-2 hover:text-accent-2 underline"
               >
-                hello@shipkit.io
+                hello@fullstackvibecoder.com
               </a>
             </p>
           </div>

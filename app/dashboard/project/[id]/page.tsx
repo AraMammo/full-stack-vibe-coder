@@ -24,7 +24,6 @@ export default async function ProjectDetailPage({
   const project = await prisma.project.findUnique({
     where: { id },
     include: {
-      template: { select: { name: true, slug: true } },
       deployedApp: {
         select: {
           hostingStatus: true,
@@ -69,11 +68,6 @@ export default async function ProjectDetailPage({
         <div>
           <h1 className="text-2xl font-bold text-white">{project.name}</h1>
           <div className="flex items-center gap-3 mt-1">
-            {project.template && (
-              <span className="text-sm text-fsvc-text-secondary">
-                {project.template.name}
-              </span>
-            )}
             <StatusBadge status={project.status} />
           </div>
         </div>

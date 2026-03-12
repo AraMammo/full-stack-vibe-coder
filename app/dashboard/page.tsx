@@ -22,7 +22,6 @@ export default async function DashboardPage() {
     where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
     include: {
-      template: { select: { name: true } },
       deployedApp: {
         select: {
           hostingStatus: true,
@@ -93,9 +92,6 @@ export default async function DashboardPage() {
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-fsvc-text-secondary">
-                      {project.template && (
-                        <span>{project.template.name}</span>
-                      )}
                       <span>
                         Created{" "}
                         {new Date(project.createdAt).toLocaleDateString()}

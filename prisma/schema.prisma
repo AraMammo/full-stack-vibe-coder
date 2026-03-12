@@ -140,35 +140,12 @@ model User {
 }
 
 // ============================================================================
-// INDUSTRY TEMPLATE
-// ============================================================================
-
-model IndustryTemplate {
-  id            String   @id @default(cuid())
-  slug          String   @unique
-  name          String
-  description   String?  @db.Text
-  isActive      Boolean  @default(true)
-  version       Int      @default(1)
-  templatePath  String   // path to template source files
-  features      Json     // what this template includes
-  defaultConfig Json     // default brand colors, fonts, etc.
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  projects Project[]
-
-  @@map("industry_templates")
-}
-
-// ============================================================================
 // PROJECT
 // ============================================================================
 
 model Project {
   id             String        @id @default(uuid())
   userId         String
-  templateId     String?
   name           String        // business name
   status         ProjectStatus @default(INTAKE)
   industryProfile Json?        // extracted profile (services, packages, timezone, brand)
@@ -183,7 +160,6 @@ model Project {
   completedAt    DateTime?
 
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  template         IndustryTemplate? @relation(fields: [templateId], references: [id])
   deployedApp      DeployedApp?
   changeRequests   ChangeRequest[]
   refinementCycles RefinementCycle[]

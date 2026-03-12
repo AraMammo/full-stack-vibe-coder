@@ -6,8 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/server/db';
-import { contactSubmissions } from '@/shared/schema';
+import { prisma } from '@/lib/db';
 import { z } from 'zod';
 
 // Rate limiting - simple in-memory store (for production, use Redis)
@@ -59,11 +58,13 @@ export async function POST(request: NextRequest) {
     const validatedData = ContactSchema.parse(body);
 
     // Save to database
-    await db.insert(contactSubmissions).values({
-      name: validatedData.name,
-      email: validatedData.email,
-      subject: validatedData.subject,
-      message: validatedData.message,
+    await prisma.contactSubmission.create({
+      data: {
+        name: validatedData.name,
+        email: validatedData.email,
+        subject: validatedData.subject,
+        message: validatedData.message,
+      },
     });
 
     console.log(`[Contact] New submission from ${validatedData.email}`);
