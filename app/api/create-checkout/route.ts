@@ -31,12 +31,29 @@ const CheckoutSchema = z.object({
   hostingAgreed: z.boolean().optional(),
   // Analysis data from /api/shipkit/analyze — passed through so we can store on project
   analysis: z.object({
-    businessNames: z.array(z.object({ name: z.string(), tagline: z.string() })).optional(),
+    businessNames: z.array(z.object({ name: z.string(), tagline: z.string(), domain: z.string().optional() })).optional(),
     valueProposition: z.string().optional(),
-    targetAudience: z.array(z.object({ segment: z.string(), description: z.string() })).optional(),
+    targetAudience: z.array(z.object({ segment: z.string(), description: z.string(), painPoint: z.string().optional() })).optional(),
     competitivePositioning: z.string().optional(),
     sitePreviewHtml: z.string().optional(),
     message: z.string().optional(),
+    colorPalette: z.object({
+      primary: z.string(),
+      secondary: z.string(),
+      accent: z.string(),
+      background: z.string(),
+      text: z.string(),
+    }).optional(),
+    features: z.array(z.object({
+      name: z.string(),
+      description: z.string(),
+      icon: z.string().optional(),
+    })).optional(),
+    monetization: z.object({
+      model: z.string(),
+      suggestedPricing: z.string(),
+      rationale: z.string(),
+    }).optional(),
   }).optional(),
   selectedNameIndex: z.number().optional(),
 });
@@ -65,7 +82,7 @@ export async function POST(request: NextRequest) {
     const selectedName = analysis?.businessNames?.[selectedNameIndex ?? 0];
     const businessName = selectedName?.name || 'New Project';
 
-    // Build industryProfile from analysis data
+    // Build industryProfile from analysis data — store EVERYTHING so the build has full context
     const industryProfile = analysis ? {
       businessName,
       tagline: selectedName?.tagline || '',
@@ -73,6 +90,14 @@ export async function POST(request: NextRequest) {
       targetAudience: analysis.targetAudience || [],
       competitivePositioning: analysis.competitivePositioning || '',
       sitePreviewHtml: analysis.sitePreviewHtml || '',
+      // Colors — map palette to the fields the build orchestrator expects
+      primaryColor: analysis.colorPalette?.primary || '#3B82F6',
+      accentColor: analysis.colorPalette?.accent || '#10B981',
+      colorPalette: analysis.colorPalette || null,
+      // Features, monetization, all business names
+      features: analysis.features || [],
+      monetization: analysis.monetization || null,
+      businessNames: analysis.businessNames || [],
     } : null;
 
     // Free preview tier — create project directly, no Stripe

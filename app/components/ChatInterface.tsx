@@ -11,8 +11,10 @@ interface Message {
 
 export default function ChatInterface({
   onAnalysis,
+  selectedName = 0,
 }: {
   onAnalysis?: (analysis: AnalysisData, sessionId: string) => void;
+  selectedName?: number;
 }) {
   const { data: session, status: authStatus } = useSession();
   const [messages, setMessages] = useState<Message[]>([
@@ -29,7 +31,6 @@ export default function ChatInterface({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [selectedName, setSelectedName] = useState<number>(0);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
   const [hostingAgreed, setHostingAgreed] = useState(false);
@@ -156,7 +157,6 @@ export default function ChatInterface({
 
       setSessionId(data.sessionId);
       setAnalysis(data.analysis);
-      setSelectedName(0);
 
       // Notify parent to open canvas
       if (onAnalysis) {

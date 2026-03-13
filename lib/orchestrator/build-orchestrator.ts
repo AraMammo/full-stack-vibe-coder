@@ -109,12 +109,16 @@ export async function runBuild(
     const appArchitecture = buildArchitectureSpec(profile, industryName, industryContext);
     const codebaseSpec = buildCodebaseSpec(profile, industryName, industryContext);
 
+    // The approved preview HTML is the user's design contract
+    const approvedPreviewHtml = (profile as unknown as Record<string, unknown>).sitePreviewHtml as string | undefined;
+
     const codegenInput: CodegenInput = {
       projectName: profile.businessName || project.name,
       businessConcept,
       brandIdentity,
       appArchitecture,
       codebaseSpec,
+      approvedPreviewHtml: approvedPreviewHtml || undefined,
     };
 
     const codegenResult = await generateCodebase(codegenInput);
@@ -266,12 +270,24 @@ function buildBusinessConcept(profile: IndustryProfile, industryName: string): s
 
 function buildBrandIdentity(profile: IndustryProfile): string {
   const parts: string[] = [];
+  const ext = profile as unknown as Record<string, unknown>;
 
   parts.push(`Brand Name: ${profile.businessName}`);
-  parts.push(`Primary Color: ${profile.primaryColor}`);
-  parts.push(`Accent Color: ${profile.accentColor}`);
-  parts.push(`Timezone: ${profile.timezone}`);
 
+  // Colors — use direct fields or fall back to colorPalette from analysis
+  const palette = ext.colorPalette as Record<string, string> | null | undefined;
+  const primaryColor = profile.primaryColor || palette?.primary || '#3B82F6';
+  const accentColor = profile.accentColor || palette?.accent || '#10B981';
+  parts.push(`Primary Color: ${primaryColor}`);
+  parts.push(`Accent Color: ${accentColor}`);
+
+  if (palette) {
+    if (palette.secondary) parts.push(`Secondary Color: ${palette.secondary}`);
+    if (palette.background) parts.push(`Background Color: ${palette.background}`);
+    if (palette.text) parts.push(`Text Color: ${palette.text}`);
+  }
+
+  if (profile.timezone) parts.push(`Timezone: ${profile.timezone}`);
   if (profile.tagline) parts.push(`Tagline: ${profile.tagline}`);
 
   if (profile.socialLinks) {
@@ -348,6 +364,22 @@ Required files:
 - components/Navigation.tsx
 - components/Footer.tsx
 - .env.example`;
+
+  // Add features from the analysis
+  const ext = profile as unknown as Record<string, unknown>;
+  const features = ext.features as Array<{ name: string; description: string }> | undefined;
+  if (features?.length) {
+    spec += `\n\nCore features to build:\n`;
+    for (const f of features) {
+      spec += `- ${f.name}: ${f.description}\n`;
+    }
+  }
+
+  // Add monetization strategy
+  const monetization = ext.monetization as { model: string; suggestedPricing: string; rationale: string } | undefined;
+  if (monetization) {
+    spec += `\n\nRevenue model: ${monetization.model} — ${monetization.suggestedPricing}\n${monetization.rationale}\n`;
+  }
 
   // Add industry-specific feature requirements
   if (profile.industryData && Object.keys(profile.industryData).length > 0) {

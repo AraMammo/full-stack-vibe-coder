@@ -26,6 +26,7 @@ export interface CodegenInput {
   brandIdentity: string;
   appArchitecture: string;
   codebaseSpec: string; // Full spec including industry context
+  approvedPreviewHtml?: string; // The landing page design the customer approved
 }
 
 export interface CodegenResult {
@@ -53,7 +54,7 @@ const anthropic = new Anthropic({
 import { CLAUDE_MODEL } from '@/lib/ai-config';
 
 const MODEL = CLAUDE_MODEL;
-const MAX_TOKENS = 8192;
+const MAX_TOKENS = 16384;
 
 /**
  * Main entry point: generate a complete Next.js codebase
@@ -62,19 +63,8 @@ export async function generateCodebase(input: CodegenInput): Promise<CodegenResu
   try {
     console.log(`[Codegen] Starting codebase generation for: ${input.projectName}`);
 
-    // Step 1: Parse files from the codebase spec output
-    const files = parseCodebaseOutput(input.codebaseSpec);
-
-    if (files.size < 3) {
-      // If parsing yielded too few files, supplement with scaffold
-      console.log(`[Codegen] Only ${files.size} files parsed from spec, supplementing with scaffold...`);
-      const scaffoldFiles = await generateScaffold(input);
-      scaffoldFiles.forEach((content, path) => {
-        if (!files.has(path)) {
-          files.set(path, content);
-        }
-      });
-    }
+    // Step 1: Generate the full codebase via Claude
+    const files = await generateFullCodebase(input);
 
     console.log(`[Codegen] Generated ${files.size} files`);
 
@@ -198,55 +188,163 @@ export function parseCodebaseOutput(codebaseSpec: string): Map<string, string> {
 }
 
 /**
- * Generate scaffold files when the codebase spec couldn't be parsed
+ * Generate the complete codebase via Claude.
+ *
+ * Makes multiple focused calls to stay within token limits:
+ * 1. Core config + layout + landing page (uses approved preview as design reference)
+ * 2. Feature pages + API routes + database schema
+ * 3. Components + utilities
  */
-async function generateScaffold(input: CodegenInput): Promise<Map<string, string>> {
-  const files = new Map<string, string>();
+async function generateFullCodebase(input: CodegenInput): Promise<Map<string, string>> {
+  const allFiles = new Map<string, string>();
 
-  const response = await anthropic.messages.create({
-    model: MODEL,
-    max_tokens: MAX_TOKENS,
-    system: `You are a Next.js expert who builds production-quality applications tailored to specific industries. Generate a complete Next.js application scaffold. Output each file as:
-\`\`\`filepath: path/to/file
+  // ── System prompt shared across all calls ──
+  const systemPrompt = `You are a senior Next.js engineer who builds production-quality applications. You generate complete, working code — not stubs, not placeholders.
+
+Tech stack: Next.js 14 (App Router), TypeScript, Tailwind CSS v3, Prisma ORM + PostgreSQL, NextAuth.js (Google OAuth), Stripe.
+
+Output EVERY file as:
+\`\`\`filepath: path/to/file.ext
 file contents here
 \`\`\`
 
-Use TypeScript, Tailwind CSS v3, and modern React patterns. Apply the brand identity provided. Build features specific to the business type — do NOT generate generic placeholder pages.`,
+Rules:
+- Use the exact brand colors provided. Wire them into tailwind.config.ts as custom colors.
+- Every page must be mobile-responsive.
+- Use semantic HTML. Add real copy — no "Lorem ipsum" or "[Your text here]".
+- Build features THIS business actually needs. No generic placeholder pages.
+- All API routes use proper error handling and input validation.
+- Prisma schema must include models specific to this business type.`;
+
+  // ── Call 1: Config + Layout + Landing Page ──
+  console.log('[Codegen] Call 1/3: Config, layout, and landing page...');
+
+  let landingPageInstruction = `Generate the landing page (app/page.tsx) as a premium, conversion-focused page specific to this business.`;
+
+  if (input.approvedPreviewHtml) {
+    landingPageInstruction = `CRITICAL: The customer approved the following landing page design. Your app/page.tsx MUST match this design — same layout structure, same color scheme, same copy tone, same visual hierarchy. Convert it from standalone HTML to a Next.js React component using Tailwind CSS classes. Keep the design EXACTLY as approved:
+
+═══ APPROVED LANDING PAGE DESIGN ═══
+${input.approvedPreviewHtml}
+═══ END APPROVED DESIGN ═══`;
+  }
+
+  const call1 = await anthropic.messages.create({
+    model: MODEL,
+    max_tokens: MAX_TOKENS,
+    system: systemPrompt,
     messages: [{
       role: 'user',
-      content: `Generate a Next.js app scaffold for:
+      content: `Generate the foundation files for "${input.projectName}":
 
-Business: ${input.businessConcept.substring(0, 1000)}
+${input.brandIdentity}
 
-Brand Identity: ${input.brandIdentity.substring(0, 500)}
+${input.businessConcept}
 
-Architecture: ${input.appArchitecture.substring(0, 2000)}
+${landingPageInstruction}
 
 Generate these files:
-1. package.json
+1. package.json (all dependencies: next, react, react-dom, typescript, tailwindcss, prisma, @prisma/client, next-auth, stripe, @stripe/stripe-js, zod)
 2. tsconfig.json
 3. next.config.js
-4. tailwind.config.ts
-5. app/layout.tsx
-6. app/page.tsx (landing page — premium, industry-specific design)
-7. app/globals.css
-8. components/Navigation.tsx
-9. components/Footer.tsx
+4. tailwind.config.ts (with brand colors as custom theme colors)
+5. app/layout.tsx (with proper metadata, Google Fonts, global providers)
+6. app/globals.css (Tailwind directives + brand CSS variables)
+7. app/page.tsx (the landing page — MUST match the approved design if provided)
+8. components/Navigation.tsx (responsive, mobile hamburger menu)
+9. components/Footer.tsx (with business info, links, copyright)
 10. .env.example`,
     }],
   });
 
-  const text = response.content
+  const text1 = call1.content
     .filter((b): b is Anthropic.TextBlock => b.type === 'text')
     .map(b => b.text)
     .join('');
+  parseCodebaseOutput(text1).forEach((content, path) => allFiles.set(path, content));
+  console.log(`[Codegen] Call 1 complete: ${allFiles.size} files`);
 
-  const parsed = parseCodebaseOutput(text);
-  parsed.forEach((content, path) => {
-    files.set(path, content);
+  // ── Call 2: Feature pages + API routes + Prisma schema ──
+  console.log('[Codegen] Call 2/3: Feature pages, API routes, database schema...');
+
+  const call2 = await anthropic.messages.create({
+    model: MODEL,
+    max_tokens: MAX_TOKENS,
+    system: systemPrompt,
+    messages: [{
+      role: 'user',
+      content: `Continue building "${input.projectName}". The config and landing page are done.
+
+${input.businessConcept}
+
+${input.codebaseSpec}
+
+Now generate:
+1. prisma/schema.prisma (models specific to this business — users, products/services, bookings/orders, payments, etc.)
+2. app/about/page.tsx (company story, team, mission — real copy for this business)
+3. app/services/page.tsx or app/products/page.tsx (whatever fits this business)
+4. app/contact/page.tsx (contact form with validation)
+5. app/api/contact/route.ts (form submission handler with Zod validation)
+6. app/api/auth/[...nextauth]/route.ts (NextAuth config with Google provider)
+7. lib/auth.ts (NextAuth options)
+8. lib/db.ts (Prisma client singleton)
+9. lib/stripe.ts (Stripe client)
+10. Any additional pages or API routes this specific business type needs`,
+    }],
   });
 
-  return files;
+  const text2 = call2.content
+    .filter((b): b is Anthropic.TextBlock => b.type === 'text')
+    .map(b => b.text)
+    .join('');
+  parseCodebaseOutput(text2).forEach((content, path) => {
+    if (!allFiles.has(path)) allFiles.set(path, content);
+  });
+  console.log(`[Codegen] Call 2 complete: ${allFiles.size} total files`);
+
+  // ── Call 3: Dashboard, auth pages, remaining components ──
+  console.log('[Codegen] Call 3/3: Dashboard, auth pages, components...');
+
+  const call3 = await anthropic.messages.create({
+    model: MODEL,
+    max_tokens: MAX_TOKENS,
+    system: systemPrompt,
+    messages: [{
+      role: 'user',
+      content: `Final batch for "${input.projectName}".
+
+${input.brandIdentity}
+
+${input.businessConcept}
+
+Generate:
+1. app/dashboard/page.tsx (customer dashboard — show their bookings/orders/purchases)
+2. app/dashboard/layout.tsx (dashboard shell with sidebar nav)
+3. app/auth/signin/page.tsx (branded sign-in page)
+4. app/api/stripe/checkout/route.ts (create Stripe checkout session for this business's products/services)
+5. app/api/stripe/webhook/route.ts (handle payment events)
+6. components/ui/Button.tsx (reusable button with variants)
+7. components/ui/Card.tsx (reusable card component)
+8. components/ui/Input.tsx (form input with label + error state)
+9. Any industry-specific components this business needs (booking widget, service cards, pricing table, etc.)
+10. middleware.ts (protect dashboard routes)`,
+    }],
+  });
+
+  const text3 = call3.content
+    .filter((b): b is Anthropic.TextBlock => b.type === 'text')
+    .map(b => b.text)
+    .join('');
+  parseCodebaseOutput(text3).forEach((content, path) => {
+    if (!allFiles.has(path)) allFiles.set(path, content);
+  });
+  console.log(`[Codegen] Call 3 complete: ${allFiles.size} total files`);
+
+  if (allFiles.size < 5) {
+    throw new Error(`Code generation produced only ${allFiles.size} files — expected at least 10`);
+  }
+
+  return allFiles;
 }
 
 /**

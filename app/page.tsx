@@ -93,7 +93,7 @@ export default function Home() {
             <div className="w-full max-w-3xl mx-auto relative">
               <div className="absolute -inset-1 rounded-2xl blur-xl opacity-40" style={{ background: 'linear-gradient(135deg, rgba(255,0,128,0.3), rgba(0,255,136,0.1), rgba(0,170,255,0.3))' }} />
               <div className="relative rounded-xl border border-accent/20 bg-surface/80 backdrop-blur-md p-4 gradient-glow">
-                <ChatInterface onAnalysis={handleAnalysis} />
+                <ChatInterface onAnalysis={handleAnalysis} selectedName={selectedName} />
               </div>
             </div>
 
