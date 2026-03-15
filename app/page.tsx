@@ -67,19 +67,19 @@ export default function Home() {
 
       <main
         id="main-content"
-        className="min-h-screen pt-20 pb-16 transition-all duration-300"
+        className="min-h-[100dvh] pt-20 pb-16 transition-all duration-300"
         style={{ marginRight: canvasOpen ? "520px" : "0" }}
       >
         {/* Hero Section - Chat Front and Center */}
         <section className="px-4 sm:px-6 py-8 sm:py-16">
           <div className={`mx-auto text-center transition-all duration-300 ${canvasOpen ? "max-w-2xl" : "max-w-4xl"}`}>
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-black mb-6 leading-[1.1] tracking-tight gradient-text">
+            <h1 className="text-fluid-hero font-heading font-black mb-6 leading-[1.1] tracking-tight gradient-text">
               Describe Your Business. Get a Working App.
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg sm:text-xl text-fsvc-text-secondary mb-2">
+            <p className="text-fluid-subhead text-fsvc-text-secondary mb-2">
               Users can sign up, log in, and pay you — on day one.
             </p>
             <p className="text-base sm:text-lg text-fsvc-text-disabled mb-2">
@@ -123,7 +123,7 @@ export default function Home() {
         {/* How It Works Section */}
         <section className="px-4 sm:px-6 py-20 border-t border-border">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-xl sm:text-2xl font-heading font-bold text-center text-fsvc-text-secondary uppercase tracking-wider mb-12">
+            <h2 className="text-fluid-section font-heading font-bold text-center text-fsvc-text-secondary uppercase tracking-wider mb-12">
               How It Works
             </h2>
 
@@ -170,7 +170,7 @@ export default function Home() {
         {/* Transparency / Credibility Section */}
         <section className="px-4 sm:px-6 py-20 border-t border-border">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-xl sm:text-2xl font-heading font-bold text-center text-fsvc-text-secondary uppercase tracking-wider mb-12">
+            <h2 className="text-fluid-section font-heading font-bold text-center text-fsvc-text-secondary uppercase tracking-wider mb-12">
               Built Different
             </h2>
 
@@ -256,7 +256,7 @@ export default function Home() {
 
               <Link
                 href="/get-started"
-                className="block w-full py-4 text-center rounded-lg gradient-bg gradient-bg-hover text-white font-bold text-lg transition-all"
+                className="block w-full py-4 text-center rounded-lg gradient-bg gradient-bg-hover text-white font-bold text-lg transition-all active:scale-95"
               >
                 Build My App &mdash; $497
               </Link>
@@ -289,7 +289,7 @@ export default function Home() {
             <p className="text-fsvc-text-disabled mb-2 text-sm">
               Your customers can find you, sign up, and pay — today.
             </p>
-            <h2 className="text-2xl sm:text-3xl font-heading font-bold text-fsvc-text mt-4 mb-2">
+            <h2 className="text-fluid-section font-heading font-bold text-fsvc-text mt-4 mb-2">
               Your business, live in 30 minutes.
             </h2>
             <p className="text-fsvc-text-disabled mb-8 text-sm">
@@ -297,7 +297,7 @@ export default function Home() {
             </p>
             <Link
               href="/get-started"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg gradient-bg gradient-bg-hover text-white font-bold text-lg transition-all"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg gradient-bg gradient-bg-hover text-white font-bold text-lg transition-all active:scale-95"
             >
               Build My App &mdash; $497
             </Link>

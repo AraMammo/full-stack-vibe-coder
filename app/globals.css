@@ -66,6 +66,19 @@
   }
 }
 
+/* ── Fluid typography scale ─────────────────────────── */
+:root {
+  --text-fluid-hero: clamp(2.25rem, 1.5rem + 3.75vw, 4.5rem);
+  --text-fluid-section: clamp(1.25rem, 1rem + 1.25vw, 1.875rem);
+  --text-fluid-subhead: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  --text-fluid-body: clamp(0.938rem, 0.9rem + 0.2vw, 1rem);
+}
+
+.text-fluid-hero { font-size: var(--text-fluid-hero); }
+.text-fluid-section { font-size: var(--text-fluid-section); }
+.text-fluid-subhead { font-size: var(--text-fluid-subhead); }
+.text-fluid-body { font-size: var(--text-fluid-body); }
+
 * {
   margin: 0;
   padding: 0;
@@ -92,7 +105,7 @@ body {
 
 .main-content {
   position: relative;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -923,7 +936,7 @@ body {
 
 /* Payment Page Styles */
 .payment-page {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1059,7 +1072,7 @@ body {
 
 /* Upload Page Styles */
 .upload-page {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1190,7 +1203,7 @@ body {
 .pricing-page {
   position: relative;
   z-index: 10;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 8rem 2rem 4rem;
   background: #000;
   color: #fff;
@@ -1559,7 +1572,7 @@ body {
 .faq-page {
   position: relative;
   z-index: 10;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 8rem 2rem 4rem;
   background: #000;
   color: #fff;
@@ -1801,7 +1814,7 @@ body {
 .vibe-coding-page {
   position: relative;
   z-index: 10;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 8rem 2rem 4rem;
   background: #000;
   color: #fff;
@@ -2301,7 +2314,7 @@ body {
 .blog-page {
   position: relative;
   z-index: 10;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 8rem 2rem 4rem;
   background: #000;
   color: #fff;
@@ -2403,7 +2416,7 @@ body {
 .blog-post-page {
   position: relative;
   z-index: 10;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 8rem 2rem 4rem;
   background: #000;
   color: #fff;
@@ -2998,7 +3011,7 @@ body {
 }
 /* Pricing Page Specific Styles */
 .pricing-page {
-  min-height: 100vh;
+  min-height: 100dvh;
   background: linear-gradient(135deg, #000000 0%, #1a0033 100%);
   padding: 2rem;
   padding-top: 100px;
@@ -3673,7 +3686,7 @@ body {
    ============================================ */
 
 .launch-guide-page {
-  min-height: 100vh;
+  min-height: 100dvh;
   background: #000;
   padding-bottom: 4rem;
 }

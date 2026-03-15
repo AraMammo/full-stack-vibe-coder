@@ -87,7 +87,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-base text-fsvc-text font-body">
+      <body className="min-h-[100dvh] flex flex-col bg-base text-fsvc-text font-body">
         <SessionProvider>
           <Navigation />
 

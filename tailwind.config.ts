@@ -20,7 +20,7 @@ const config: Config = {
         border: '#2A2A2A',
         'fsvc-text': '#F0F0EE',
         'fsvc-text-secondary': '#9A9A96',
-        'fsvc-text-disabled': '#555552',
+        'fsvc-text-disabled': '#737370',
         accent: '#ff0080',
         'accent-hover': '#ff339a',
         'accent-glow': 'rgba(255,0,128,0.12)',

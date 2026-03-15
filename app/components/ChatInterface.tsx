@@ -226,7 +226,7 @@ export default function ChatInterface({
   return (
     <div className="w-full">
       {/* Chat Messages */}
-      <div ref={chatContainerRef} className="rounded-xl bg-raised p-3 mb-3 min-h-[80px] max-h-[400px] overflow-y-auto">
+      <div ref={chatContainerRef} className="rounded-xl bg-raised p-3 mb-3 min-h-[80px] max-h-[400px] overflow-y-auto" role="log" aria-label="Conversation" aria-live="polite">
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -331,7 +331,7 @@ export default function ChatInterface({
                   type="button"
                   onClick={() => handleCheckout("TURNKEY_SYSTEM")}
                   disabled={!hostingAgreed || checkoutLoading}
-                  className="w-full py-3 px-4 rounded-lg gradient-bg text-white font-semibold text-sm hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 px-4 rounded-lg gradient-bg text-white font-semibold text-sm hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {checkoutLoading ? "Processing..." : "Build & Deploy My App — $497"}
                 </button>
@@ -399,13 +399,14 @@ export default function ChatInterface({
       )}
 
       {/* Input */}
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center" role="form" aria-label="Describe your business idea">
         {/* Hidden file input */}
         <input
           ref={screenshotInputRef}
           type="file"
           accept="image/png,image/jpeg,image/webp"
           className="hidden"
+          aria-hidden="true"
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) {
@@ -423,15 +424,17 @@ export default function ChatInterface({
           type="button"
           onClick={() => screenshotInputRef.current?.click()}
           disabled={isRecording || isTranscribing || isSubmitting}
-          className="w-10 h-10 flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-raised transition-all text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Upload screenshot"
+          className="w-11 h-11 flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-raised transition-all text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Upload a screenshot of a site you like"
           title="Upload a screenshot of a site you like (optional)"
         >
-          <svg className="w-5 h-5 text-fsvc-text-disabled" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-fsvc-text-disabled" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </button>
+        <label htmlFor="business-idea-input" className="sr-only">Describe your business idea</label>
         <input
+          id="business-idea-input"
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
@@ -443,19 +446,25 @@ export default function ChatInterface({
               ? "Request changes — \"make it darker\", \"add testimonials\", \"more modern\"..."
               : "What do you sell, who do you serve, and how do they pay?"
           }
+          aria-describedby="input-help"
           className="flex-1 bg-surface border border-border rounded-lg px-4 py-3 text-fsvc-text text-base placeholder-fsvc-text-disabled focus:outline-none focus:border-accent/50 focus:shadow-[0_0_0_3px_rgba(255,92,53,0.12)] transition-colors"
           disabled={isRecording || isTranscribing || isSubmitting}
         />
+        <span id="input-help" className="sr-only">
+          {analysis
+            ? "Describe what you'd like to change about the preview"
+            : "Tell us about your business in a sentence or two"}
+        </span>
         <button
           type="button"
           onClick={isRecording ? stopRecording : startRecording}
           disabled={isTranscribing || isSubmitting}
-          className={`w-10 h-10 flex items-center justify-center rounded-lg border transition-all text-lg ${
+          className={`w-11 h-11 flex items-center justify-center rounded-lg border transition-all text-lg ${
             isRecording
               ? "border-error/50 bg-error/20 animate-pulse"
               : "border-border bg-surface hover:bg-raised"
           } disabled:opacity-50 disabled:cursor-not-allowed`}
-          aria-label={isRecording ? "Stop recording" : "Start recording"}
+          aria-label={isRecording ? "Stop recording voice note" : "Record a voice note"}
         >
           {isRecording ? "⏹" : "🎤"}
         </button>
@@ -463,7 +472,8 @@ export default function ChatInterface({
           type="button"
           onClick={handleTextSubmit}
           disabled={!inputText.trim() || isRecording || isTranscribing || isSubmitting}
-          className="px-6 py-3 rounded-lg gradient-bg text-white font-bold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-3 rounded-lg gradient-bg text-white font-bold hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label={isSubmitting ? "Sending..." : "Send message"}
         >
           {isSubmitting ? "..." : "Send"}
         </button>
